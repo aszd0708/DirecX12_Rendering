@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Game">
+      <UniqueIdentifier>{d2d0fd71-4d67-48c2-b343-6fdb5782e40f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{ec1fc7a4-e083-4ffe-aa6f-9f1c2c16b5c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Main">
+      <UniqueIdentifier>{917790be-525f-4fb7-b23e-ac28870b541b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Camera">
+      <UniqueIdentifier>{86c54248-1ebc-4972-95e8-d093b6e6487c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Demo">
+      <UniqueIdentifier>{2ce0dcc7-261c-4197-baa0-6cfcf65d57df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Demo">
+      <UniqueIdentifier>{0388eed7-b764-4e8c-8180-5cdfbf4c1016}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\GameObject">
+      <UniqueIdentifier>{db3bb5c8-6a3b-4725-b377-41b02b788477}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Material">
+      <UniqueIdentifier>{5c587bd2-cf25-4c85-a30d-11f6cf1a513c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Demo\PBR">
+      <UniqueIdentifier>{aa9d6380-3985-47bf-a273-53b80c6f5713}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Demo\Shadow">
+      <UniqueIdentifier>{71f1a3df-7295-424d-94fb-d48a313f5e96}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Demo\AO">
+      <UniqueIdentifier>{24d2a1fd-a3c1-4662-ad44-c5906093c4c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Demo\PBR">
+      <UniqueIdentifier>{20b41b92-55bd-411a-be63-8ba27c42bc14}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Main.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Main.h">
+      <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Main</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Shaders\SSAODemo.fx">
+      <Filter>Shaders\Demo</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Shaders\ShadowMap.fx">
+      <Filter>Shaders\Demo</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Shaders\PBRMeshDemo.fx">
+      <Filter>Shaders\Demo\PBR</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Shaders\PBRModelDemo.fx">
+      <Filter>Shaders\Demo\PBR</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Shaders\SkyBox.fx">
+      <Filter>Shaders\Demo</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Shaders\PBRTerrain.fx">
+      <Filter>Shaders\Demo\PBR</Filter>
+    </FxCompile>
+  </ItemGroup>
+</Project>
