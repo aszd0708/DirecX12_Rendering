@@ -439,3 +439,6 @@ Resources/
 
 # Compiled Shader Objects
 *.cso
+
+# Markdown files
+*.md
