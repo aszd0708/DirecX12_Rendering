@@ -27,3 +27,4 @@ public:										\
 #define CUR_SCENE	SCENE->GetCurrentScene()
 
 inline void ThrowIfFailed(HRESULT hr);
+const uint32 SWAP_CHAIN_BUFFER_COUNT = 2;
