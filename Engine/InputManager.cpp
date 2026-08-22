@@ -24,12 +24,12 @@ void InputManager::Update()
 
 	for (uint32 key = 0; key < KEY_TYPE_COUNT; key++)
 	{
-		// Å°°¡ ´­·Á ÀÖÀ¸¸é true
+		// í‚¤ê°€ ëˆŒë ¤ ìˆìœ¼ë©´ true
 		if (asciiKeys[key] & 0x80)
 		{
 			KEY_STATE& state = _states[key];
 
-			// ÀÌÀü ÇÁ·¹ÀÓ¿¡ Å°¸¦ ´©¸¥ »óÅÂ¶ó¸é PRESS
+			// ì´ì „ í”„ë ˆì„ì— í‚¤ë¥¼ ëˆ„ë¥¸ ìƒíƒœë¼ë©´ PRESS
 			if (state == KEY_STATE::PRESS || state == KEY_STATE::DOWN)
 				state = KEY_STATE::PRESS;
 			else
@@ -39,7 +39,7 @@ void InputManager::Update()
 		{
 			KEY_STATE& state = _states[key];
 
-			// ÀÌÀü ÇÁ·¹ÀÓ¿¡ Å°¸¦ ´©¸¥ »óÅÂ¶ó¸é UP
+			// ì´ì „ í”„ë ˆì„ì— í‚¤ë¥¼ ëˆ„ë¥¸ ìƒíƒœë¼ë©´ UP
 			if (state == KEY_STATE::PRESS || state == KEY_STATE::DOWN)
 				state = KEY_STATE::UP;
 			else

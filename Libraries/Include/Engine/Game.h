@@ -2,6 +2,7 @@
 
 struct GameDesc
 {
+	shared_ptr<class SceneBuilder> _scene;
 	wstring appName = L"DX12_Study";
 	HINSTANCE hInstance = 0;
 	HWND hWnd = 0;

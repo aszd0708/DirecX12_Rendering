@@ -1,5 +1,7 @@
 #include "pch.h"
 #include "Game.h"
+#include "SceneBuilder.h"
+#include "Graphics.h"
 
 WPARAM Game::Run(GameDesc& desc)
 {
@@ -16,6 +18,9 @@ WPARAM Game::Run(GameDesc& desc)
 	// Manager 초기화
 	TIME->Init();
 	INPUT->Init(_desc.hWnd);
+
+	// Scene 초기화
+	_desc._scene->Init();
 
 	MSG msg = { 0 };
 
@@ -81,7 +86,10 @@ void Game::Update()
 	ShowFPS();
 
 	GRAPHICS->RenderBegin();
-	// TODO: 렌더링 파이프라인 호출
+
+	_desc._scene->Update();
+	_desc._scene->Render();
+
 	GRAPHICS->RenderEnd();
 }
 

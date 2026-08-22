@@ -25,6 +25,13 @@ public:
 private:
 	void SetResourceBarrier(bool isBegin);
 
+public:
+	ComPtr<ID3D12Device> GetDevice() { return _device; }
+	ComPtr<IDXGIFactory4> GetFactory() { return _factory; }
+	ComPtr<ID3D12CommandQueue> GetQueue() { return _commandQueue; }
+	ComPtr<ID3D12CommandAllocator> GetAllocator() { return _commandAllocator; }
+	ComPtr<ID3D12GraphicsCommandList> GetList() { return _commandList; }
+
 private:
 	HWND _hwnd = {};
 
@@ -45,5 +52,9 @@ private:
 	HANDLE _fenceEvent = nullptr;
 
 private:
-	const float CLEAR_COLOR[4] = {0.5f, 0.5f, 0.5f, 1.0f};
+	D3D12_VIEWPORT _viewport;
+	D3D12_RECT _rect;
+
+private:
+	const float CLEAR_COLOR[4] = { 0.5f, 0.5f, 0.5f, 1.0f };
 };

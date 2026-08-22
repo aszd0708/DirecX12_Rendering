@@ -437,6 +437,12 @@ FodyWeavers.xsd
 # Custom exclusions
 Resources/
 
+# Build outputs
+Intermediate/
+Binaries/
+Libraries/Lib/Engine/
+*.idb
+
 # Compiled Shader Objects
 *.cso
 

@@ -20,6 +20,8 @@
 #include <string>
 #include <optional>
 #include <assert.h>
+#include <stdexcept>
+#include <concepts>
 using namespace std;
 
 // WIN
@@ -27,6 +29,8 @@ using namespace std;
 
 // DirectX 12
 #include <d3d12.h>
+#include <d3dx12.h>
+#include <comdef.h>
 #include <dxgi1_6.h>
 #include <d3dcompiler.h>
 #include <wrl.h>
@@ -35,6 +39,16 @@ using namespace std;
 #include <DirectXTex/DirectXTex.inl>
 using namespace DirectX;
 using namespace Microsoft::WRL;
+
+
+inline void ThrowIfFailed(HRESULT hr)
+{
+    if (FAILED(hr))
+    {
+        MessageBox(nullptr, L"HRESULT Failed!", L"Error", MB_OK);
+        __debugbreak();  // 디버거가 여기서 강제로 멈춤
+    }
+}
 
 // STB
 #include "stb_image.h"
@@ -56,11 +70,16 @@ using namespace Microsoft::WRL;
 #include "Graphics.h"
 #include "InputManager.h"
 #include "TimeManager.h"
+#include "SceneManager.h"
+#include "GameObject.h"
+#include "Component.h"
+#include "Renderer.h"
 
 // Geometry
 #include "VertexData.h"
 #include "Geometry.h"
 #include "GeometryHelper.h"
+#include "Scene.h"
 
 // ImGUI
 #include "imgui.h"

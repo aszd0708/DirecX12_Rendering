@@ -17,8 +17,7 @@ void Graphics::Init(HWND hwnd)
 	// 5. Fence (GPU-CPU 동기화) 객체 생성
 
 	
-	HRESULT hr = D3D12CreateDevice(nullptr, D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&_device));
-	CHECK(hr);
+	ThrowIfFailed(D3D12CreateDevice(nullptr, D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&_device)));
 
 	CreateCommandQueue();
 	CreateCommandAllocator();
@@ -51,6 +50,18 @@ void Graphics::CreateCommandList()
 {
 	ThrowIfFailed(_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, _commandAllocator.Get(), nullptr, IID_PPV_ARGS(&_commandList)));
 	_commandList->Close();
+
+	_viewport.TopLeftX = 0;
+	_viewport.TopLeftY = 0;
+	_viewport.Width = SCREEN_WIDTH;
+	_viewport.Height = SCREEN_HEIGHT;
+	_viewport.MinDepth = 0.0f;
+	_viewport.MaxDepth = 1.0f;
+
+	_rect.left = 0;
+	_rect.top = 0;
+	_rect.right = SCREEN_WIDTH;
+	_rect.bottom = SCREEN_HEIGHT;
 }
 
 void Graphics::CreateFactory()
@@ -125,6 +136,9 @@ void Graphics::RenderBegin()
 	_commandList->OMSetRenderTargets(1, &descHandler, false, nullptr);
 
 	_commandList->ClearRenderTargetView(descHandler, CLEAR_COLOR, 0, nullptr);
+
+	_commandList->RSSetViewports(1, &_viewport);
+	_commandList->RSSetScissorRects(1, &_rect);
 }
 
 void Graphics::RenderEnd()
