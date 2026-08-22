@@ -1,10 +1,12 @@
 #include "pch.h"
 #include "Main.h"
 #include "Engine/Game.h"
+#include "TriagleDemo.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
 	GameDesc desc;
+	desc._scene = make_shared<TriagleDemo>("TriangleDemo");
 	desc.appName = L"DX12_Study";
 	desc.hInstance = hInstance;
 	desc.vsync = false;

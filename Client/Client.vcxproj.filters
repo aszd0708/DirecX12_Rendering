@@ -16,27 +16,6 @@
     <Filter Include="Game\Demo">
       <UniqueIdentifier>{2ce0dcc7-261c-4197-baa0-6cfcf65d57df}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shaders\Demo">
-      <UniqueIdentifier>{0388eed7-b764-4e8c-8180-5cdfbf4c1016}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game\GameObject">
-      <UniqueIdentifier>{db3bb5c8-6a3b-4725-b377-41b02b788477}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game\Material">
-      <UniqueIdentifier>{5c587bd2-cf25-4c85-a30d-11f6cf1a513c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game\Demo\PBR">
-      <UniqueIdentifier>{aa9d6380-3985-47bf-a273-53b80c6f5713}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game\Demo\Shadow">
-      <UniqueIdentifier>{71f1a3df-7295-424d-94fb-d48a313f5e96}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game\Demo\AO">
-      <UniqueIdentifier>{24d2a1fd-a3c1-4662-ad44-c5906093c4c1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shaders\Demo\PBR">
-      <UniqueIdentifier>{20b41b92-55bd-411a-be63-8ba27c42bc14}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -44,6 +23,9 @@
     </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="TriagleDemo.cpp">
+      <Filter>Game\Demo</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -53,25 +35,16 @@
     <ClInclude Include="pch.h">
       <Filter>Main</Filter>
     </ClInclude>
+    <ClInclude Include="TriagleDemo.h">
+      <Filter>Game\Demo</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\Shaders\SSAODemo.fx">
-      <Filter>Shaders\Demo</Filter>
-    </FxCompile>
-    <FxCompile Include="..\Shaders\ShadowMap.fx">
-      <Filter>Shaders\Demo</Filter>
-    </FxCompile>
-    <FxCompile Include="..\Shaders\PBRMeshDemo.fx">
-      <Filter>Shaders\Demo\PBR</Filter>
-    </FxCompile>
-    <FxCompile Include="..\Shaders\PBRModelDemo.fx">
-      <Filter>Shaders\Demo\PBR</Filter>
-    </FxCompile>
-    <FxCompile Include="..\Shaders\SkyBox.fx">
-      <Filter>Shaders\Demo</Filter>
-    </FxCompile>
-    <FxCompile Include="..\Shaders\PBRTerrain.fx">
-      <Filter>Shaders\Demo\PBR</Filter>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Shaders\HLSL\Triangle.hlsl">
+      <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>
