@@ -1,6 +1,7 @@
 #pragma once
 
 class GameObject;
+class Transform;
 
 enum class eComponentType
 {
@@ -24,7 +25,10 @@ public:
 public:
 	eComponentType GetType() const { return _type; }
 
-	void SetGameObject(shared_ptr<GameObject> obj) { _gameObject.lock() = obj; }
+	shared_ptr<GameObject> GetGameObject();
+	shared_ptr<Transform> GetTransform();
+
+	void SetGameObject(shared_ptr<GameObject> obj) { _gameObject = obj; }
 
 private:
 	eComponentType _type;

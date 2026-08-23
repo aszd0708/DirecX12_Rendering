@@ -9,13 +9,13 @@ Graphics::~Graphics()
 void Graphics::Init(HWND hwnd)
 {
 	_hwnd = hwnd;
+
 	// TODO: DirectX 12 초기화 구현
 	// 1. D3D12CreateDevice
 	// 2. CommandQueue, CommandAllocator, CommandList 생성
 	// 3. SwapChain 생성
 	// 4. Descriptor Heap(RTV, DSV, CBV/SRV/UAV) 생성 및 BackBuffer RTV 생성
 	// 5. Fence (GPU-CPU 동기화) 객체 생성
-
 	
 	ThrowIfFailed(D3D12CreateDevice(nullptr, D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&_device)));
 
