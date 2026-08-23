@@ -8,10 +8,8 @@ public:
 	Mesh(shared_ptr<Geometry<T>> data);
 	~Mesh();
 
-public:
-	void CreateMesh();
-
 private:
+	void CreateMesh();
 	void CreateVertexResource();
 	void CreateIndexResource();
 

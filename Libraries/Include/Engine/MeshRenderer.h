@@ -10,11 +10,12 @@ class MeshRenderer : public Renderer
 	DECLARE_COMPONENT_TYPE(eComponentType::Renderer);
 
 public:
-	inline MeshRenderer(shared_ptr<Mesh<T>> mesh, shared_ptr<Shader> shader);
-	inline virtual ~MeshRenderer() override;
+	MeshRenderer();
+	virtual ~MeshRenderer() override;
 
 public:
-	inline virtual void Render() override;
+	void Init(shared_ptr<Mesh<T>> mesh, shared_ptr<Shader> shader);
+	virtual void Render() override;
 
 public:
 	const D3D12_VERTEX_BUFFER_VIEW& GetVertexBuffer() { return _mesh->GetVertexView(); }
@@ -25,7 +26,7 @@ private:
 };
 
 template<typename T>
-inline MeshRenderer<T>::MeshRenderer(shared_ptr<Mesh<T>> mesh, shared_ptr<Shader> shader) : Renderer(eComponentType::Renderer), _mesh(mesh), _shader(shader)
+inline MeshRenderer<T>::MeshRenderer() : Renderer(eComponentType::Renderer)
 {
 	
 }
@@ -34,6 +35,13 @@ template<typename T>
 inline MeshRenderer<T>::~MeshRenderer()
 {
 
+}
+
+template<typename T>
+inline void MeshRenderer<T>::Init(shared_ptr<Mesh<T>> mesh, shared_ptr<Shader> shader)
+{
+	_mesh = mesh;
+	_shader = shader;
 }
 
 template<typename T>

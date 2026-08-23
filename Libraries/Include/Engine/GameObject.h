@@ -43,7 +43,7 @@ public:
 		eComponentType type = C::GetType();
 		if (type != eComponentType::Script)
 		{
-			_fixedComponent[type] = component;
+			_fixedComponent[(int)type] = component;
 		}
 		else
 		{

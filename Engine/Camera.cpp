@@ -6,10 +6,14 @@ Camera::Camera() : Component(eComponentType::Camera)
 {}
 
 Camera::~Camera()
-{}
+{
+
+}
 
 void Camera::Update()
-{}
+{
+	Component::Update();
+}
 
 void Camera::UpdateMatrix()
 {

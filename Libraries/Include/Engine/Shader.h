@@ -6,10 +6,9 @@ struct ShaderInfo;
 class Shader
 {
 private:
-	constexpr wstring SHADER_PATH(std::wstring_view fileName)
+	inline wstring SHADER_PATH(wstring fileName)
 	{
-		// 주의: 이 방식은 고정된 상수를 다룰 때만 메모리 낭비 제로로 작동합니다.
-		return L"../Shaders/HLSL/" + std::wstring(fileName) + L".hlsl";
+		return L"../Shaders/HLSL/" + wstring(fileName) + L".hlsl";
 	}
 
 public:
@@ -43,5 +42,8 @@ private:
 	ComPtr<ID3D12RootSignature> _signature;
 
 	ComPtr<ID3D12PipelineState> _pso;
+public:
+
+	Shader() = default;
 };
 
