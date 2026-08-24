@@ -73,6 +73,7 @@ inline void ThrowIfFailed(HRESULT hr)
 #include "SceneManager.h"
 #include "GameObject.h"
 #include "Component.h"
+#include "Transform.h"
 #include "Renderer.h"
 
 // Geometry

@@ -32,9 +32,10 @@ inline void VertexBuffer<T>::CreateResource(const vector<T>& vertices)
 	desc.SampleDesc.Count = 1;
 	desc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 
-	ThrowIfFailed(DEVICE->CreateCommittedResource(&properties, D3D12_HEAP_FLAG_NONE,
-		&desc, D3D12_RESOURCE_STATE_GENERIC_READ,
-		nullptr, IID_PPV_ARGS(_resource.GetAddressOf())));
+	ThrowIfFailed(DEVICE->CreateCommittedResource(
+	&properties, D3D12_HEAP_FLAG_NONE,
+	&desc, D3D12_RESOURCE_STATE_GENERIC_READ,
+	nullptr, IID_PPV_ARGS(_resource.GetAddressOf())));
 
 	void* data;
 	_resource->Map(0, nullptr, &data);

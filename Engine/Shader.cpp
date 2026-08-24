@@ -20,17 +20,12 @@ Shader::~Shader()
 
 void Shader::CreateRootSignature()
 {
-	CD3DX12_ROOT_SIGNATURE_DESC desc = {};
-	desc.pParameters = 0;
-	desc.pStaticSamplers = nullptr;
-	desc.NumParameters = 0;
-	desc.NumStaticSamplers = 0;
-	desc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+	CD3DX12_ROOT_SIGNATURE_DESC desc = CD3DX12_ROOT_SIGNATURE_DESC(	1, _info._signatureRootParam, 
+																	0, nullptr,
+																	D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
 	ThrowIfFailed(D3D12SerializeRootSignature(&desc, D3D_ROOT_SIGNATURE_VERSION_1, _signatureBlob.GetAddressOf(), _signatureError.GetAddressOf()));
 	ThrowIfFailed(DEVICE->CreateRootSignature(0, _signatureBlob->GetBufferPointer(), _signatureBlob->GetBufferSize(), IID_PPV_ARGS(&_signature)));
-
-
 }
 
 void Shader::CreatePSO()
