@@ -19,7 +19,7 @@ public:
 	ComPtr<ID3D12Resource> GetVertexResource() { return _vertexResource; };
 	const D3D12_VERTEX_BUFFER_VIEW GetVertexView() { return _vertexResourceView; }
 	ComPtr<ID3D12Resource> GetIndexResource() { return _indexResource; };
-	const D3D12_VERTEX_BUFFER_VIEW GetIndexView() { return _indexResourceView; }
+	const D3D12_INDEX_BUFFER_VIEW GetIndexView() { return _indexResourceView; }
 	
 private:
 	shared_ptr<Geometry<T>> _meshData;
@@ -35,6 +35,12 @@ template<typename T>
 inline Mesh<T>::Mesh(shared_ptr<Geometry<T>> data) : _meshData(data)
 {
 	CreateMesh();
+}
+
+template<typename T>
+inline Mesh<T>::~Mesh()
+{
+
 }
 
 template<typename T>

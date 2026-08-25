@@ -4,7 +4,7 @@
 class MeshDemo : public SceneBuilder
 {
 public:
-	MeshDemo();
+	MeshDemo(string sceneName);
 	virtual ~MeshDemo();
 
 public:

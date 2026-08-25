@@ -3,10 +3,14 @@
 #include "Transform.h"
 
 CameraController::CameraController() : Component(eComponentType::Script)
-{}
+{
+
+}
 
 CameraController::~CameraController()
-{}
+{
+
+}
 
 void CameraController::Start()
 {

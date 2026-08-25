@@ -66,7 +66,7 @@ private:
 	vector<shared_ptr<Transform>> _children;
 };
 
-Vec3 ToEulerAngles(Quaternion q)
+inline Vec3 ToEulerAngles(Quaternion q)
 {
 	Vec3 angles;
 

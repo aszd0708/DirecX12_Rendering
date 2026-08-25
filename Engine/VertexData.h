@@ -39,7 +39,7 @@ struct VertexTextureData
 
 struct VertexColorData
 {
-	Vec3 position = { 0, 0, 0 };
+	Vec4 position = { 0, 0, 0, 0 };
 	Color color = { 0, 0, 0, 0 };
 
 	static inline vector<D3D12_INPUT_ELEMENT_DESC> GetDesc()
@@ -50,7 +50,7 @@ struct VertexColorData
 			D3D12_INPUT_ELEMENT_DESC inputElementDesc = {};
 			inputElementDesc.SemanticName = "POSITION";
 			inputElementDesc.SemanticIndex = 0;
-			inputElementDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+			inputElementDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 			inputElementDesc.InputSlot = 0;
 			inputElementDesc.AlignedByteOffset = 0;
 			inputElementDesc.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
@@ -65,7 +65,7 @@ struct VertexColorData
 			inputElementDesc.SemanticIndex = 0;
 			inputElementDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 			inputElementDesc.InputSlot = 0;
-			inputElementDesc.AlignedByteOffset = sizeof(Vec3);
+			inputElementDesc.AlignedByteOffset = sizeof(Vec4);
 			inputElementDesc.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
 			inputElementDesc.InstanceDataStepRate = 0;
 			desc.emplace_back(inputElementDesc);

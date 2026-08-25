@@ -2,8 +2,14 @@
 #include "Camera.h"
 #include "Transform.h"
 
+Matrix Camera::S_MatView = Matrix::Identity;
+Matrix Camera::S_MatProjection = Matrix::Identity;
+
 Camera::Camera() : Component(eComponentType::Camera)
-{}
+{
+	_width = SCREEN_WIDTH;
+	_height = SCREEN_HEIGHT;
+}
 
 Camera::~Camera()
 {
@@ -13,6 +19,7 @@ Camera::~Camera()
 void Camera::Update()
 {
 	Component::Update();
+	UpdateMatrix();
 }
 
 void Camera::UpdateMatrix()

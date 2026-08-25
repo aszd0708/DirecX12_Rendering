@@ -1,37 +1,31 @@
 #pragma once
 
-template<typename T>
 class ConstantBuffer
 {
 public:
-	ConstantBuffer() { }
-	~ConstantBuffer() { }
+	ConstantBuffer(uint32 dataSize);
+	~ConstantBuffer();
 
-	ComPtr<ID3D11Buffer> GetComPtr() { return _constantBuffer; }
-
-	void Create()
-	{
-		D3D11_BUFFER_DESC desc;
-		ZeroMemory(&desc, sizeof(desc));
-		desc.Usage = D3D11_USAGE_DYNAMIC; // CPU_Write + GPU_Read
-		desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-		desc.ByteWidth = sizeof(T);
-		desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-
-		HRESULT hr = DEVICE->CreateBuffer(&desc, nullptr, _constantBuffer.GetAddressOf());
-		CHECK(hr);
-	}
-
-	void CopyData(const T& data)
-	{
-		D3D11_MAPPED_SUBRESOURCE subResource;
-		ZeroMemory(&subResource, sizeof(subResource));
-
-		DC->Map(_constantBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &subResource);
-		::memcpy(subResource.pData, &data, sizeof(data));
-		DC->Unmap(_constantBuffer.Get(), 0);
-	}
+	static uint32 GetSize(uint32 dataSize);
 
 private:
-	ComPtr<ID3D11Buffer> _constantBuffer;
+	void CreateBuffer(uint32 dataSize);
+
+public:
+	D3D12_GPU_VIRTUAL_ADDRESS GetAddress() { return _buffer->GetGPUVirtualAddress(); }
+	void PushData(const void* sendData, uint32 dataSize);
+
+	template<typename T>
+	void PushDataSafe(const T& sendData);
+
+private:
+	ComPtr<ID3D12Resource> _buffer;
+	void* _mappedData;
+	uint32 _dataSize;
 };
+
+template<typename T>
+inline void ConstantBuffer::PushDataSafe(const T& sendData)
+{
+	PushData((void*)&sendData, sizeof(T));
+}

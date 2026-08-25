@@ -16,7 +16,13 @@ void Graphics::Init(HWND hwnd)
 	// 3. SwapChain 생성
 	// 4. Descriptor Heap(RTV, DSV, CBV/SRV/UAV) 생성 및 BackBuffer RTV 생성
 	// 5. Fence (GPU-CPU 동기화) 객체 생성
-	
+
+#ifdef _DEBUG
+	ComPtr<ID3D12Debug> debugController;
+	D3D12GetDebugInterface(IID_PPV_ARGS(&debugController));
+	debugController->EnableDebugLayer();
+#endif // _DEBUG
+
 	ThrowIfFailed(D3D12CreateDevice(nullptr, D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&_device)));
 
 	CreateCommandQueue();

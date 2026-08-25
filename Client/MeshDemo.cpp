@@ -7,9 +7,18 @@
 #include "Shader.h"
 #include "ShaderInfo.h"
 
+MeshDemo::MeshDemo(string sceneName) : SceneBuilder(sceneName)
+{}
+
+MeshDemo::~MeshDemo()
+{}
+
 void MeshDemo::Init()
 {
 	SceneBuilder::Init();
+
+	CreateCamera();
+	CreateMesh();
 }
 
 void MeshDemo::Render()
@@ -22,6 +31,8 @@ void MeshDemo::Render()
 void MeshDemo::CreateCamera()
 {
 	_cameraObj = make_shared<GameObject>();
+	shared_ptr<Transform> transform = _cameraObj->AddComponent<Transform>();
+	transform->SetPosition(Vec3(0.0f, 0.0f, -15.0f));
 	_cameraObj->AddComponent<Camera>();
 	_cameraObj->AddComponent<CameraController>();
 
@@ -31,20 +42,23 @@ void MeshDemo::CreateCamera()
 void MeshDemo::CreateMesh()
 {
 	_meshObj = make_shared<GameObject>();
-	shared_ptr<Geometry<VertexTextureData>> geometry = make_shared<Geometry<VertexTextureData>>();
-	GeometryHelper::CreateCube(geometry);
-	shared_ptr<Mesh<VertexTextureData>> mesh = make_shared<Mesh<VertexTextureData>>(geometry);
+	_meshObj->AddComponent<Transform>();
+	shared_ptr<Geometry<VertexColorData>> geometry = make_shared<Geometry<VertexColorData>>();
+	GeometryHelper::CreateSphere(geometry, Color(0.0f, 0.0f, 0.0f, 1.0f));
+	shared_ptr<Mesh<VertexColorData>> mesh = make_shared<Mesh<VertexColorData>>(geometry);
 
 	ShaderInfo shaderInfo = {};
-	shaderInfo._path = L"Mesh.hlsl";
+	shaderInfo._path = L"Mesh";
 	shaderInfo._inputLayoutDesc = VertexColorData::GetDesc();
-	CD3DX12_ROOT_PARAMETER rootParams[1] = { {} };
+	CD3DX12_ROOT_PARAMETER rootParams[2] = { {} };
 	rootParams[0].InitAsConstantBufferView(0);
+	rootParams[1].InitAsConstantBufferView(1);
 	shaderInfo._signatureRootParam = rootParams;
+	shaderInfo._signatureRootParamCount = 2;
 	shared_ptr<Shader> shader = make_shared<Shader>(shaderInfo);
 
-	shared_ptr<MeshRenderer<VertexTextureData>> meshRednerer = _meshObj->AddComponent<MeshRenderer<VertexTextureData>>();
+	shared_ptr<MeshRenderer<VertexColorData>> meshRednerer = _meshObj->AddComponent<MeshRenderer<VertexColorData>>();
 	meshRednerer->Init(mesh, shader);
 
-	AddGameObject(_cameraObj);
+	AddGameObject(_meshObj);
 }

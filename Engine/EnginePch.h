@@ -43,11 +43,7 @@ using namespace Microsoft::WRL;
 
 inline void ThrowIfFailed(HRESULT hr)
 {
-    if (FAILED(hr))
-    {
-        MessageBox(nullptr, L"HRESULT Failed!", L"Error", MB_OK);
-        __debugbreak();  // 디버거가 여기서 강제로 멈춤
-    }
+    CHECK(hr);
 }
 
 // STB
@@ -65,14 +61,16 @@ inline void ThrowIfFailed(HRESULT hr)
 #pragma comment(lib, "DirectXTex/DirectXTex.lib")
 #endif
 
-// Managers & Core
+// Managers
 #include "Game.h"
 #include "Graphics.h"
 #include "InputManager.h"
 #include "TimeManager.h"
 #include "SceneManager.h"
-#include "GameObject.h"
+
+// Core
 #include "Component.h"
+#include "GameObject.h"
 #include "Transform.h"
 #include "Renderer.h"
 

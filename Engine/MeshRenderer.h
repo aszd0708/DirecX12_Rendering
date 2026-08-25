@@ -52,7 +52,7 @@ inline void MeshRenderer<T>::Render()
 {
 	Renderer::Render();
 
-	PushGlobalBuffer(Camera::GetViewMatrix(), Camera::GetProjectionMatrix());
+	PushGlobalBuffer(Camera::S_MatView, Camera::S_MatProjection);
 	PushWorldMatrixBuffer();
 
 	COMMAND_LIST->SetGraphicsRootSignature(this->_shader->GetRootSignature().Get());
@@ -68,10 +68,10 @@ inline void MeshRenderer<T>::Render()
 	COMMAND_LIST->IASetIndexBuffer(&indexView);
 
 	// Global 버퍼 전달
-	COMMAND_LIST->SetGraphicsRootConstantBufferView(0, GetWorldMatrixBuffer()->GetAddress());
+	COMMAND_LIST->SetGraphicsRootConstantBufferView(0, GetGlobalBuffer()->GetAddress());
 
 	// World Matrix 버퍼 전달
-	COMMAND_LIST->SetGraphicsRootConstantBufferView(1, GetGlobalBuffer()->GetAddress());
+	COMMAND_LIST->SetGraphicsRootConstantBufferView(1, GetWorldMatrixBuffer()->GetAddress());
 
-	COMMAND_LIST->DrawIndexedInstanced(_mesh->GetMesh()->GetIndexCount(), 1, 0, 0);
+	COMMAND_LIST->DrawIndexedInstanced(_mesh->GetMesh()->GetIndexCount(), 1, 0, 0, 0);
 }

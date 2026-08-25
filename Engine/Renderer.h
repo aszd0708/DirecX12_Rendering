@@ -13,6 +13,7 @@ public:
 	virtual ~Renderer() override;
 
 public:
+	virtual void Init();
 	virtual void Render();
 
 public:

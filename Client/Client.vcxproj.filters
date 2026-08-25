@@ -16,6 +16,9 @@
     <Filter Include="Game\Demo">
       <UniqueIdentifier>{2ce0dcc7-261c-4197-baa0-6cfcf65d57df}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders\GlobalData">
+      <UniqueIdentifier>{8804d004-c6f5-48f9-bd37-984706a3ee5a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -57,6 +60,12 @@
   <ItemGroup>
     <FxCompile Include="..\Shaders\HLSL\Triangle.hlsl">
       <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Shaders\HLSL\Mesh.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Shaders\HLSL\Global.hlsl">
+      <Filter>Shaders\GlobalData</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

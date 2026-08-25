@@ -8,6 +8,11 @@ Component::Component(eComponentType type) : _type(type)
 
 }
 
+Component::~Component()
+{
+
+}
+
 void Component::Awake()
 {
 
