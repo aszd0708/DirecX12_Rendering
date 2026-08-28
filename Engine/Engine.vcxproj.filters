@@ -73,6 +73,9 @@
     <Filter Include="04. Component\FixedComponent\Render">
       <UniqueIdentifier>{9fc9cd0a-b436-46e5-bafc-88fca9575e5e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Graphics\Texture">
+      <UniqueIdentifier>{507cbd17-9ab8-4c65-b778-9b24f49c21df}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -190,6 +193,9 @@
     <ClInclude Include="GlobalBuffer.h">
       <Filter>01. Graphics\Buffer</Filter>
     </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>01. Graphics\Texture</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -293,6 +299,9 @@
     </ClCompile>
     <ClCompile Include="GlobalBuffer.cpp">
       <Filter>01. Graphics\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>01. Graphics\Texture</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

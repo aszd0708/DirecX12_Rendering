@@ -41,6 +41,7 @@
   <ItemGroup>
     <FxCompile Include="..\Shaders\HLSL\Global.hlsl" />
     <FxCompile Include="..\Shaders\HLSL\Mesh.hlsl" />
+    <FxCompile Include="..\Shaders\HLSL\TextureMesh.hlsl" />
     <FxCompile Include="..\Shaders\HLSL\Triangle.hlsl" />
   </ItemGroup>
   <ItemGroup>

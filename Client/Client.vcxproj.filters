@@ -67,5 +67,8 @@
     <FxCompile Include="..\Shaders\HLSL\Global.hlsl">
       <Filter>Shaders\GlobalData</Filter>
     </FxCompile>
+    <FxCompile Include="..\Shaders\HLSL\TextureMesh.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

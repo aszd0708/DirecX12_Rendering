@@ -1,6 +1,7 @@
 #pragma once
 #include "Renderer.h"
 #include "Mesh.h"
+#include "Texture.h"
 #include "ConstantBuffer.h"
 #include "Camera.h"
 
@@ -18,6 +19,7 @@ public:
 
 public:
 	void Init(shared_ptr<Mesh<T>> mesh, shared_ptr<Shader> shader);
+	void Init(shared_ptr<Mesh<T>> mesh, shared_ptr<Shader> shader, shared_ptr<Texture> texture);
 	virtual void Render() override;
 
 public:
@@ -26,6 +28,7 @@ public:
 private:
 	shared_ptr<Mesh<T>> _mesh;
 	shared_ptr<Shader> _shader;
+	shared_ptr<Texture> _texture;
 };
 
 template<typename T>
@@ -45,6 +48,15 @@ inline void MeshRenderer<T>::Init(shared_ptr<Mesh<T>> mesh, shared_ptr<Shader> s
 {
 	_mesh = mesh;
 	_shader = shader;
+	_texture = nullptr;
+}
+
+template<typename T>
+inline void MeshRenderer<T>::Init(shared_ptr<Mesh<T>> mesh, shared_ptr<Shader> shader, shared_ptr<Texture> texture)
+{
+	_mesh = mesh;
+	_shader = shader;
+	_texture = texture;
 }
 
 template<typename T>
@@ -72,6 +84,14 @@ inline void MeshRenderer<T>::Render()
 
 	// World Matrix 버퍼 전달
 	COMMAND_LIST->SetGraphicsRootConstantBufferView(1, GetWorldMatrixBuffer()->GetAddress());
+
+	// Texture 전달
+	if(_texture != nullptr)
+	{
+		ID3D12DescriptorHeap* heaps[] = { _texture->GetDescHeap().Get() };
+		COMMAND_LIST->SetDescriptorHeaps(1, heaps);
+		COMMAND_LIST->SetGraphicsRootDescriptorTable(2, _texture->GetHandle());
+	}
 
 	COMMAND_LIST->DrawIndexedInstanced(_mesh->GetMesh()->GetIndexCount(), 1, 0, 0, 0);
 }

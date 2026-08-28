@@ -6,8 +6,9 @@ Shader::Shader(ShaderInfo info) : _info(info)
 {
 	_fullPath = SHADER_PATH(info._path);
 
-	ThrowIfFailed(D3DCompileFromFile(_fullPath.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VS", "vs_5_0", D3DCOMPILE_SKIP_OPTIMIZATION, 0, _vsBlob.GetAddressOf(), _vsError.GetAddressOf()));
-	ThrowIfFailed(D3DCompileFromFile(_fullPath.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PS", "ps_5_0", D3DCOMPILE_SKIP_OPTIMIZATION, 0, _psBlob.GetAddressOf(), _psError.GetAddressOf()));
+	const wchar_t* str = _fullPath.c_str();
+	ThrowIfFailed(D3DCompileFromFile(str, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VS", "vs_5_0", D3DCOMPILE_SKIP_OPTIMIZATION, 0, _vsBlob.GetAddressOf(), _vsError.GetAddressOf()));
+	ThrowIfFailed(D3DCompileFromFile(str, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PS", "ps_5_0", D3DCOMPILE_SKIP_OPTIMIZATION, 0, _psBlob.GetAddressOf(), _psError.GetAddressOf()));
 
 	CreateRootSignature();
 	CreatePSO();
@@ -22,7 +23,7 @@ void Shader::CreateRootSignature()
 {
 	CD3DX12_ROOT_SIGNATURE_DESC desc = CD3DX12_ROOT_SIGNATURE_DESC(	
 	_info._signatureRootParamCount, _info._signatureRootParam, 
-	0, nullptr,
+	1, &_info._sampler,
 	D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
 	ThrowIfFailed(D3D12SerializeRootSignature(&desc, D3D_ROOT_SIGNATURE_VERSION_1, _signatureBlob.GetAddressOf(), _signatureError.GetAddressOf()));

@@ -22,6 +22,8 @@ public:
 	void RenderBegin();
 	void RenderEnd();
 
+	void WaitForGPU();
+
 private:
 	void SetResourceBarrier(bool isBegin);
 

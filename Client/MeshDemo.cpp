@@ -3,6 +3,7 @@
 #include "Camera.h"
 #include "CameraController.h"
 #include "Mesh.h"
+#include "Texture.h"
 #include "MeshRenderer.h"
 #include "Shader.h"
 #include "ShaderInfo.h"
@@ -18,7 +19,7 @@ void MeshDemo::Init()
 	SceneBuilder::Init();
 
 	CreateCamera();
-	CreateMesh();
+	CreateTextureMesh();
 }
 
 void MeshDemo::Render()
@@ -44,7 +45,7 @@ void MeshDemo::CreateMesh()
 	_meshObj = make_shared<GameObject>();
 	_meshObj->AddComponent<Transform>();
 	shared_ptr<Geometry<VertexColorData>> geometry = make_shared<Geometry<VertexColorData>>();
-	GeometryHelper::CreateSphere(geometry, Color(0.0f, 0.0f, 0.0f, 1.0f));
+	GeometryHelper::CreateCube(geometry, Color(0.79f, 0.66f, 0.79f, 1.0f));
 	shared_ptr<Mesh<VertexColorData>> mesh = make_shared<Mesh<VertexColorData>>(geometry);
 
 	ShaderInfo shaderInfo = {};
@@ -61,4 +62,40 @@ void MeshDemo::CreateMesh()
 	meshRednerer->Init(mesh, shader);
 
 	AddGameObject(_meshObj);
+}
+
+void MeshDemo::CreateTextureMesh()
+{
+	_textureMeshObj = make_shared<GameObject>();
+	_textureMeshObj->AddComponent<Transform>();
+	shared_ptr<Geometry<VertexTextureData>> geometry = make_shared<Geometry<VertexTextureData>>();
+	GeometryHelper::CreateCube(geometry);
+	shared_ptr<Mesh<VertexTextureData>> mesh = make_shared<Mesh<VertexTextureData>>(geometry);
+
+	shared_ptr<Texture> texture = make_shared<Texture>(L"../Resources/Leather.jpg");
+
+
+	ShaderInfo shaderInfo = {};
+	shaderInfo._path = L"TextureMesh";
+	shaderInfo._inputLayoutDesc = VertexTextureData::GetDesc();
+	CD3DX12_ROOT_PARAMETER rootParams[3] = { {} };
+	for (int i = 0; i < 2; ++i)
+	{
+		rootParams[i].InitAsConstantBufferView(i);
+	}
+
+	CD3DX12_DESCRIPTOR_RANGE srvRange;
+	srvRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);   // SRV 1개, register t0
+	rootParams[2].InitAsDescriptorTable(1, &srvRange, D3D12_SHADER_VISIBILITY_PIXEL);
+
+	shaderInfo._signatureRootParam = rootParams;
+	shaderInfo._signatureRootParamCount = 3;
+	shaderInfo._sampler = CD3DX12_STATIC_SAMPLER_DESC(0);
+
+	shared_ptr<Shader> shader = make_shared<Shader>(shaderInfo);
+
+	shared_ptr<MeshRenderer<VertexTextureData>> meshRednerer = _textureMeshObj->AddComponent<MeshRenderer<VertexTextureData>>();
+	meshRednerer->Init(mesh, shader, texture);
+
+	AddGameObject(_textureMeshObj);
 }

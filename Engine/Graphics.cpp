@@ -163,6 +163,11 @@ void Graphics::RenderEnd()
 
 	_swapChain->Present(0,0);
 	
+	WaitForGPU();
+}
+
+void Graphics::WaitForGPU()
+{
 	_fenceValue++;
 	_commandQueue->Signal(_fence.Get(), _fenceValue);
 

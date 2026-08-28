@@ -24,9 +24,9 @@ struct VertexTextureData
 		// Color
 		{
 			D3D12_INPUT_ELEMENT_DESC inputElementDesc = {};
-			inputElementDesc.SemanticName = "UV";
+			inputElementDesc.SemanticName = "TEXCOORD";
 			inputElementDesc.SemanticIndex = 0;
-			inputElementDesc.Format = DXGI_FORMAT_R16G16_FLOAT;
+			inputElementDesc.Format = DXGI_FORMAT_R32G32_FLOAT;
 			inputElementDesc.InputSlot = 0;
 			inputElementDesc.AlignedByteOffset = sizeof(Vec3);
 			inputElementDesc.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
