@@ -61,7 +61,8 @@ void MemoryList::AddRange(MemoryBlock* blocks, UINT addCount)
 void MemoryList::Remove(const MemoryBlock& block)
 {
 	int index;
-	if(FindMemory(block, index) == false) return; 
+	if(FindMemory(block, index) == false) 
+		return; 
 
 	memmove(&_list[index], &_list[index + 1], sizeof(MemoryBlock) * (_count - index - 1));
 	_count--;
@@ -90,6 +91,21 @@ void MemoryList::RemoveUnordered(const MemoryBlock* blocks, UINT count)
 	{
 		RemoveUnordered(blocks[i]);
 	}
+}
+
+void MemoryList::RemoveAt(const UINT index)
+{
+	memmove(&_list[index], &_list[index + 1], sizeof(MemoryBlock) * (_count - index - 1));
+	_count--;
+}
+
+void MemoryList::RemoveAtUnordered(const UINT index)
+{
+	if (index != _count - 1)
+	{
+		memmove(&_list[index], &_list[_count - 1], sizeof(MemoryBlock));
+	}
+	_count--;
 }
 
 void MemoryList::SetCapacity(UINT capacity)

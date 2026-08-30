@@ -23,6 +23,8 @@ public:
 	void RemoveRange(UINT startIndex, UINT blockCount);
 	void RemoveUnordered(const MemoryBlock& block);
 	void RemoveUnordered(const MemoryBlock* blocks, UINT count);
+	void RemoveAt(const UINT index);
+	void RemoveAtUnordered(const UINT index);
 	void SetCapacity(UINT capacity);
 
 	bool FindMemory(const MemoryBlock& block, OUT int& index);

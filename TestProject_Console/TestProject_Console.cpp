@@ -18,11 +18,11 @@ public:
     INT64 _index;
 };
 
-UINT MAX_COUNT = 100000000;
+UINT MAX_COUNT = 1000000;
 
 void CheckSTL()
 {
-    std::cout << "Using STL\n";
+    std::cout << "Using STL\n\n";
     vector<TestObject*> vec;
     {
         std::cout << "Allocate\n";
@@ -38,7 +38,7 @@ void CheckSTL()
         auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 
         std::cout << "Done!\n";
-        std::cout << "Total Time : " << elapsed << "\n";
+        std::cout << "Total Time : " << elapsed << "\n\n";
     }
 
     {
@@ -55,13 +55,72 @@ void CheckSTL()
         auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 
         std::cout << "Done!\n";
+        std::cout << "Total Time : " << elapsed << "\n\n";
+
+        start = std::chrono::steady_clock::now();
+        vec.shrink_to_fit();
+
+        end = std::chrono::steady_clock::now();
+        elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+
+        std::cout << "Pool Relese Done!\n";
+        std::cout << "Total Time : " << elapsed << "\n";
+    }
+}
+
+void CheckSTL_Random()
+{
+    std::cout << "Using STL Random\n\n";
+    vector<TestObject*> vec;
+    {
+        std::cout << "Allocate\n";
+        auto start = std::chrono::steady_clock::now();
+
+        for (int i = 0; i < MAX_COUNT; ++i)
+        {
+            TestObject* obj = new TestObject(i);
+            vec.emplace_back(obj);
+        }
+
+        auto end = std::chrono::steady_clock::now();
+        auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+
+        std::cout << "Done!\n";
+        std::cout << "Total Time : " << elapsed << "\n\n";
+    }
+
+    {
+        std::cout << "Release\n";
+        auto start = std::chrono::steady_clock::now();
+
+        for (int i = 0; i < MAX_COUNT; ++i)
+        {
+            int index = rand() % vec.size();
+            TestObject* obj = vec[index];
+            delete obj;
+            vec.erase(vec.begin() + index);
+        }
+
+        auto end = std::chrono::steady_clock::now();
+        auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+
+        std::cout << "Done!" << "\n";
+        std::cout << "Total Time : " << elapsed << "\n\n";
+
+        start = std::chrono::steady_clock::now();
+        vec.shrink_to_fit();
+
+        end = std::chrono::steady_clock::now();
+        elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+
+        std::cout << "Pool Relese Done!\n";
         std::cout << "Total Time : " << elapsed << "\n";
     }
 }
 
 void CheckMemoryPool()
 {
-    std::cout << "Using Memory Pool\n";
+    std::cout << "Using Memory Pool\n\n";
     CpuMemoryPool* memPool = new CpuMemoryPool(eBlockSize::BYTE_64);
     MemoryList* memList = new MemoryList(memPool);
 
@@ -115,11 +174,88 @@ void CheckMemoryPool()
 
         std::cout << "Objects Release Done!\n";
         std::cout << "Total Time : " << elapsed << "\n";
-        std::cout << "Success Count : " << successCount << "\n";
-        std::cout << "Failed Count: " << failCount << "\n";
 
         std::cout << "\n";
+        start = std::chrono::steady_clock::now();
+        delete memPool;
+        delete memList;
 
+        end = std::chrono::steady_clock::now();
+        elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+
+        std::cout << "Pool Relese Done!\n";
+        std::cout << "Total Time : " << elapsed << "\n";
+    }
+}
+
+void CheckMemoryPool_Random()
+{
+    std::cout << "Using Memory Pool Random\n\n";
+    CpuMemoryPool* memPool = new CpuMemoryPool(eBlockSize::BYTE_64);
+    MemoryList* memList = new MemoryList(memPool);
+
+    {
+        std::cout << "Allocate\n";
+        auto start = std::chrono::steady_clock::now();
+
+        for (int i = 0; i < MAX_COUNT; ++i)
+        {
+            TestObject* obj = nullptr;
+            memPool->GetMemory(&obj, i);
+            obj->_index = i;
+            memList->Add(obj->GetMemoryHandler());
+        }
+
+        auto end = std::chrono::steady_clock::now();
+        auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+
+        std::cout << "Done!\n";
+        std::cout << "Total Time : " << elapsed << "\n";
+    }
+
+    std::cout << "\n";
+
+    std::cout << "Release\n";
+
+    {
+        auto start = std::chrono::steady_clock::now();
+
+        int successCount = 0;
+        int failCount = 0;
+        for (int i = 0; i < MAX_COUNT; ++i)
+        {
+            MemoryBlock block;
+            int index = rand() % memList->GetCount();
+            bool isSuccess = memList->GetMemoryBlock(index, block);
+            if (isSuccess)
+            {
+                TestObject* obj = nullptr;
+                bool getSuccess = memPool->GetObject(block, &obj);
+                if (getSuccess)
+                {
+                    memPool->ReleaseMemory(obj);
+                    memList->RemoveAt(index);
+                    successCount++;
+                }
+                else
+                {
+                    failCount++;
+                }
+            }
+            else
+            {
+                failCount++;
+            }
+        }
+
+        auto end = std::chrono::steady_clock::now();
+        auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+
+        std::cout << "Objects Release Done!\n";
+        std::cout << "Total Time : " << elapsed << "\n";
+
+        std::cout << "\n";
+        start = std::chrono::steady_clock::now();
         delete memPool;
         delete memList;
 
@@ -133,11 +269,11 @@ void CheckMemoryPool()
 
 int main()
 {
-    std::cout << "Total Count : " << MAX_COUNT << "\n";
+    std::cout << "Class Size : " << sizeof(TestObject) << "Byte" << "\n\n";
+    std::cout << "Total Count : " << MAX_COUNT << "\n\n";
 
+    //CheckSTL();
     CheckMemoryPool();
 
     std::cout << "\n\n";
-
-    CheckSTL();
 }

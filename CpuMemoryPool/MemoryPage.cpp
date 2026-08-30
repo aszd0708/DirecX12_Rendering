@@ -2,7 +2,7 @@
 #include "MemoryPage.h"
 #include "MemoryBlockStack.h"
 
-MemoryPage::MemoryPage(eBlockSize size, UINT pageIndex) : _size(size), _pageIndex(pageIndex)
+MemoryPage::MemoryPage(UINT8 poolID, eBlockSize size, UINT pageIndex) : _poolID(poolID), _size(size), _pageIndex(pageIndex)
 {
     SetBlockCount();
 }
@@ -25,8 +25,8 @@ void MemoryPage::SetBlockCount()
     for (int i = 0; i < _totalBlockCount; ++i)
     {
         MemoryBlock& blockInfo = _blockInfos[i];
-        blockInfo._size = _size;
         blockInfo._index = i;
+        blockInfo._poolID = _poolID;
         blockInfo._pageIndex = _pageIndex;
         blockInfo._gen = 0;
     }
@@ -35,7 +35,8 @@ void MemoryPage::SetBlockCount()
 bool MemoryPage::ResolveMemory(MemoryBlock& blockInfo, OUT BYTE** memory)
 {
     int index = blockInfo._index;
-    if(blockInfo._gen != _blockInfos[index]._gen) return false;
+    if(blockInfo._gen != _blockInfos[index]._gen) 
+        return false;
 
     *memory = &_blocks[blockInfo._index * (int)_size];
     return true;

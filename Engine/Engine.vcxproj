@@ -124,7 +124,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>$(SolutionDir)Libraries\Include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Libraries\Include\;$(SolutionDir)CpuMemoryPool\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -133,7 +133,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)Libraries\Lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)Libraries\Lib\;$(SolutionDir)Libraries\Lib\CpuMemoryPool;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
     <PreBuildEvent>
       <Command>xcopy /Y "$(SolutionDir)Engine\*.h" "$(SolutionDir)Libraries\Include\Engine"
@@ -151,7 +151,7 @@ xcopy /Y "$(SolutionDir)Engine\*.inl" "$(SolutionDir)Libraries\Include\Engine"</
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>$(SolutionDir)Libraries\Include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Libraries\Include\;$(SolutionDir)CpuMemoryPool\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -161,7 +161,7 @@ xcopy /Y "$(SolutionDir)Engine\*.inl" "$(SolutionDir)Libraries\Include\Engine"</
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)Libraries\Lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)Libraries\Lib\;$(SolutionDir)Libraries\Lib\CpuMemoryPool;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
     <PreBuildEvent>
       <Command>xcopy /Y "$(SolutionDir)Engine\*.h" "$(SolutionDir)Libraries\Include\Engine"
@@ -172,6 +172,7 @@ xcopy /Y "$(SolutionDir)Engine\*.inl" "$(SolutionDir)Libraries\Include\Engine"</
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ConstantBuffer.h" />
+    <ClInclude Include="CpuPoolManager.h" />
     <ClInclude Include="Define.h" />
     <ClInclude Include="EnginePch.h" />
     <ClInclude Include="FileUtils.h" />
@@ -214,6 +215,7 @@ xcopy /Y "$(SolutionDir)Engine\*.inl" "$(SolutionDir)Libraries\Include\Engine"</
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="ConstantBuffer.cpp" />
+    <ClCompile Include="CpuPoolManager.cpp" />
     <ClCompile Include="FileUtils.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
@@ -317,6 +319,11 @@ xcopy /Y "$(SolutionDir)Engine\*.inl" "$(SolutionDir)Libraries\Include\Engine"</
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Engine.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CpuMemoryPool\CpuMemoryPool.vcxproj">
+      <Project>{1797e56b-ea2a-4120-a986-a05ea2d1265a}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -3,8 +3,12 @@
 #include "MemoryPage.h"
 #include "MemoryBlockStack.h"
 
+UINT8 CpuMemoryPool::s_nextPoolID = 0;
+
 CpuMemoryPool::CpuMemoryPool(eBlockSize blockSize) : _blockSize(blockSize), _pageCount(MemoryPage::TOTAL_PAGE_SIZE / blockSize)
 {
+	_poolID = AllocatePoolId();
+
 	InitPage();
 }
 
@@ -30,7 +34,7 @@ void CpuMemoryPool::InitPage()
 
 	for (int i = 0; i < _pageCount; ++i)
 	{
-		_pages[i] = new MemoryPage(_blockSize, i);
+		_pages[i] = new MemoryPage(_poolID, _blockSize, i);
 	}
 
 	_pageStack = new MemoryBlockStack(_pageCount);
@@ -46,7 +50,7 @@ void CpuMemoryPool::CreatePage(UINT count)
 	for (int i = 0; i < count; ++i)
 	{
 		int index = i + _pageCount;
-		newPage[index] = new MemoryPage(_blockSize, index);
+		newPage[index] = new MemoryPage(_poolID, _blockSize, index);
 	}
 	free(_pages);
 
@@ -57,9 +61,9 @@ void CpuMemoryPool::CreatePage(UINT count)
 
 bool CpuMemoryPool::ReleaseMemory(MemoryBlock & blockInfo)
 {
-	if(_blockSize != blockInfo._size) return false;
+	if(_poolID != blockInfo._poolID) return false;
 
-	UINT8 pageIndex = blockInfo._pageIndex;
+	UINT pageIndex = blockInfo._pageIndex;
 	if(pageIndex >= _pageCount) return false;
 
 	_pages[pageIndex]->ReleaseMemory(blockInfo);

@@ -7,12 +7,11 @@ class MemoryBlockStack;
 class MemoryBlock
 {
 public:
-	eBlockSize _size;
-
-	UINT _pageIndex;
-
+	UINT8 _poolID;
 	UINT8 _index;
 	UINT8 _gen;
+
+	UINT _pageIndex;
 
 	bool operator==(const MemoryBlock& other) const;
 	bool IsValid(const MemoryBlock& other) const;
@@ -24,7 +23,7 @@ public:
 	static const UINT TOTAL_PAGE_SIZE = 4096;
 
 public:
-	MemoryPage(eBlockSize size, UINT pageIndex);
+	MemoryPage(UINT8 poolID, eBlockSize size, UINT pageIndex);
 	~MemoryPage();
 
 private:
@@ -38,6 +37,7 @@ public:
 	bool CanGettingMemory();
 
 private:
+	const UINT8 _poolID;
 	const eBlockSize _size;
 	UINT _pageIndex;
 

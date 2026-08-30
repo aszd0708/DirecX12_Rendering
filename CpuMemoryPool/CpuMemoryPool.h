@@ -9,6 +9,12 @@
 
 class CpuMemoryPool
 {
+// Static PoolID 발급 255개를 초과하는 경우는 없을것 같기 때문에 이런식으로 할당
+public:
+	static UINT8 AllocatePoolId() { return s_nextPoolID++; }
+private:
+	static UINT8 s_nextPoolID;
+	 
 public:
 	CpuMemoryPool(eBlockSize blockSize);
 	CpuMemoryPool(eBlockSize blockSize, UINT pageCount);
@@ -33,6 +39,7 @@ public:
 	const UINT& GetPageCount() { return _pageCount; }
 
 private:
+	UINT8 _poolID;
 	eBlockSize _blockSize;
 
 	UINT _pageCount;
@@ -90,7 +97,9 @@ inline bool CpuMemoryPool::GetObject(MemoryBlock& blockInfo, OUT T** obj)
 	BYTE* rawPtr = nullptr;
 	UINT pageIndex = blockInfo._pageIndex;
 	bool isSuccess = _pages[pageIndex]->ResolveMemory(blockInfo, &rawPtr);
-	if(isSuccess == false) return false;
+	if(isSuccess == false) 
+		return false;
 
 	*obj = reinterpret_cast<T*>(rawPtr);
+	return true;
 }

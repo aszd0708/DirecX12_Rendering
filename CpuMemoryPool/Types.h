@@ -11,6 +11,14 @@ using UINT64 = unsigned __int64;
 
 using BYTE = char;
 
+enum eBlockSizeIndex : UINT8
+{
+	INDEX_BYTE_64 = 0,
+	INDEX_BYTE_128 = 1,
+	INDEX_BYTE_256 = 2,
+	MAX
+};
+
 enum eBlockSize : UINT16
 {
 	BYTE_64 = 64,

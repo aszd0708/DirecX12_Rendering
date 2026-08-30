@@ -21,11 +21,15 @@ public:
 	void RegisterRenderer(shared_ptr<Renderer> renderer);
 	void UnregisterRenderer(shared_ptr<Renderer> renderer);
 	
+
+
 private:
 	string _sceneName;
 	int _id;
 
 	vector<shared_ptr<GameObject>> _objs;
 	vector<weak_ptr<Renderer>> _renderers;
+
+	CpuMemoryPool
 };
 
