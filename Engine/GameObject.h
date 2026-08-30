@@ -2,11 +2,14 @@
 #include "Component.h"
 #include "CpuPoolManager.h"
 
-class GameObject : public std::enable_shared_from_this<GameObject>, public IMemoryBlockHanlde
+class GameObject : public IMemoryBlockHanlde
 {
 public:
 	GameObject();
 	~GameObject();
+
+public:
+	virtual void SetMemoryHandler(const MemoryBlock& handler) override;
 
 public:
 	void Awake();
@@ -79,7 +82,7 @@ public:
 		bool isSuccess = pool->GetMemory(&component);
 		assert(isSuccess);
 
-		component->SetGameObject(shared_from_this());
+		component->SetGameObject(_memoryEntry);
 		if (type != eComponentType::Script)
 		{
 			MemoryEntry memoryEntry;
@@ -97,7 +100,11 @@ public:
 		return component;
 	}
 
+public:
+	MemoryEntry& GetMemoryEntry() { return _memoryEntry; }
+
 private:
+	MemoryEntry _memoryEntry;
 	MemoryList* _fixedComponentList;
 	MemoryList* _componentList;
 };

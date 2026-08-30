@@ -21,55 +21,59 @@ void CameraController::Update()
 {
 	float dt = TIME->GetDeltaTime();
 
+	Transform* transform = nullptr;
+	bool isSuccess = GetTransform(&transform);
+	if(isSuccess == false) return;
+
 	// Position
 	{
-		Vec3 pos = GetTransform()->GetPosition();
+		Vec3 pos = transform->GetPosition();
 
 		if (INPUT->GetButton(KEY_TYPE::W))
 		{
-			pos += GetTransform()->GetLook() * _speed * dt;
+			pos += transform->GetLook() * _speed * dt;
 		}
 		if (INPUT->GetButton(KEY_TYPE::S))
 		{
-			pos -= GetTransform()->GetLook() * _speed * dt;
+			pos -= transform->GetLook() * _speed * dt;
 		}
 		if (INPUT->GetButton(KEY_TYPE::A))
 		{
-			pos -= GetTransform()->GetRight() * _speed * dt;
+			pos -= transform->GetRight() * _speed * dt;
 		}
 		if (INPUT->GetButton(KEY_TYPE::D))
 		{
-			pos += GetTransform()->GetRight() * _speed * dt;
+			pos += transform->GetRight() * _speed * dt;
 		}
 
-		GetTransform()->SetPosition(pos);
+		transform->SetPosition(pos);
 	}
 
 	// Rotation
 	{
 		if (INPUT->GetButton(KEY_TYPE::Q))
 		{
-			Vec3 rotation = GetTransform()->GetLocalRotation();
+			Vec3 rotation = transform->GetLocalRotation();
 			rotation.x += dt * 0.5f;
-			GetTransform()->SetLocalRotation(rotation);
+			transform->SetLocalRotation(rotation);
 		}
 		if (INPUT->GetButton(KEY_TYPE::E))
 		{
-			Vec3 rotation = GetTransform()->GetLocalRotation();
+			Vec3 rotation = transform->GetLocalRotation();
 			rotation.x -= dt * 0.5f;
-			GetTransform()->SetLocalRotation(rotation);
+			transform->SetLocalRotation(rotation);
 		}
 		if (INPUT->GetButton(KEY_TYPE::Z))
 		{
-			Vec3 rotation = GetTransform()->GetLocalRotation();
+			Vec3 rotation = transform->GetLocalRotation();
 			rotation.y += dt * 0.5f;
-			GetTransform()->SetLocalRotation(rotation);
+			transform->SetLocalRotation(rotation);
 		}
 		if (INPUT->GetButton(KEY_TYPE::C))
 		{
-			Vec3 rotation = GetTransform()->GetLocalRotation();
+			Vec3 rotation = transform->GetLocalRotation();
 			rotation.y -= dt * 0.5f;
-			GetTransform()->SetLocalRotation(rotation);
+			transform->SetLocalRotation(rotation);
 		}
 	}
 
@@ -81,10 +85,10 @@ void CameraController::Update()
 			float dx = static_cast<float>(mousePos.x - _prevMousePos.x);
 			float dy = static_cast<float>(mousePos.y - _prevMousePos.y);
 
-			Vec3 rotation = GetTransform()->GetLocalRotation();
+			Vec3 rotation = transform->GetLocalRotation();
 			rotation.y += dx * dt * 0.2f; // Yaw (좌우 회전)
 			rotation.x += dy * dt * 0.2f; // Pitch (상하 회전)
-			GetTransform()->SetLocalRotation(rotation);
+			transform->SetLocalRotation(rotation);
 		}
 
 		_prevMousePos = mousePos;

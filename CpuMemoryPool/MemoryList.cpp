@@ -35,7 +35,7 @@ bool MemoryList::GetMemoryBlock(UINT index, OUT MemoryEntry& block)
 	return true;
 }
 
-void MemoryList::Add(const MemoryEntry& block)
+void MemoryList::Add(MemoryEntry& block)
 {
 	if (_capacity < _count + 1)
 	{
@@ -46,7 +46,7 @@ void MemoryList::Add(const MemoryEntry& block)
 	_count++;
 }
 
-void MemoryList::AddAt(const MemoryEntry& block, UINT index)
+void MemoryList::AddAt(MemoryEntry& block, UINT index)
 {
 	if(_capacity <= index) 
 	{

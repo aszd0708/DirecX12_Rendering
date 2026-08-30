@@ -34,6 +34,13 @@ GameObject::~GameObject()
 	delete _componentList;
 }
 
+void GameObject::SetMemoryHandler(const MemoryBlock& handler)
+{
+	IMemoryBlockHanlde::SetMemoryHandler(handler);
+	_memoryEntry.type = typeid(GameObject);
+	_memoryEntry.SetMemoryBlock(_memoryHandler);
+}
+
 void GameObject::Awake()
 {
 	bool isSuccess = false;
@@ -45,7 +52,7 @@ void GameObject::Awake()
 		assert(isSuccess);
 
 		Component* component = nullptr;
-		isSuccess = CpuPoolManager::GetInstance()->Resolve<Component>(memoryEntry, component);
+		isSuccess = CpuPoolManager::GetInstance()->Resolve<Component>(memoryEntry, &component);
 		if (isSuccess == true)
 		{
 			component->Awake();
@@ -60,7 +67,7 @@ void GameObject::Awake()
 		assert(isSuccess);
 
 		Component* component = nullptr;
-		isSuccess = CpuPoolManager::GetInstance()->Resolve<Component>(memoryEntry, component);
+		isSuccess = CpuPoolManager::GetInstance()->Resolve<Component>(memoryEntry, &component);
 		if (isSuccess == true)
 		{
 			component->Awake();
@@ -79,7 +86,7 @@ void GameObject::Start()
 		assert(isSuccess);
 
 		Component* component = nullptr;
-		isSuccess = CpuPoolManager::GetInstance()->Resolve<Component>(memoryEntry, component);
+		isSuccess = CpuPoolManager::GetInstance()->Resolve<Component>(memoryEntry, &component);
 		if (isSuccess == true)
 		{
 			component->Start();
@@ -94,7 +101,7 @@ void GameObject::Start()
 		assert(isSuccess);
 		
 		Component* component = nullptr;
-		isSuccess = CpuPoolManager::GetInstance()->Resolve<Component>(memoryEntry, component);
+		isSuccess = CpuPoolManager::GetInstance()->Resolve<Component>(memoryEntry, &component);
 		if (isSuccess == true)
 		{
 			component->Start();
@@ -113,7 +120,7 @@ void GameObject::Update()
 		assert(isSuccess);
 
 		Component* component = nullptr;
-		isSuccess = CpuPoolManager::GetInstance()->Resolve<Component>(memoryEntry, component);
+		isSuccess = CpuPoolManager::GetInstance()->Resolve<Component>(memoryEntry, &component);
 		if (isSuccess == true)
 		{
 			component->Update();
@@ -128,7 +135,7 @@ void GameObject::Update()
 		assert(isSuccess);
 
 		Component* component = nullptr;
-		isSuccess = CpuPoolManager::GetInstance()->Resolve<Component>(memoryEntry, component);
+		isSuccess = CpuPoolManager::GetInstance()->Resolve<Component>(memoryEntry, &component);
 		if (isSuccess == true)
 		{
 			component->Update();
@@ -147,7 +154,7 @@ void GameObject::LateUpdate()
 		assert(isSuccess);
 
 		Component* component = nullptr;
-		isSuccess = CpuPoolManager::GetInstance()->Resolve<Component>(memoryEntry, component);
+		isSuccess = CpuPoolManager::GetInstance()->Resolve<Component>(memoryEntry, &component);
 		if (isSuccess == true)
 		{
 			component->LateUpdate();
@@ -162,7 +169,7 @@ void GameObject::LateUpdate()
 		assert(isSuccess);
 
 		Component* component = nullptr;
-		isSuccess = CpuPoolManager::GetInstance()->Resolve<Component>(memoryEntry, component);
+		isSuccess = CpuPoolManager::GetInstance()->Resolve<Component>(memoryEntry, &component);
 		if (isSuccess == true)
 		{
 			component->LateUpdate();
@@ -181,7 +188,7 @@ void GameObject::OnDestroy()
 		assert(isSuccess);
 
 		Component* component = nullptr;
-		isSuccess = CpuPoolManager::GetInstance()->Resolve<Component>(memoryEntry, component);
+		isSuccess = CpuPoolManager::GetInstance()->Resolve<Component>(memoryEntry, &component);
 		if (isSuccess == true)
 		{
 			component->OnDestroy();
@@ -196,7 +203,7 @@ void GameObject::OnDestroy()
 		assert(isSuccess);
 
 		Component* component = nullptr;
-		isSuccess = CpuPoolManager::GetInstance()->Resolve<Component>(memoryEntry, component);
+		isSuccess = CpuPoolManager::GetInstance()->Resolve<Component>(memoryEntry, &component);
 		if (isSuccess == true)
 		{
 			component->OnDestroy();

@@ -6,6 +6,9 @@ public:
 	Scene(string sceneName);
 	~Scene();
 
+private:
+	void DeleteObjs();
+
 public:
 	virtual void Awake();
 	virtual void Start();
@@ -15,19 +18,23 @@ public:
 
 	virtual void Render();
 
-	void RegisterGameObject(shared_ptr<GameObject> obj);
-	void UnregisterGameObject(shared_ptr<GameObject> obj);
+	void RegisterGameObject(MemoryEntry& objMemory);
+	void UnregisterGameObject(MemoryEntry& objMemory);
 
-	void RegisterRenderer(shared_ptr<Renderer> renderer);
-	void UnregisterRenderer(shared_ptr<Renderer> renderer);
+	void RegisterRenderer(MemoryEntry& memoryEntry);
+	void UnregisterRenderer(MemoryEntry& memoryEntry);
 	
-
+	bool CreateGameObject(OUT GameObject** obj);
 
 private:
 	string _sceneName;
 	int _id;
 
-	vector<shared_ptr<GameObject>> _objs;
-	vector<weak_ptr<Renderer>> _renderers;
+	MemoryList* _objList;
+	// 한 프레임 이후에 지우는 로직을 위한 오브젝트들
+	MemoryList* _deletedObjs;
+
+
+	MemoryList* _renderList;
 };
 

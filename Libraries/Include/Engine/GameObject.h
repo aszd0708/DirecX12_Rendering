@@ -2,11 +2,14 @@
 #include "Component.h"
 #include "CpuPoolManager.h"
 
-class GameObject : public std::enable_shared_from_this<GameObject>, public IMemoryBlockHanlde
+class GameObject : public IMemoryBlockHanlde
 {
 public:
 	GameObject();
 	~GameObject();
+
+public:
+	virtual void SetMemoryHandler(const MemoryBlock& handler) override;
 
 public:
 	void Awake();
@@ -38,12 +41,12 @@ public:
 		{
 			int componentCount = _componentList->GetCount();
 			type_index typeIndex = typeid(C);
-			CpuMemoryPool* pool = CpuPoolManager::GetInstance()->GetMemoryPool(memoryEntry.block._poolID);
 			for (int i = 0; i < componentCount; ++i)
 			{
 				isSuccess = _componentList->GetMemoryBlock(i, memoryEntry);
 				assert(isSuccess);
 
+				CpuMemoryPool* pool = CpuPoolManager::GetInstance()->GetMemoryPool(memoryEntry.block._poolID);
 				if (memoryEntry.type == typeIndex)
 				{
 					isSuccess = pool->GetObjectByMemoryBlock<C>(memoryEntry.block, &component);
@@ -79,7 +82,7 @@ public:
 		bool isSuccess = pool->GetMemory(&component);
 		assert(isSuccess);
 
-		component->SetGameObject(shared_from_this());
+		component->SetGameObject(_memoryEntry);
 		if (type != eComponentType::Script)
 		{
 			MemoryEntry memoryEntry;
@@ -97,7 +100,11 @@ public:
 		return component;
 	}
 
+public:
+	MemoryEntry& GetMemoryEntry() { return _memoryEntry; }
+
 private:
+	MemoryEntry _memoryEntry;
 	MemoryList* _fixedComponentList;
 	MemoryList* _componentList;
 };

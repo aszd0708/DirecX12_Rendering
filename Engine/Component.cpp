@@ -38,13 +38,23 @@ void Component::OnDestroy()
 
 }
 
-std::shared_ptr<GameObject> Component::GetGameObject()
+bool Component::GetGameObject(OUT GameObject** gameObject)
 {
-	return _gameObject.lock();
+	bool isSuccess = CpuPoolManager::GetInstance()->Resolve(_gameObjectMemory, gameObject);
+	return isSuccess;
 }
 
-Transform* Component::GetTransform()
-{
-	return _gameObject.lock()->GetComponent<Transform>();
+bool Component::GetTransform(OUT Transform** transform)
+{	
+	bool isSuccess = false;
+	GameObject* gameObject = nullptr;
+	isSuccess = GetGameObject(&gameObject);
+	if (isSuccess == false)
+	{
+		return false;
+	}
+
+	*transform = gameObject->GetComponent<Transform>();
+	return isSuccess;
 }
 

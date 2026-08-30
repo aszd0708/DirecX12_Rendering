@@ -13,7 +13,7 @@ Camera::Camera() : Component(eComponentType::Camera)
 
 Camera::~Camera()
 {
-
+	
 }
 
 void Camera::Update()
@@ -24,9 +24,16 @@ void Camera::Update()
 
 void Camera::UpdateMatrix()
 {
-	Vec3 eyePosition = GetTransform()->GetPosition();
-	Vec3 focusPosition = eyePosition + GetTransform()->GetLook();
-	Vec3 upDirection = GetTransform()->GetUp();
+	Transform* transform = nullptr;
+	bool isSuccess = GetTransform(&transform);
+	if (isSuccess == false)
+	{
+		return;
+	}
+
+	Vec3 eyePosition = transform->GetPosition();
+	Vec3 focusPosition = eyePosition + transform->GetLook();
+	Vec3 upDirection = transform->GetUp();
 
 	_matView = S_MatView = ::XMMatrixLookAtLH(eyePosition, focusPosition, upDirection);
 	_matProjection = S_MatProjection = ::XMMatrixPerspectiveFovLH(_fov, _width / _height, _near, _far);

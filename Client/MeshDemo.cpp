@@ -31,18 +31,20 @@ void MeshDemo::Render()
 
 void MeshDemo::CreateCamera()
 {
-	_cameraObj = make_shared<GameObject>();
-	shared_ptr<Transform> transform = _cameraObj->AddComponent<Transform>();
+	bool isSuccess = GetScene()->CreateGameObject(&_cameraObj);
+	assert(isSuccess);
+	Transform* transform = _cameraObj->AddComponent<Transform>();
 	transform->SetPosition(Vec3(0.0f, 0.0f, -15.0f));
 	_cameraObj->AddComponent<Camera>();
 	_cameraObj->AddComponent<CameraController>();
 
-	AddGameObject(_cameraObj);
+	AddGameObject(_cameraObj->GetMemoryEntry());
 }
 
 void MeshDemo::CreateMesh()
 {
-	_meshObj = make_shared<GameObject>();
+	bool isSuccess = GetScene()->CreateGameObject(&_meshObj);
+	assert(isSuccess);
 	_meshObj->AddComponent<Transform>();
 	shared_ptr<Geometry<VertexColorData>> geometry = make_shared<Geometry<VertexColorData>>();
 	GeometryHelper::CreateCube(geometry, Color(0.79f, 0.66f, 0.79f, 1.0f));
@@ -58,15 +60,16 @@ void MeshDemo::CreateMesh()
 	shaderInfo._signatureRootParamCount = 2;
 	shared_ptr<Shader> shader = make_shared<Shader>(shaderInfo);
 
-	shared_ptr<MeshRenderer<VertexColorData>> meshRednerer = _meshObj->AddComponent<MeshRenderer<VertexColorData>>();
+	MeshRenderer<VertexColorData>* meshRednerer = _meshObj->AddComponent<MeshRenderer<VertexColorData>>();
 	meshRednerer->Init(mesh, shader);
 
-	AddGameObject(_meshObj);
+	AddGameObject(_meshObj->GetMemoryEntry());
 }
 
 void MeshDemo::CreateTextureMesh()
 {
-	_textureMeshObj = make_shared<GameObject>();
+	bool isSuccess = GetScene()->CreateGameObject(&_textureMeshObj);
+	assert(isSuccess);
 	_textureMeshObj->AddComponent<Transform>();
 	shared_ptr<Geometry<VertexTextureData>> geometry = make_shared<Geometry<VertexTextureData>>();
 	GeometryHelper::CreateCube(geometry);
@@ -94,8 +97,8 @@ void MeshDemo::CreateTextureMesh()
 
 	shared_ptr<Shader> shader = make_shared<Shader>(shaderInfo);
 
-	shared_ptr<MeshRenderer<VertexTextureData>> meshRednerer = _textureMeshObj->AddComponent<MeshRenderer<VertexTextureData>>();
+	MeshRenderer<VertexTextureData>* meshRednerer = _textureMeshObj->AddComponent<MeshRenderer<VertexTextureData>>();
 	meshRednerer->Init(mesh, shader, texture);
 
-	AddGameObject(_textureMeshObj);
+	AddGameObject(_textureMeshObj->GetMemoryEntry());
 }

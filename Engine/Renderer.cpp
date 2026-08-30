@@ -42,7 +42,11 @@ void Renderer::PushWorldMatrixBuffer()
 {
 	if(_worldTransformBuffer == nullptr) return;
 
-	Matrix world = GetGameObject()->GetComponent<Transform>()->GetWorldMatrix();
+	Transform* transform;
+	bool isSuccess = GetTransform(&transform);
+	if(isSuccess == false) return;
+
+	Matrix world = transform->GetWorldMatrix();
 	_worldTransformDesc.W = world.Transpose();
 
 	_worldTransformBuffer->PushDataSafe<TransformDesc>(_worldTransformDesc);

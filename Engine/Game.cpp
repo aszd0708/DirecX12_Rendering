@@ -2,6 +2,7 @@
 #include "Game.h"
 #include "SceneBuilder.h"
 #include "Graphics.h"
+#include "CpuPoolManager.h"
 
 WPARAM Game::Run(GameDesc& desc)
 {
@@ -18,6 +19,7 @@ WPARAM Game::Run(GameDesc& desc)
 	// Manager 초기화
 	TIME->Init();
 	INPUT->Init(_desc.hWnd);
+	CpuPoolManager::GetInstance()->Init();
 
 	// Scene 초기화
 	_desc._scene->Init();

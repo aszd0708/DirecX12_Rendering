@@ -26,13 +26,14 @@ public:
 public:
 	eComponentType GetType() const { return _type; }
 
-	shared_ptr<GameObject> GetGameObject();
-	Transform* GetTransform();
+	bool GetGameObject(OUT GameObject** gameObject);
+	bool GetTransform(OUT Transform** transform);
 
-	void SetGameObject(shared_ptr<GameObject> obj) { _gameObject = obj; }
+	void SetGameObject(MemoryEntry& gameObjectMemory) { _gameObjectMemory = gameObjectMemory; }
 
 private:
 	eComponentType _type;
-	weak_ptr<GameObject> _gameObject;
+
+	MemoryEntry _gameObjectMemory;
 };
 

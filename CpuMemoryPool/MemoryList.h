@@ -10,10 +10,17 @@ struct MemoryEntry
 	MemoryBlock block;
 	std::type_index type = typeid(void);
 
-	bool operator==(const MemoryEntry& other) 
+	bool operator==(MemoryEntry& other) 
 	{
 		return type == other.type && block == other.block;
 	}
+
+	bool operator==(const MemoryEntry& other)
+	{
+		return type == other.type && block == other.block;
+	}
+
+	void SetMemoryBlock(MemoryBlock& memoryBlock) { block = memoryBlock;}
 };
 
 class MemoryList
@@ -30,8 +37,8 @@ public:
 	bool GetMemoryBlock(UINT index, OUT MemoryEntry& block);
 	const UINT& GetCount() { return _count; }
 	
-	void Add(const MemoryEntry& block);
-	void AddAt(const MemoryEntry& block, UINT index);
+	void Add(MemoryEntry& block);
+	void AddAt(MemoryEntry& block, UINT index);
 	void AddRange(MemoryEntry* blocks, UINT addCount);
 	void Remove(const MemoryBlock& block);
 	void RemoveRange(UINT startIndex, UINT blockCount);
@@ -40,6 +47,7 @@ public:
 	void RemoveAt(const UINT index);
 	void RemoveAtUnordered(const UINT index);
 	void SetCapacity(UINT capacity);
+	UINT GetCapacity() { return _capacity; }
 
 	bool FindMemory(const MemoryBlock& block, OUT int& index);
 

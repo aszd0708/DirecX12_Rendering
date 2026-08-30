@@ -17,8 +17,8 @@ public:
 	void CreateTextureMesh();
 
 private:
-	shared_ptr<GameObject> _cameraObj;
-	shared_ptr<GameObject> _meshObj;
-	shared_ptr<GameObject> _textureMeshObj;
+	GameObject* _cameraObj;
+	GameObject* _meshObj;
+	GameObject* _textureMeshObj;
 };
 

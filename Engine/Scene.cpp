@@ -5,65 +5,120 @@
 
 Scene::Scene(string _sceneName) : _sceneName(_sceneName)
 {
+	_objList = new MemoryList();
+	_deletedObjs = new MemoryList();
 	_renderList = new MemoryList();
 }
 
 Scene::~Scene()
 {
+	delete _objList;
+	delete _deletedObjs;
 	delete _renderList;
+}
+
+void Scene::DeleteObjs()
+{	
+	for (int i = 0; i < _deletedObjs->GetCount(); ++i)
+	{
+		MemoryEntry entry;
+		bool isSuccess = _deletedObjs->GetMemoryBlock(i, entry);
+		if (isSuccess)
+		{
+			_objList->RemoveUnordered(entry.block);
+			_renderList->RemoveUnordered(entry.block);
+		}
+	}
 }
 
 void Scene::Awake()
 {
-	for (shared_ptr<GameObject>& obj : _objs)
+	for (int i = 0; i < _objList->GetCount(); ++i)
 	{
-		if (obj != nullptr)
+		MemoryEntry entity;
+		bool isSuccess = _objList->GetMemoryBlock(i, entity);
+		if (isSuccess)
 		{
-			obj->Awake();
+			GameObject* render = nullptr;
+			bool isSuccess = CpuPoolManager::GetInstance()->Resolve(entity, &render);
+			if (isSuccess)
+			{
+				render->Awake();
+			}
 		}
 	}
 }
 
 void Scene::Start()
 {
-	for (shared_ptr<GameObject>& obj : _objs)
+	for (int i = 0; i < _objList->GetCount(); ++i)
 	{
-		if (obj != nullptr)
+		MemoryEntry entity;
+		bool isSuccess = _objList->GetMemoryBlock(i, entity);
+		if (isSuccess)
 		{
-			obj->Start();
+			GameObject* render = nullptr;
+			bool isSuccess = CpuPoolManager::GetInstance()->Resolve(entity, &render);
+			if (isSuccess)
+			{
+				render->Start();
+			}
 		}
 	}
 }
 
 void Scene::Update()
 {
-	for (shared_ptr<GameObject>& obj : _objs)
+	for (int i = 0; i < _objList->GetCount(); ++i)
 	{
-		if (obj != nullptr)
+		MemoryEntry entity;
+		bool isSuccess = _objList->GetMemoryBlock(i, entity);
+		if (isSuccess)
 		{
-			obj->Update();
+			GameObject* render = nullptr;
+			bool isSuccess = CpuPoolManager::GetInstance()->Resolve(entity, &render);
+			if (isSuccess)
+			{
+				render->Update();
+			}
 		}
 	}
 }
 
 void Scene::LateUpdate()
 {
-	for (shared_ptr<GameObject>& obj : _objs)
+	for (int i = 0; i < _objList->GetCount(); ++i)
 	{
-		if (obj != nullptr)
+		MemoryEntry entity;
+		bool isSuccess = _objList->GetMemoryBlock(i, entity);
+		if (isSuccess)
 		{
-			obj->LateUpdate();
+			GameObject* render = nullptr;
+			bool isSuccess = CpuPoolManager::GetInstance()->Resolve(entity, &render);
+			if (isSuccess)
+			{
+				render->LateUpdate();
+			}
 		}
 	}
+
+	DeleteObjs();
 }
 
 void Scene::OnDestory()
 {
-	for (shared_ptr<GameObject>& obj : _objs)
+	for (int i = 0; i < _objList->GetCount(); ++i)
 	{
-		if (obj != nullptr)
+		MemoryEntry entity;
+		bool isSuccess = _objList->GetMemoryBlock(i, entity);
+		if (isSuccess)
 		{
-			obj->OnDestroy();
+			GameObject* render = nullptr;
+			bool isSuccess = CpuPoolManager::GetInstance()->Resolve(entity, &render);
+			if (isSuccess)
+			{
+				render->OnDestroy();
+			}
 		}
 	}
 }
@@ -77,7 +132,7 @@ void Scene::Render()
 		if (isSuccess)
 		{
 			Renderer* render = nullptr;
-			bool isSuccess = CpuPoolManager::GetInstance()->Resolve(entity, render);
+			bool isSuccess = CpuPoolManager::GetInstance()->Resolve(entity, &render);
 			if (isSuccess)
 			{
 				render->Render();
@@ -86,24 +141,52 @@ void Scene::Render()
 	}
 }
 
-void Scene::RegisterGameObject(shared_ptr<GameObject> obj)
+void Scene::RegisterGameObject(MemoryEntry& objMemory)
 {
-	vector<shared_ptr<GameObject>>::iterator iterator = find(_objs.begin(), _objs.end(), obj);
-	if (iterator == _objs.end())
+	bool found = false;
+	for (int i = 0; i < _objList->GetCount(); ++i)
 	{
-		_objs.emplace_back(obj);
+		MemoryEntry entry;
+		bool isSuccess = _objList->GetMemoryBlock(i, entry);
+		if (isSuccess)
+		{
+			if (entry == objMemory)
+			{
+				found = true;
+				break;
+			}
+		}
+	}
+	if (found == false)
+	{
+		_objList->Add(objMemory);
+		GameObject* obj = nullptr;
+		bool isSuccess = CpuPoolManager::GetInstance()->Resolve(objMemory, &obj);
+		assert(isSuccess);
 		obj->Awake();
 		obj->Start();
 	}
 }
 
-void Scene::UnregisterGameObject(shared_ptr<GameObject> obj)
+void Scene::UnregisterGameObject(MemoryEntry& objMemory)
 {
-	vector<shared_ptr<GameObject>>::iterator iterator = find(_objs.begin(), _objs.end(), obj);
-	if (iterator != _objs.end())
+	bool found = false;
+	for (int i = 0; i < _objList->GetCount(); ++i)
 	{
-		obj->OnDestroy();
-		_objs.erase(iterator);
+		MemoryEntry entry;
+		bool isSuccess = _objList->GetMemoryBlock(i, entry);
+		if (isSuccess)
+		{
+			if (entry == objMemory)
+			{
+				found = true;
+				break;
+			}
+		}
+	}
+	if (found == true)
+	{
+		_deletedObjs->Add(objMemory);
 	}
 }
 
@@ -114,7 +197,7 @@ void Scene::RegisterRenderer(MemoryEntry& memoryEntity)
 	{
 		MemoryEntry entity;
 		bool isSuccess =_renderList->GetMemoryBlock(i, entity);
-		if (entity == memoryEntity)
+		if (isSuccess && entity == memoryEntity)
 		{
 			index = i;
 			break;
@@ -133,7 +216,7 @@ void Scene::UnregisterRenderer(MemoryEntry& memoryEntity)
 	{
 		MemoryEntry entity;
 		bool isSuccess =_renderList->GetMemoryBlock(i, entity);
-		if (entity == memoryEntity)
+		if (isSuccess && entity == memoryEntity)
 		{
 			index = i;
 			break;
@@ -143,4 +226,19 @@ void Scene::UnregisterRenderer(MemoryEntry& memoryEntity)
 	{
 		_renderList->RemoveAtUnordered(index);
 	}
+}
+
+bool Scene::CreateGameObject(OUT GameObject** obj)
+{
+	UINT8 poolID;
+	bool isSuccess = CpuPoolManager::GetInstance()->GetPoolID(sizeof(GameObject), poolID);
+	if (isSuccess == false)
+	{
+		return isSuccess;
+	}
+
+	CpuMemoryPool* pool = CpuPoolManager::GetInstance()->GetMemoryPool(poolID);
+
+	isSuccess = pool->GetMemory(obj);
+	return isSuccess;
 }

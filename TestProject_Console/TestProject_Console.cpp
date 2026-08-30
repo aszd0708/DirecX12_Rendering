@@ -122,7 +122,7 @@ void CheckMemoryPool()
 {
     std::cout << "Using Memory Pool\n\n";
     CpuMemoryPool* memPool = new CpuMemoryPool(eBlockSize::BYTE_64,0);
-    MemoryList* memList = new MemoryList(memPool);
+    MemoryList* memList = new MemoryList();
 
     {
         std::cout << "Allocate\n";

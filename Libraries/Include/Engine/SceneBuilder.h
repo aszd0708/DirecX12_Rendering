@@ -13,8 +13,8 @@ public:
 	virtual void Render();
 
 public:
-	virtual void AddGameObject(shared_ptr<GameObject> obj);
-	virtual void RemoveGameObject(shared_ptr<GameObject> obj);
+	virtual void AddGameObject(MemoryEntry& memoryEntry);
+	virtual void RemoveGameObject(MemoryEntry& memoryEntry);
 
 public:
 	shared_ptr<Scene> GetScene() { return _scene; }
