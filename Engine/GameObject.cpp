@@ -37,43 +37,31 @@ GameObject::~GameObject()
 void GameObject::Awake()
 {
 	bool isSuccess = false;
+
 	for (int i = 0; i < _fixedComponentList->GetCount(); ++i)
 	{
 		MemoryEntry memoryEntry;
 		isSuccess = _fixedComponentList->GetMemoryBlock(i, memoryEntry);
 		assert(isSuccess);
 
-		CpuMemoryPool* pool = CpuPoolManager::GetInstance()->GetMemoryPool(memoryEntry.block._poolID);
 		Component* component = nullptr;
-		isSuccess = pool->GetObjectByMemoryBlock<Component>(memoryEntry.block, &component);
-		assert(isSuccess);
-		component->Awake();
-	}
-
-	bool isSuccess = false;
-	for (int i = 0; i < _componentsList->GetCount(); ++i)
-	{
-		MemoryEntry memoryEntry;
-		isSuccess = _components->GetMemoryBlock(i, memoryEntry);
-		assert(isSuccess);
-
-		CpuMemoryPool* pool = CpuPoolManager::GetInstance()->GetMemoryPool(memoryEntry.block._poolID);
-		Component* component = nullptr;
-		isSuccess = pool->GetObjectByMemoryBlock<Component>(memoryEntry.block, &component);
-		assert(isSuccess);
-		component->Awake();
-	}
-	for (shared_ptr<Component>& component : _fixedComponent)
-	{
-		if (component != nullptr)
+		isSuccess = CpuPoolManager::GetInstance()->Resolve<Component>(memoryEntry, component);
+		if (isSuccess == true)
 		{
 			component->Awake();
 		}
 	}
 
-	for (shared_ptr<Component>& component : _components)
+
+	for (int i = 0; i < _componentList->GetCount(); ++i)
 	{
-		if (component != nullptr)
+		MemoryEntry memoryEntry;
+		isSuccess = _componentList->GetMemoryBlock(i, memoryEntry);
+		assert(isSuccess);
+
+		Component* component = nullptr;
+		isSuccess = CpuPoolManager::GetInstance()->Resolve<Component>(memoryEntry, component);
+		if (isSuccess == true)
 		{
 			component->Awake();
 		}
@@ -82,17 +70,32 @@ void GameObject::Awake()
 
 void GameObject::Start()
 {
-	for (shared_ptr<Component>& component : _fixedComponent)
+	bool isSuccess = false;
+
+	for (int i = 0; i < _fixedComponentList->GetCount(); ++i)
 	{
-		if (component != nullptr)
+		MemoryEntry memoryEntry;
+		isSuccess = _fixedComponentList->GetMemoryBlock(i, memoryEntry);
+		assert(isSuccess);
+
+		Component* component = nullptr;
+		isSuccess = CpuPoolManager::GetInstance()->Resolve<Component>(memoryEntry, component);
+		if (isSuccess == true)
 		{
 			component->Start();
 		}
 	}
 
-	for (shared_ptr<Component>& component : _components)
+
+	for (int i = 0; i < _componentList->GetCount(); ++i)
 	{
-		if (component != nullptr)
+		MemoryEntry memoryEntry;
+		isSuccess = _componentList->GetMemoryBlock(i, memoryEntry);
+		assert(isSuccess);
+		
+		Component* component = nullptr;
+		isSuccess = CpuPoolManager::GetInstance()->Resolve<Component>(memoryEntry, component);
+		if (isSuccess == true)
 		{
 			component->Start();
 		}
@@ -101,17 +104,32 @@ void GameObject::Start()
 
 void GameObject::Update()
 {
-	for (shared_ptr<Component>& component : _fixedComponent)
+	bool isSuccess = false;
+
+	for (int i = 0; i < _fixedComponentList->GetCount(); ++i)
 	{
-		if (component != nullptr)
+		MemoryEntry memoryEntry;
+		isSuccess = _fixedComponentList->GetMemoryBlock(i, memoryEntry);
+		assert(isSuccess);
+
+		Component* component = nullptr;
+		isSuccess = CpuPoolManager::GetInstance()->Resolve<Component>(memoryEntry, component);
+		if (isSuccess == true)
 		{
 			component->Update();
 		}
 	}
 
-	for (shared_ptr<Component>& component : _components)
+
+	for (int i = 0; i < _componentList->GetCount(); ++i)
 	{
-		if (component != nullptr)
+		MemoryEntry memoryEntry;
+		isSuccess = _componentList->GetMemoryBlock(i, memoryEntry);
+		assert(isSuccess);
+
+		Component* component = nullptr;
+		isSuccess = CpuPoolManager::GetInstance()->Resolve<Component>(memoryEntry, component);
+		if (isSuccess == true)
 		{
 			component->Update();
 		}
@@ -120,17 +138,32 @@ void GameObject::Update()
 
 void GameObject::LateUpdate()
 {
-	for (shared_ptr<Component>& component : _fixedComponent)
+	bool isSuccess = false;
+
+	for (int i = 0; i < _fixedComponentList->GetCount(); ++i)
 	{
-		if (component != nullptr)
+		MemoryEntry memoryEntry;
+		isSuccess = _fixedComponentList->GetMemoryBlock(i, memoryEntry);
+		assert(isSuccess);
+
+		Component* component = nullptr;
+		isSuccess = CpuPoolManager::GetInstance()->Resolve<Component>(memoryEntry, component);
+		if (isSuccess == true)
 		{
 			component->LateUpdate();
 		}
 	}
 
-	for (shared_ptr<Component>& component : _components)
+
+	for (int i = 0; i < _componentList->GetCount(); ++i)
 	{
-		if (component != nullptr)
+		MemoryEntry memoryEntry;
+		isSuccess = _componentList->GetMemoryBlock(i, memoryEntry);
+		assert(isSuccess);
+
+		Component* component = nullptr;
+		isSuccess = CpuPoolManager::GetInstance()->Resolve<Component>(memoryEntry, component);
+		if (isSuccess == true)
 		{
 			component->LateUpdate();
 		}
@@ -139,19 +172,34 @@ void GameObject::LateUpdate()
 
 void GameObject::OnDestroy()
 {
-	for (shared_ptr<Component>& component : _fixedComponent)
+	bool isSuccess = false;
+
+	for (int i = 0; i < _fixedComponentList->GetCount(); ++i)
 	{
-		if (component != nullptr)
+		MemoryEntry memoryEntry;
+		isSuccess = _fixedComponentList->GetMemoryBlock(i, memoryEntry);
+		assert(isSuccess);
+
+		Component* component = nullptr;
+		isSuccess = CpuPoolManager::GetInstance()->Resolve<Component>(memoryEntry, component);
+		if (isSuccess == true)
 		{
-			component->OnDestory();
+			component->OnDestroy();
 		}
 	}
 
-	for (shared_ptr<Component>& component : _components)
+
+	for (int i = 0; i < _componentList->GetCount(); ++i)
 	{
-		if (component != nullptr)
+		MemoryEntry memoryEntry;
+		isSuccess = _componentList->GetMemoryBlock(i, memoryEntry);
+		assert(isSuccess);
+
+		Component* component = nullptr;
+		isSuccess = CpuPoolManager::GetInstance()->Resolve<Component>(memoryEntry, component);
+		if (isSuccess == true)
 		{
-			component->OnDestory();
+			component->OnDestroy();
 		}
 	}
 }

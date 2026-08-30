@@ -4,7 +4,7 @@
 
 #include "Types.h"
 #include "Defines.h"
-#include "Interfaces.h"
+#include "CpuMemoryPoolInterfaces.h"
 #include "MemoryList.h"
 
 class CpuMemoryPool
@@ -31,7 +31,6 @@ public:
 
 	const eBlockSize& GetBlockSize() { return _blockSize; }
 	const UINT& GetPageCount() { return _pageCount; }
-
 	const UINT8 GetPoolID() { return _poolID; }
 
 private:

@@ -161,7 +161,7 @@
   <ItemGroup>
     <ClInclude Include="Block.h" />
     <ClInclude Include="CpuMemoryPool.h" />
-    <ClInclude Include="Interfaces.h" />
+    <ClInclude Include="CpuMemoryPoolInterfaces.h" />
     <ClInclude Include="MemoryBlockStack.h" />
     <ClInclude Include="Defines.h" />
     <ClInclude Include="framework.h" />
@@ -172,7 +172,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CpuMemoryPool.cpp" />
-    <ClCompile Include="Interfaces.cpp" />
+    <ClCompile Include="CpuMemoryPoolInterfaces.cpp" />
     <ClCompile Include="MemoryBlockStack.cpp" />
     <ClCompile Include="Defines.cpp" />
     <ClCompile Include="MemoryList.cpp" />

@@ -38,12 +38,12 @@ public:
 		{
 			int componentCount = _componentList->GetCount();
 			type_index typeIndex = typeid(C);
-			CpuMemoryPool* pool = CpuPoolManager::GetInstance()->GetMemoryPool(memoryEntry.block._poolID);
 			for (int i = 0; i < componentCount; ++i)
 			{
 				isSuccess = _componentList->GetMemoryBlock(i, memoryEntry);
 				assert(isSuccess);
 
+				CpuMemoryPool* pool = CpuPoolManager::GetInstance()->GetMemoryPool(memoryEntry.block._poolID);
 				if (memoryEntry.type == typeIndex)
 				{
 					isSuccess = pool->GetObjectByMemoryBlock<C>(memoryEntry.block, &component);
@@ -64,7 +64,7 @@ public:
 
 		switch (type)
 		{
-			case eComponentType::Renderer
+			case eComponentType::Renderer:
 				poolID = (UINT8)CpuPoolManager::ePoolID::RENDERER;
 			break;
 			default:

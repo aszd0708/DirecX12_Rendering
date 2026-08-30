@@ -1,6 +1,6 @@
 #pragma once
 
-using INT8 = __int8;
+using INT8 = signed char;
 using INT16 = __int16;
 using INT = __int32;
 using INT64 = __int64;
@@ -9,7 +9,7 @@ using UINT16 = unsigned __int16;
 using UINT = unsigned __int32;
 using UINT64 = unsigned __int64;
 
-using BYTE = char;
+using BYTE = unsigned char;
 
 enum eBlockSizeIndex : UINT8
 {

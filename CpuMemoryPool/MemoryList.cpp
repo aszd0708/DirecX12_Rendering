@@ -55,7 +55,7 @@ void MemoryList::AddAt(const MemoryEntry& block, UINT index)
 	}
 
 	_list[index] = block;
-	_count = std::max(_count, index + 1);
+	_count = max(_count, index + 1);
 }
 
 void MemoryList::AddRange(MemoryEntry* blocks, UINT addCount)

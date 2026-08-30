@@ -5,11 +5,12 @@
 
 Scene::Scene(string _sceneName) : _sceneName(_sceneName)
 {
-
+	_renderList = new MemoryList();
 }
 
 Scene::~Scene()
 {
+	delete _renderList;
 }
 
 void Scene::Awake()
@@ -69,12 +70,18 @@ void Scene::OnDestory()
 
 void Scene::Render()
 {
-	for (weak_ptr<Renderer>& renderer : _renderers)
+	for (int i = 0; i < _renderList->GetCount(); ++i)
 	{
-		if (renderer.expired() == false)
+		MemoryEntry entity;
+		bool isSuccess = _renderList->GetMemoryBlock(i, entity);
+		if (isSuccess)
 		{
-			shared_ptr<Renderer> render = renderer.lock();
-			render->Render();
+			Renderer* render = nullptr;
+			bool isSuccess = CpuPoolManager::GetInstance()->Resolve(entity, render);
+			if (isSuccess)
+			{
+				render->Render();
+			}
 		}
 	}
 }
@@ -100,44 +107,40 @@ void Scene::UnregisterGameObject(shared_ptr<GameObject> obj)
 	}
 }
 
-void Scene::RegisterRenderer(shared_ptr<Renderer> renderer)
+void Scene::RegisterRenderer(MemoryEntry& memoryEntity)
 {
 	int index = -1;
-	for (int i = 0 ; i < _renderers.size(); ++i)
+	for (int i = 0 ; i < _renderList->GetCount(); ++i)
 	{
-		if (_renderers[i].expired() == false)
+		MemoryEntry entity;
+		bool isSuccess =_renderList->GetMemoryBlock(i, entity);
+		if (entity == memoryEntity)
 		{
-			shared_ptr<Renderer> curRender = _renderers[i].lock();
-			if (curRender == renderer)
-			{
-				index = i;
-				break;
-			}
+			index = i;
+			break;
 		}
 	}
 	if (index == -1)
 	{
-		_renderers.emplace_back(renderer);
+		_renderList->Add(memoryEntity);
 	}
 }
 
-void Scene::UnregisterRenderer(shared_ptr<Renderer> renderer)
+void Scene::UnregisterRenderer(MemoryEntry& memoryEntity)
 {
 	int index = -1;
-	for (int i = 0; i < _renderers.size(); ++i)
+	for (int i = 0 ; i < _renderList->GetCount(); ++i)
 	{
-		if (_renderers[i].expired() == false)
+		MemoryEntry entity;
+		bool isSuccess =_renderList->GetMemoryBlock(i, entity);
+		if (entity == memoryEntity)
 		{
-			shared_ptr<Renderer> curRender = _renderers[i].lock();
-			if (curRender == renderer)
-			{
-				index = i;
-				break;
-			}
+			index = i;
+			break;
 		}
 	}
 	if (index != -1)
 	{
-		_renderers.erase(_renderers.begin() + index);
+		_renderList->RemoveAtUnordered(index);
 	}
 }

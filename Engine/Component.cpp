@@ -3,7 +3,7 @@
 #include "Transform.h"
 #include "GameObject.h"
 
-Component::Component(eComponentType type) : _type(type)
+Component::Component(eComponentType type) : IMemoryBlockHanlde(), _type(type)
 {
 
 }
@@ -33,7 +33,7 @@ void Component::LateUpdate()
 
 }
 
-void Component::OnDestory()
+void Component::OnDestroy()
 {
 
 }
@@ -43,7 +43,7 @@ std::shared_ptr<GameObject> Component::GetGameObject()
 	return _gameObject.lock();
 }
 
-std::shared_ptr<Transform> Component::GetTransform()
+Transform* Component::GetTransform()
 {
 	return _gameObject.lock()->GetComponent<Transform>();
 }

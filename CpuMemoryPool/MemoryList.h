@@ -8,7 +8,12 @@ class CpuMemoryPool;
 struct MemoryEntry
 {
 	MemoryBlock block;
-	std::type_index type = typeid(void);;
+	std::type_index type = typeid(void);
+
+	bool operator==(const MemoryEntry& other) 
+	{
+		return type == other.type && block == other.block;
+	}
 };
 
 class MemoryList

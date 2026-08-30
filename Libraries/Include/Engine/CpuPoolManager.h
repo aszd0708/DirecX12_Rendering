@@ -11,18 +11,31 @@ public:
 		CPU_64 = 0,
 		CPU_128,
 		CPU_256,
-
+	
 		RENDERER,
+		MAX,
 	};
 	
 public:
 	void Init();
-	 void Release();
-
-	 bool GetPoolID(UINT size, OUT UINT8& poolID);
-	 const CpuMemoryPool* GetMemoryPool(UINT8& poolID);
+	void Release();
+	
+	bool GetPoolID(UINT size, OUT UINT8& poolID);
+	CpuMemoryPool* GetMemoryPool(UINT8& poolID);
+	
+	template<typename T>
+	T* Resolve(MemoryEntry& entry);
 
 private:
-	 CpuMemoryPool** _memoryPools;
-	 CpuMemoryPool* _renderingMemoryPool;
+	CpuMemoryPool** _memoryPools;
 };
+
+template<typename T>
+inline T* CpuPoolManager::Resolve(MemoryEntry& entry)
+{
+	CpuMemoryPool* pool = CpuPoolManager::GetInstance()->GetMemoryPool(entry.block._poolID);
+	T* obj = nullptr;
+	bool isSuccess = pool->GetObjectByMemoryBlock<T>(entry.block, &obj);
+	assert(isSuccess);
+	return obj;
+}

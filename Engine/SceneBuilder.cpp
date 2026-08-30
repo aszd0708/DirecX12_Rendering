@@ -30,7 +30,7 @@ void SceneBuilder::Render()
 void SceneBuilder::AddGameObject(shared_ptr<GameObject> obj)
 {
 	_scene->RegisterGameObject(obj);
-	shared_ptr<Renderer> render = obj->GetComponent<Renderer>();
+	Renderer* render = obj->GetComponent<Renderer>();
 	if(render != nullptr)
 	{
 		_scene->RegisterRenderer(render);
@@ -39,7 +39,7 @@ void SceneBuilder::AddGameObject(shared_ptr<GameObject> obj)
 
 void SceneBuilder::RemoveGameObject(shared_ptr<GameObject> obj)
 {
-	shared_ptr<Renderer> render = obj->GetComponent<Renderer>();
+	Renderer* render = obj->GetComponent<Renderer>();
 	if (render != nullptr)
 	{
 		_scene->UnregisterRenderer(render);

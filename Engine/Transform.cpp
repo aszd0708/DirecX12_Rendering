@@ -31,7 +31,7 @@ void Transform::LateUpdate()
 
 }
 
-void Transform::OnDestory()
+void Transform::OnDestroy()
 {
 
 }

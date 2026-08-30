@@ -16,6 +16,7 @@
 #include <utility>
 #include "Types.h"
 #include "Defines.h"
-#include "Interfaces.h"
+#include "CpuMemoryPoolInterfaces.h"
+#include "windows.h"
 
 #endif //PCH_H

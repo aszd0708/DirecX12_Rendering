@@ -18,8 +18,8 @@ public:
 	void RegisterGameObject(shared_ptr<GameObject> obj);
 	void UnregisterGameObject(shared_ptr<GameObject> obj);
 
-	void RegisterRenderer(shared_ptr<Renderer> renderer);
-	void UnregisterRenderer(shared_ptr<Renderer> renderer);
+	void RegisterRenderer(MemoryEntry& memoryEntity);
+	void UnregisterRenderer(MemoryEntry& memoryEntity);
 	
 
 
@@ -28,8 +28,7 @@ private:
 	int _id;
 
 	vector<shared_ptr<GameObject>> _objs;
-	vector<weak_ptr<Renderer>> _renderers;
 
-	CpuMemoryPool
+	MemoryList* _renderList;
 };
 

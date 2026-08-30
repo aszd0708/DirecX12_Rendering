@@ -5,8 +5,8 @@
 class IMemoryBlockHanlde
 {
 public:
-	IMemoryBlockHanlde() {};
-	virtual ~IMemoryBlockHanlde() {};
+	IMemoryBlockHanlde() { };
+	virtual ~IMemoryBlockHanlde() { };
 
 	virtual void SetMemoryHandler(const MemoryBlock& handler) { _memoryHandler = handler; };
 	virtual MemoryBlock& GetMemoryHandler() { return _memoryHandler; }

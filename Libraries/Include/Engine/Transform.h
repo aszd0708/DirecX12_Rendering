@@ -13,7 +13,7 @@ public:
 	void Start() override;
 	void Update() override;
 	void LateUpdate() override;
-	void OnDestory() override;
+	void OnDestroy() override;
 
 	void UpdateTransform();
 

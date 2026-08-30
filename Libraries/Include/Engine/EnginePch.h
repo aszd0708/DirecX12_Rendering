@@ -54,6 +54,7 @@ inline void ThrowIfFailed(HRESULT hr)
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "dxguid.lib")
+#pragma comment(lib, "CpuMemoryPool.lib")
 
 #ifdef _DEBUG
 #pragma comment(lib, "DirectXTex/DirectXTex_debug.lib")
@@ -82,3 +83,6 @@ inline void ThrowIfFailed(HRESULT hr)
 
 // ImGUI
 #include "imgui.h"
+
+// POOL
+#include "CpuMemoryPool.h"
