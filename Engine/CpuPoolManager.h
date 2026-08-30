@@ -21,7 +21,7 @@ public:
 	void Release();
 	
 	bool GetPoolID(UINT size, OUT UINT8& poolID);
-	const CpuMemoryPool* GetMemoryPool(UINT8& poolID);
+	CpuMemoryPool* GetMemoryPool(UINT8& poolID);
 
 private:
 	CpuMemoryPool** _memoryPools;

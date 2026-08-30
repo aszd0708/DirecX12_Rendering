@@ -48,7 +48,7 @@ bool CpuPoolManager::GetPoolID(UINT size, OUT UINT8& poolID)
 	return true;
 }
 
-const CpuMemoryPool* CpuPoolManager::GetMemoryPool(UINT8& poolID)
+CpuMemoryPool* CpuPoolManager::GetMemoryPool(UINT8& poolID)
 {
 	return _memoryPools[poolID];
 }

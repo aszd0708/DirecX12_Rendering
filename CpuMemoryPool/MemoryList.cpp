@@ -55,14 +55,14 @@ void MemoryList::AddAt(const MemoryEntry& block, UINT index)
 	}
 
 	_list[index] = block;
-	_count++;
+	_count = std::max(_count, index + 1);
 }
 
 void MemoryList::AddRange(MemoryEntry* blocks, UINT addCount)
 {
 	if (_capacity < _count + addCount)
 	{
-		SetCapacity(_capacity * 2);
+		SetCapacity(_capacity * 2 + addCount);
 	}
 
 	memmove(&_list[_count], blocks, sizeof(MemoryEntry) * addCount);
@@ -83,6 +83,7 @@ void MemoryList::Remove(const MemoryBlock& block)
 void MemoryList::RemoveRange(UINT startIndex, UINT blockCount)
 {
 	memmove(&_list[startIndex], &_list[startIndex + blockCount], sizeof(MemoryEntry) * (blockCount));
+	_count - startIndex - blockCount;
 }
 
 void MemoryList::RemoveUnordered(const MemoryBlock& block)

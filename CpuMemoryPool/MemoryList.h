@@ -8,7 +8,7 @@ class CpuMemoryPool;
 struct MemoryEntry
 {
 	MemoryBlock block;
-	std::type_index type;
+	std::type_index type = typeid(void);;
 };
 
 class MemoryList

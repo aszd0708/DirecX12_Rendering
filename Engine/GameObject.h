@@ -17,7 +17,7 @@ public:
 
 public:
 	template<typename C>
-	shared_ptr<C> GetComponent()
+	C* GetComponent()
 	{
 		eComponentType type = C::GetType();
 		MemoryEntry memoryEntry;
@@ -38,6 +38,7 @@ public:
 		{
 			int componentCount = _componentList->GetCount();
 			type_index typeIndex = typeid(C);
+			CpuMemoryPool* pool = CpuPoolManager::GetInstance()->GetMemoryPool(memoryEntry.block._poolID);
 			for (int i = 0; i < componentCount; ++i)
 			{
 				isSuccess = _componentList->GetMemoryBlock(i, memoryEntry);
@@ -56,14 +57,14 @@ public:
 	}
 
 	template<typename C>
-	shared_ptr<C> AddComponent()
+	C* AddComponent()
 	{
 		eComponentType type = C::GetType();
 		UINT8 poolID = 0;
 
 		switch (type)
 		{
-			case eComponentType::Renderer::
+			case eComponentType::Renderer
 				poolID = (UINT8)CpuPoolManager::ePoolID::RENDERER;
 			break;
 			default:
@@ -91,7 +92,7 @@ public:
 			MemoryEntry memoryEntry;
 			memoryEntry.block = component->GetMemoryHandler();
 			memoryEntry.type = typeid(C);
-			_componentList->Add(memoryEntry)
+			_componentList->Add(memoryEntry);
 		}
 		return component;
 	}
