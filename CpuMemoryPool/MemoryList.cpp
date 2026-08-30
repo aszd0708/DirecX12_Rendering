@@ -2,21 +2,21 @@
 #include "MemoryList.h"
 #include "MemoryPage.h"
 
-MemoryList::MemoryList(CpuMemoryPool* pool) : _pool(pool)
+MemoryList::MemoryList()
 {
-	_list = (MemoryBlock*)malloc(sizeof(MemoryBlock) * DEFAULT_CAPACITY);
+	_list = (MemoryEntry*)malloc(sizeof(MemoryEntry) * DEFAULT_CAPACITY);
 	assert(_list != nullptr);
 	_capacity = DEFAULT_CAPACITY;
 	_count = 0;
 }
 
-MemoryList::MemoryList(CpuMemoryPool * pool, UINT capacity) : _pool(pool), _capacity(capacity)
+MemoryList::MemoryList(UINT capacity) :  _capacity(capacity)
 {
 	if (_capacity == 0)
 	{
 		_capacity = DEFAULT_CAPACITY;
 	}
-	_list = (MemoryBlock*)malloc(sizeof(MemoryBlock) * _capacity);
+	_list = (MemoryEntry*)malloc(sizeof(MemoryEntry) * _capacity);
 	assert(_list != nullptr);
 	_count = 0;
 }
@@ -26,7 +26,7 @@ MemoryList::~MemoryList()
 	free(_list);
 }
 
-bool MemoryList::GetMemoryBlock(UINT index, OUT MemoryBlock& block)
+bool MemoryList::GetMemoryBlock(UINT index, OUT MemoryEntry& block)
 {
 	if (index >= _count) return false;
 
@@ -35,7 +35,7 @@ bool MemoryList::GetMemoryBlock(UINT index, OUT MemoryBlock& block)
 	return true;
 }
 
-void MemoryList::Add(const MemoryBlock& block)
+void MemoryList::Add(const MemoryEntry& block)
 {
 	if (_capacity < _count + 1)
 	{
@@ -46,14 +46,26 @@ void MemoryList::Add(const MemoryBlock& block)
 	_count++;
 }
 
-void MemoryList::AddRange(MemoryBlock* blocks, UINT addCount)
+void MemoryList::AddAt(const MemoryEntry& block, UINT index)
+{
+	if(_capacity <= index) 
+	{
+		assert(false);
+		return;
+	}
+
+	_list[index] = block;
+	_count++;
+}
+
+void MemoryList::AddRange(MemoryEntry* blocks, UINT addCount)
 {
 	if (_capacity < _count + addCount)
 	{
 		SetCapacity(_capacity * 2);
 	}
 
-	memmove(&_list[_count], blocks, sizeof(MemoryBlock) * addCount);
+	memmove(&_list[_count], blocks, sizeof(MemoryEntry) * addCount);
 
 	_count += addCount;
 }
@@ -64,13 +76,13 @@ void MemoryList::Remove(const MemoryBlock& block)
 	if(FindMemory(block, index) == false) 
 		return; 
 
-	memmove(&_list[index], &_list[index + 1], sizeof(MemoryBlock) * (_count - index - 1));
+	memmove(&_list[index], &_list[index + 1], sizeof(MemoryEntry) * (_count - index - 1));
 	_count--;
 }
 
 void MemoryList::RemoveRange(UINT startIndex, UINT blockCount)
 {
-	memmove(&_list[startIndex], &_list[startIndex + blockCount], sizeof(MemoryBlock) * (blockCount));
+	memmove(&_list[startIndex], &_list[startIndex + blockCount], sizeof(MemoryEntry) * (blockCount));
 }
 
 void MemoryList::RemoveUnordered(const MemoryBlock& block)
@@ -80,7 +92,7 @@ void MemoryList::RemoveUnordered(const MemoryBlock& block)
 
 	if (index != _count - 1)
 	{
-		memmove(&_list[index], &_list[_count - 1], sizeof(MemoryBlock));
+		memmove(&_list[index], &_list[_count - 1], sizeof(MemoryEntry));
 	}
 	_count--;
 }
@@ -95,7 +107,7 @@ void MemoryList::RemoveUnordered(const MemoryBlock* blocks, UINT count)
 
 void MemoryList::RemoveAt(const UINT index)
 {
-	memmove(&_list[index], &_list[index + 1], sizeof(MemoryBlock) * (_count - index - 1));
+	memmove(&_list[index], &_list[index + 1], sizeof(MemoryEntry) * (_count - index - 1));
 	_count--;
 }
 
@@ -103,7 +115,7 @@ void MemoryList::RemoveAtUnordered(const UINT index)
 {
 	if (index != _count - 1)
 	{
-		memmove(&_list[index], &_list[_count - 1], sizeof(MemoryBlock));
+		memmove(&_list[index], &_list[_count - 1], sizeof(MemoryEntry));
 	}
 	_count--;
 }
@@ -115,10 +127,10 @@ void MemoryList::SetCapacity(UINT capacity)
 		_capacity = DEFAULT_CAPACITY;
 	}
 
-	MemoryBlock* newList = (MemoryBlock*)malloc(sizeof(MemoryBlock) * capacity);
+	MemoryEntry* newList = (MemoryEntry*)malloc(sizeof(MemoryEntry) * capacity);
 	assert(newList != nullptr);
 
-	memcpy(newList, _list, sizeof(MemoryBlock) * _capacity);
+	memcpy(newList, _list, sizeof(MemoryEntry) * _capacity);
 	free(_list);
 
 	_capacity = capacity;
@@ -130,7 +142,7 @@ bool MemoryList::FindMemory(const MemoryBlock& block, OUT int& index)
 	index = -1;
 	for (int i = 0; i < _count; ++i)
 	{
-		if (_list[i] == block)
+		if (_list[i].block == block)
 		{
 			index = i;
 			break;

@@ -1,7 +1,8 @@
 #pragma once
 #include "Component.h"
+#include "CpuPoolManager.h"
 
-class GameObject : public std::enable_shared_from_this<GameObject>
+class GameObject : public std::enable_shared_from_this<GameObject>, public IMemoryBlockHanlde
 {
 public:
 	GameObject();
@@ -19,41 +20,84 @@ public:
 	shared_ptr<C> GetComponent()
 	{
 		eComponentType type = C::GetType();
+		MemoryEntry memoryEntry;
+		bool isSuccess = false;
+		C* component = nullptr;
 		if (type != eComponentType::Script)
 		{
-			return static_pointer_cast<C>(_fixedComponent[(int)type]);
+			isSuccess = _fixedComponentList->GetMemoryBlock((int)type, memoryEntry);
+			assert(isSuccess);
+
+			CpuMemoryPool* pool = CpuPoolManager::GetInstance()->GetMemoryPool(memoryEntry.block._poolID);
+
+			isSuccess = pool->GetObjectByMemoryBlock<C>(memoryEntry.block, &component);
+			assert(isSuccess);
 		}
 
-		for (shared_ptr<Component>& component : _components)
+		else
 		{
-			shared_ptr<C> target = dynamic_pointer_cast<C>(component);
-			if (target != nullptr)
+			int componentCount = _componentList->GetCount();
+			type_index typeIndex = typeid(C);
+			for (int i = 0; i < componentCount; ++i)
 			{
-				return target;
+				isSuccess = _componentList->GetMemoryBlock(i, memoryEntry);
+				assert(isSuccess);
+
+				if (memoryEntry.type == typeIndex)
+				{
+					isSuccess = pool->GetObjectByMemoryBlock<C>(memoryEntry.block, &component);
+					assert(isSuccess);
+					break;
+				}
 			}
 		}
-		return nullptr;
+
+		return component;
 	}
 
 	template<typename C>
 	shared_ptr<C> AddComponent()
 	{
-		shared_ptr<C> component = make_shared<C>();
-		component->SetGameObject(shared_from_this());
 		eComponentType type = C::GetType();
+		UINT8 poolID = 0;
+
+		switch (type)
+		{
+			case eComponentType::Renderer::
+				poolID = (UINT8)CpuPoolManager::ePoolID::RENDERER;
+			break;
+			default:
+				bool bFindPooID = CpuPoolManager::GetInstance()->GetPoolID(sizeof(C), poolID);
+				assert(bFindPooID);
+			break;
+		}
+
+		CpuMemoryPool* pool = CpuPoolManager::GetInstance()->GetMemoryPool(poolID);
+
+		C* component = nullptr;
+		bool isSuccess = pool->GetMemory(&component);
+		assert(isSuccess);
+
+		component->SetGameObject(shared_from_this());
 		if (type != eComponentType::Script)
 		{
-			_fixedComponent[(int)type] = component;
+			MemoryEntry memoryEntry;
+			memoryEntry.block = component->GetMemoryHandler();
+			memoryEntry.type = typeid(C);
+			_fixedComponentList->AddAt(memoryEntry, (int)type);
 		}
 		else
 		{
-			_components.emplace_back(component);
+			MemoryEntry memoryEntry;
+			memoryEntry.block = component->GetMemoryHandler();
+			memoryEntry.type = typeid(C);
+			_componentList->Add(memoryEntry)
 		}
 		return component;
 	}
 
 private:
-	array<shared_ptr<Component>, (int)eComponentType::END> _fixedComponent;
-	vector<shared_ptr<Component>> _components;
+	MemoryList* _fixedComponentList;
+	MemoryList* _componentList;
 };
 

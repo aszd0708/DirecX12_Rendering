@@ -9,15 +9,9 @@
 
 class CpuMemoryPool
 {
-// Static PoolID 발급 255개를 초과하는 경우는 없을것 같기 때문에 이런식으로 할당
 public:
-	static UINT8 AllocatePoolId() { return s_nextPoolID++; }
-private:
-	static UINT8 s_nextPoolID;
-	 
-public:
-	CpuMemoryPool(eBlockSize blockSize);
-	CpuMemoryPool(eBlockSize blockSize, UINT pageCount);
+	CpuMemoryPool(eBlockSize blockSize, UINT8 poolID);
+	CpuMemoryPool(eBlockSize blockSize, UINT8 poolID, UINT pageCount);
 	~CpuMemoryPool();
 
 private:
@@ -31,12 +25,14 @@ public:
 	bool ReleaseMemory(T* memory);
 
 	template<typename T>
-	bool GetObject(MemoryBlock& blockInfo, OUT T** obj);
+	bool GetObjectByMemoryBlock(MemoryBlock& blockInfo, OUT T** obj);
 
 	bool ReleaseMemory(MemoryBlock& blockInfo);
 
 	const eBlockSize& GetBlockSize() { return _blockSize; }
 	const UINT& GetPageCount() { return _pageCount; }
+
+	const UINT8 GetPoolID() { return _poolID; }
 
 private:
 	UINT8 _poolID;
@@ -92,7 +88,7 @@ bool CpuMemoryPool::ReleaseMemory(T* obj)
 }
 
 template<typename T>
-inline bool CpuMemoryPool::GetObject(MemoryBlock& blockInfo, OUT T** obj)
+inline bool CpuMemoryPool::GetObjectByMemoryBlock(MemoryBlock& blockInfo, OUT T** obj)
 {
 	BYTE* rawPtr = nullptr;
 	UINT pageIndex = blockInfo._pageIndex;

@@ -13,6 +13,7 @@ using BYTE = char;
 
 enum eBlockSizeIndex : UINT8
 {
+	MIN = 0,
 	INDEX_BYTE_64 = 0,
 	INDEX_BYTE_128 = 1,
 	INDEX_BYTE_256 = 2,

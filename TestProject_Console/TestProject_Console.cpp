@@ -18,7 +18,7 @@ public:
     INT64 _index;
 };
 
-UINT MAX_COUNT = 1000000;
+UINT MAX_COUNT = 100000;
 
 void CheckSTL()
 {
@@ -121,7 +121,7 @@ void CheckSTL_Random()
 void CheckMemoryPool()
 {
     std::cout << "Using Memory Pool\n\n";
-    CpuMemoryPool* memPool = new CpuMemoryPool(eBlockSize::BYTE_64);
+    CpuMemoryPool* memPool = new CpuMemoryPool(eBlockSize::BYTE_64,0);
     MemoryList* memList = new MemoryList(memPool);
 
     {
@@ -191,7 +191,7 @@ void CheckMemoryPool()
 void CheckMemoryPool_Random()
 {
     std::cout << "Using Memory Pool Random\n\n";
-    CpuMemoryPool* memPool = new CpuMemoryPool(eBlockSize::BYTE_64);
+    CpuMemoryPool* memPool = new CpuMemoryPool(eBlockSize::BYTE_64,0);
     MemoryList* memList = new MemoryList(memPool);
 
     {
@@ -234,7 +234,7 @@ void CheckMemoryPool_Random()
                 if (getSuccess)
                 {
                     memPool->ReleaseMemory(obj);
-                    memList->RemoveAt(index);
+                    memList->RemoveAtUnordered(index);
                     successCount++;
                 }
                 else
@@ -273,7 +273,7 @@ int main()
     std::cout << "Total Count : " << MAX_COUNT << "\n\n";
 
     //CheckSTL();
-    CheckMemoryPool();
+    CheckMemoryPool_Random();
 
     std::cout << "\n\n";
 }

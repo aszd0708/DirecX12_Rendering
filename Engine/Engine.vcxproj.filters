@@ -145,9 +145,6 @@
       <Filter>02. Managers</Filter>
     </ClInclude>
     <ClInclude Include="resource.h" />
-    <ClInclude Include="GameObject.h">
-      <Filter>00. Engine</Filter>
-    </ClInclude>
     <ClInclude Include="Component.h">
       <Filter>04. Component</Filter>
     </ClInclude>
@@ -198,6 +195,9 @@
     </ClInclude>
     <ClInclude Include="CpuPoolManager.h">
       <Filter>02. Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>03. GameObject</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -255,9 +255,6 @@
     <ClCompile Include="SceneManager.cpp">
       <Filter>02. Managers</Filter>
     </ClCompile>
-    <ClCompile Include="GameObject.cpp">
-      <Filter>00. Engine</Filter>
-    </ClCompile>
     <ClCompile Include="Component.cpp">
       <Filter>04. Component</Filter>
     </ClCompile>
@@ -308,6 +305,9 @@
     </ClCompile>
     <ClCompile Include="CpuPoolManager.cpp">
       <Filter>02. Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>03. GameObject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

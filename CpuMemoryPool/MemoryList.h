@@ -1,7 +1,15 @@
 #pragma once
+#include "MemoryPage.h"
+#include <typeindex>
+#include <typeinfo>
 
 class CpuMemoryPool;
-struct MemoryBlock;
+
+struct MemoryEntry
+{
+	MemoryBlock block;
+	std::type_index type;
+};
 
 class MemoryList
 {
@@ -9,16 +17,17 @@ private:
 	static const UINT DEFAULT_CAPACITY = 32;
 
 public:
-	MemoryList(CpuMemoryPool* pool);
-	MemoryList(CpuMemoryPool* pool, UINT capacity);
+	MemoryList();
+	MemoryList(UINT capacity);
 	~MemoryList();
 
 public:
-	bool GetMemoryBlock(UINT index, OUT MemoryBlock& block);
+	bool GetMemoryBlock(UINT index, OUT MemoryEntry& block);
 	const UINT& GetCount() { return _count; }
 	
-	void Add(const MemoryBlock& block);
-	void AddRange(MemoryBlock* blocks, UINT addCount);
+	void Add(const MemoryEntry& block);
+	void AddAt(const MemoryEntry& block, UINT index);
+	void AddRange(MemoryEntry* blocks, UINT addCount);
 	void Remove(const MemoryBlock& block);
 	void RemoveRange(UINT startIndex, UINT blockCount);
 	void RemoveUnordered(const MemoryBlock& block);
@@ -30,9 +39,7 @@ public:
 	bool FindMemory(const MemoryBlock& block, OUT int& index);
 
 private:
-	CpuMemoryPool* _pool;
-
 	UINT _count;
 	UINT _capacity;
-	MemoryBlock* _list;
+	MemoryEntry* _list;
 };

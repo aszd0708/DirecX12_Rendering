@@ -9,7 +9,7 @@ enum class eComponentType
 	Script
 };
 
-class Component
+class Component : public IMemoryBlockHanlde
 {
 public:
 	Component(eComponentType type);
@@ -32,6 +32,8 @@ public:
 
 private:
 	eComponentType _type;
+
+	
 	weak_ptr<GameObject> _gameObject;
 };
 

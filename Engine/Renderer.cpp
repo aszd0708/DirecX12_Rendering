@@ -3,6 +3,8 @@
 #include "ConstantBuffer.h"
 #include "GlobalBuffer.h"
 
+CpuPoolManager::ePoolID Renderer::s_PoolID = CpuPoolManager::ePoolID::RENDERER;
+
 Renderer::Renderer(eComponentType type) : Component(type)
 {
 	_globalBuffer = make_shared<ConstantBuffer>(sizeof(GlobalDesc));

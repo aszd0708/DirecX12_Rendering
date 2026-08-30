@@ -3,16 +3,12 @@
 #include "MemoryPage.h"
 #include "MemoryBlockStack.h"
 
-UINT8 CpuMemoryPool::s_nextPoolID = 0;
-
-CpuMemoryPool::CpuMemoryPool(eBlockSize blockSize) : _blockSize(blockSize), _pageCount(MemoryPage::TOTAL_PAGE_SIZE / blockSize)
+CpuMemoryPool::CpuMemoryPool(eBlockSize blockSize, UINT8 poolID) : _poolID(poolID), _blockSize(blockSize), _pageCount(MemoryPage::TOTAL_PAGE_SIZE / blockSize)
 {
-	_poolID = AllocatePoolId();
-
 	InitPage();
 }
 
-CpuMemoryPool::CpuMemoryPool(eBlockSize blockSize, UINT pageCount) : _blockSize(blockSize), _pageCount(pageCount)
+CpuMemoryPool::CpuMemoryPool(eBlockSize blockSize, UINT8 poolID, UINT pageCount) : _poolID(poolID), _blockSize(blockSize), _pageCount(pageCount)
 {
 	InitPage();
 }
