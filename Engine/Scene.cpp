@@ -193,6 +193,7 @@ void Scene::UnregisterGameObject(MemoryEntry& objMemory)
 void Scene::RegisterRenderer(MemoryEntry& memoryEntity)
 {
 	int index = -1;
+
 	for (int i = 0 ; i < _renderList->GetCount(); ++i)
 	{
 		MemoryEntry entity;

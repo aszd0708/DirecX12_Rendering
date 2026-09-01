@@ -16,6 +16,14 @@ Renderer::~Renderer()
 
 }
 
+void Renderer::SetMemoryHandler(const MemoryBlock& handler)
+{
+	IMemoryBlockHanlde::SetMemoryHandler(handler);
+
+	_memoryEntry.block = handler;
+	_memoryEntry.type = typeid(Renderer);
+}
+
 void Renderer::Init()
 {
 

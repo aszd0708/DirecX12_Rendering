@@ -30,11 +30,31 @@ void SceneBuilder::Render()
 void SceneBuilder::AddGameObject(MemoryEntry& memoryEntry)
 {
 	_scene->RegisterGameObject(memoryEntry);
-	_scene->RegisterRenderer(memoryEntry);
+
+	GameObject* obj = nullptr;
+	bool isSuccess = CpuPoolManager::GetInstance()->Resolve(memoryEntry, &obj);
+	if (isSuccess)
+	{
+		Renderer* renderer = obj->GetComponent<Renderer>();
+		if (renderer != nullptr)
+		{
+			_scene->RegisterRenderer(renderer->GetMemoryEntry());
+		}
+	}
 }
 
 void SceneBuilder::RemoveGameObject(MemoryEntry& memoryEntry)
 {
 	_scene->UnregisterRenderer(memoryEntry);
-	_scene->UnregisterGameObject(memoryEntry);
+
+	GameObject* obj = nullptr;
+	bool isSuccess = CpuPoolManager::GetInstance()->Resolve(memoryEntry, &obj);
+	if (isSuccess)
+	{
+		Renderer* renderer = obj->GetComponent<Renderer>();
+		if (renderer != nullptr)
+		{
+			_scene->UnregisterGameObject(renderer->GetMemoryEntry());
+		}
+	}
 }

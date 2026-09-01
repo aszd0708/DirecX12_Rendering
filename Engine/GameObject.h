@@ -29,12 +29,12 @@ public:
 		if (type != eComponentType::Script)
 		{
 			isSuccess = _fixedComponentList->GetMemoryBlock((int)type, memoryEntry);
-			assert(isSuccess);
+			if(isSuccess == false) return nullptr;
 
 			CpuMemoryPool* pool = CpuPoolManager::GetInstance()->GetMemoryPool(memoryEntry.block._poolID);
 
 			isSuccess = pool->GetObjectByMemoryBlock<C>(memoryEntry.block, &component);
-			assert(isSuccess);
+			if (isSuccess == false) return nullptr;
 		}
 
 		else
@@ -44,13 +44,13 @@ public:
 			for (int i = 0; i < componentCount; ++i)
 			{
 				isSuccess = _componentList->GetMemoryBlock(i, memoryEntry);
-				assert(isSuccess);
+				if (isSuccess == false) return nullptr;
 
 				CpuMemoryPool* pool = CpuPoolManager::GetInstance()->GetMemoryPool(memoryEntry.block._poolID);
 				if (memoryEntry.type == typeIndex)
 				{
 					isSuccess = pool->GetObjectByMemoryBlock<C>(memoryEntry.block, &component);
-					assert(isSuccess);
+					if (isSuccess == false) return nullptr;
 					break;
 				}
 			}

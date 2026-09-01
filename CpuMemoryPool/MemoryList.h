@@ -23,6 +23,12 @@ struct MemoryEntry
 	void SetMemoryBlock(MemoryBlock& memoryBlock) { block = memoryBlock;}
 };
 
+struct MemoryListSlot
+{
+	MemoryEntry entry;
+	bool isValied = false;
+};
+
 class MemoryList
 {
 private:
@@ -54,5 +60,5 @@ public:
 private:
 	UINT _count;
 	UINT _capacity;
-	MemoryEntry* _list;
+	MemoryListSlot* _list;
 };

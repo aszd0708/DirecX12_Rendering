@@ -16,6 +16,10 @@ public:
 	Renderer(eComponentType type);
 	virtual ~Renderer() override;
 
+	virtual void SetMemoryHandler(const MemoryBlock& handler) override;
+
+	MemoryEntry& GetMemoryEntry() { return _memoryEntry; }
+
 public:
 	virtual void Init();
 	virtual void Render();
@@ -36,6 +40,7 @@ private:
 
 	TransformDesc _worldTransformDesc;
 	shared_ptr<ConstantBuffer> _worldTransformBuffer;
-	
+
+	MemoryEntry _memoryEntry;
 };
 
