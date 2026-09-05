@@ -177,6 +177,8 @@ xcopy /Y "$(SolutionDir)Engine\*.inl" "$(SolutionDir)Libraries\Include\Engine"</
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="CpuPoolManager.h" />
     <ClInclude Include="Define.h" />
+    <ClInclude Include="DescHeapAllocatorManager.h" />
+    <ClInclude Include="DescriptorHeapAllocator.h" />
     <ClInclude Include="EnginePch.h" />
     <ClInclude Include="FileUtils.h" />
     <ClInclude Include="Game.h" />
@@ -206,6 +208,7 @@ xcopy /Y "$(SolutionDir)Engine\*.inl" "$(SolutionDir)Libraries\Include\Engine"</
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderInfo.h" />
     <ClInclude Include="SimpleMath.h" />
+    <ClInclude Include="Stack.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TimeManager.h" />
@@ -221,6 +224,8 @@ xcopy /Y "$(SolutionDir)Engine\*.inl" "$(SolutionDir)Libraries\Include\Engine"</
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="ConstantBuffer.cpp" />
     <ClCompile Include="CpuPoolManager.cpp" />
+    <ClCompile Include="DescHeapAllocatorManager.cpp" />
+    <ClCompile Include="DescriptorHeapAllocator.cpp" />
     <ClCompile Include="FileUtils.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
@@ -269,6 +274,7 @@ xcopy /Y "$(SolutionDir)Engine\*.inl" "$(SolutionDir)Libraries\Include\Engine"</
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderInfo.cpp" />
     <ClCompile Include="SimpleMath.cpp" />
+    <ClCompile Include="Stack.cpp" />
     <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TimeManager.cpp" />

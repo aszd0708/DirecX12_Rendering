@@ -28,6 +28,7 @@ public:										\
 #define RESOURCES			GET_SINGLE(ResourceManager)
 #define INSTANCING			GET_SINGLE(InstancingManager)
 #define GUI					GET_SINGLE(ImGuiManager)
+#define DESC_POOL			GET_SINGLE(DescHeapAllocatorManager)
 //#define SCENE		GET_SINGLE(SceneManager)
 //#define CUR_SCENE	SCENE->GetCurrentScene()
 

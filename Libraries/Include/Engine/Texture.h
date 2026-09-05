@@ -21,8 +21,7 @@ public:
 	void CreateView();
 
 public:
-	ComPtr<ID3D12DescriptorHeap> GetDescHeap() { return _descHeap; }
-	D3D12_GPU_DESCRIPTOR_HANDLE GetHandle() { return _descHeap->GetGPUDescriptorHandleForHeapStart(); }
+	D3D12_GPU_DESCRIPTOR_HANDLE GetHandle() { return _descHandle.gpuDesc; }
 
 private:
 	wstring _filePath;
@@ -30,7 +29,7 @@ private:
 	ComPtr<ID3D12Resource> _resource;
 	D3D12_SHADER_RESOURCE_VIEW_DESC _resourceDesc;
 
-	ComPtr<ID3D12DescriptorHeap> _descHeap;
 	D3D12_DESCRIPTOR_HEAP_DESC _heapDesc;
+	DescriptorHandle _descHandle;
 };
 

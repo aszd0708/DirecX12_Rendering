@@ -1,4 +1,6 @@
 #pragma once
+#include "DescriptorHeapAllocator.h"
+
 class ImGuiManager
 {
 	DECLARE_SINGLE(ImGuiManager);
@@ -12,6 +14,6 @@ private:
 	void CreateView();
 
 private:
-	ComPtr<ID3D12DescriptorHeap> _descHeap;
+	DescriptorHandle _descHandle;
 };
 

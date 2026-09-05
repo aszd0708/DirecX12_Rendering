@@ -76,6 +76,9 @@
     <Filter Include="01. Graphics\Texture">
       <UniqueIdentifier>{507cbd17-9ab8-4c65-b778-9b24f49c21df}</UniqueIdentifier>
     </Filter>
+    <Filter Include="99. Structures">
+      <UniqueIdentifier>{63702443-0ba6-40fd-97d9-47ef2018f9cf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -205,6 +208,15 @@
     <ClInclude Include="imgui_impl_dx12.h">
       <Filter>98. Utils\ImGUI</Filter>
     </ClInclude>
+    <ClInclude Include="DescriptorHeapAllocator.h">
+      <Filter>00. Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Stack.h">
+      <Filter>99. Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="DescHeapAllocatorManager.h">
+      <Filter>02. Managers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -317,6 +329,15 @@
     </ClCompile>
     <ClCompile Include="imgui_impl_dx12.cpp">
       <Filter>98. Utils\ImGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="DescriptorHeapAllocator.cpp">
+      <Filter>00. Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Stack.cpp">
+      <Filter>99. Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="DescHeapAllocatorManager.cpp">
+      <Filter>02. Managers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

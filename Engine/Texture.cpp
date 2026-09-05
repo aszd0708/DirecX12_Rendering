@@ -9,7 +9,7 @@ Texture::Texture(wstring filePath) : _filePath(filePath)
 
 Texture::~Texture()
 {
-
+	DESC_POOL->FreeAllocDescHandle(_descHandle);
 }
 
 void Texture::CreateTexture()
@@ -96,18 +96,12 @@ void Texture::CreateResource()
 
 void Texture::CreateView()
 {
-	D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
-	heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-	// 셰이더에서 직접 참조할 수 있게 세팅
-	heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-	heapDesc.NumDescriptors = 1;
-	ThrowIfFailed(DEVICE->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(_descHeap.GetAddressOf())));
+	_descHandle = DESC_POOL->AllocDescHandle(D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
-	
 	D3D12_SHADER_RESOURCE_VIEW_DESC resourceDesc = {};
 	resourceDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	resourceDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 	resourceDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	resourceDesc.Texture2D.MipLevels = 1;
-	DEVICE->CreateShaderResourceView(_resource.Get(), &resourceDesc, _descHeap->GetCPUDescriptorHandleForHeapStart());
+	DEVICE->CreateShaderResourceView(_resource.Get(), &resourceDesc, _descHandle.cpuDesc);
 }

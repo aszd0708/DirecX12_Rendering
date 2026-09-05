@@ -7,19 +7,61 @@
 #include "MeshRenderer.h"
 #include "Shader.h"
 #include "ShaderInfo.h"
+#include <chrono>
 
 MeshDemo::MeshDemo(string sceneName) : SceneBuilder(sceneName)
 {}
 
 MeshDemo::~MeshDemo()
-{}
+{
+
+}
 
 void MeshDemo::Init()
 {
 	SceneBuilder::Init();
 
+	_vInfo = new DXGI_QUERY_VIDEO_MEMORY_INFO();
+	auto start = std::chrono::steady_clock::now();
+	
+	ComPtr<IDXGIAdapter1> adapter;
+	
+	FACTORY->EnumAdapters1(0, adapter.GetAddressOf());
+	ComPtr<IDXGIAdapter3> adapter3;
+	adapter->QueryInterface(IID_PPV_ARGS(&adapter3));
+	adapter3->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, _vInfo);
+	
+	_curUsage = _vInfo->CurrentUsage;
 	CreateCamera();
-	CreateTextureMesh();
+
+	_objs = (GameObject**)malloc(sizeof(GameObject*) * MAX_COUNT);
+	for (int i = 0; i < MAX_COUNT; ++i)
+	{
+		CreateTextureMesh(i);
+	}
+
+	adapter3->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, _vInfo);
+	_endUsage = _vInfo->CurrentUsage;
+	
+	auto end = std::chrono::steady_clock::now();
+	auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+	_totalTime = elapsed.count();
+}
+
+void MeshDemo::Update()
+{
+	SceneBuilder::Update();
+
+	uint32 fps = TIME->GetFps();
+	ImGui::LabelText("FPS  ","%d", fps);
+
+	ImGui::LabelText("Start Usage  ","%llu byte", _curUsage);
+	ImGui::LabelText("End Usage  ","%llu byte", _endUsage);
+
+	UINT64 totalUsage = _endUsage - _curUsage;
+	ImGui::LabelText("Total Usage  ", "%llu byte", totalUsage);
+
+	ImGui::LabelText("Total Time  ", "%llu ms", _totalTime);
 }
 
 void MeshDemo::Render()
@@ -34,7 +76,7 @@ void MeshDemo::CreateCamera()
 	bool isSuccess = GetScene()->CreateGameObject(&_cameraObj);
 	assert(isSuccess);
 	Transform* transform = _cameraObj->AddComponent<Transform>();
-	transform->SetPosition(Vec3(0.0f, 0.0f, -15.0f));
+	transform->SetPosition(Vec3(50.0f, 50.0f, -15.0f));
 	_cameraObj->AddComponent<Camera>();
 	_cameraObj->AddComponent<CameraController>();
 
@@ -66,11 +108,16 @@ void MeshDemo::CreateMesh()
 	AddGameObject(_meshObj->GetMemoryEntry());
 }
 
-void MeshDemo::CreateTextureMesh()
+void MeshDemo::CreateTextureMesh(int index)
 {
-	bool isSuccess = GetScene()->CreateGameObject(&_textureMeshObj);
+	GameObject* obj;
+	bool isSuccess = GetScene()->CreateGameObject(&obj);
 	assert(isSuccess);
-	_textureMeshObj->AddComponent<Transform>();
+	_objs[index] = obj;
+
+	Transform* t =obj->AddComponent<Transform>();
+	Vec3 pos = Vec3(rand() % 100, rand() % 100, rand() % 100);
+	t->SetPosition(pos);
 	shared_ptr<Geometry<VertexTextureData>> geometry = make_shared<Geometry<VertexTextureData>>();
 	GeometryHelper::CreateCube(geometry);
 	shared_ptr<Mesh<VertexTextureData>> mesh = make_shared<Mesh<VertexTextureData>>(geometry);
@@ -97,8 +144,8 @@ void MeshDemo::CreateTextureMesh()
 
 	shared_ptr<Shader> shader = make_shared<Shader>(shaderInfo);
 
-	MeshRenderer<VertexTextureData>* meshRednerer = _textureMeshObj->AddComponent<MeshRenderer<VertexTextureData>>();
+	MeshRenderer<VertexTextureData>* meshRednerer = obj->AddComponent<MeshRenderer<VertexTextureData>>();
 	meshRednerer->Init(mesh, shader, texture);
 
-	AddGameObject(_textureMeshObj->GetMemoryEntry());
+	AddGameObject(obj->GetMemoryEntry());
 }

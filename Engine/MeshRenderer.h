@@ -88,8 +88,6 @@ inline void MeshRenderer<T>::Render()
 	// Texture 전달
 	if(_texture != nullptr)
 	{
-		ID3D12DescriptorHeap* heaps[] = { _texture->GetDescHeap().Get() };
-		COMMAND_LIST->SetDescriptorHeaps(1, heaps);
 		COMMAND_LIST->SetGraphicsRootDescriptorTable(2, _texture->GetHandle());
 	}
 

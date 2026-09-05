@@ -2,6 +2,7 @@
 #include "ImGuiManager.h"
 #include "imgui_impl_dx12.h"
 #include "imgui_impl_win32.h"
+#include "DescHeapAllocatorManager.h"
 
 void ImGuiManager::Init()
 {
@@ -20,17 +21,17 @@ void ImGuiManager::Init()
     ImGui_ImplWin32_Init(GAME->GetGameDesc().hWnd);
 
     ImGui_ImplDX12_InitInfo* info = new ImGui_ImplDX12_InitInfo();
-    CreateView();
+    _descHandle = DESC_POOL->AllocDescHandle(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
     info->Device = DEVICE.Get();
     info->CommandQueue = COMMAND_QUEUE.Get();
-    info->SrvDescriptorHeap = _descHeap.Get();
+    info->SrvDescriptorHeap = DESC_POOL->GetDescriptorHeapAllocator(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
     info->NumFramesInFlight = SWAP_CHAIN_BUFFER_COUNT;
     info->RTVFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
     info->DSVFormat = DXGI_FORMAT_UNKNOWN;
     info->SrvDescriptorAllocFn = nullptr;
     info->SrvDescriptorFreeFn = nullptr;
-    info->LegacySingleSrvCpuDescriptor = _descHeap->GetCPUDescriptorHandleForHeapStart();
-    info->LegacySingleSrvGpuDescriptor = _descHeap->GetGPUDescriptorHandleForHeapStart();
+    info->LegacySingleSrvCpuDescriptor = _descHandle.cpuDesc;
+    info->LegacySingleSrvGpuDescriptor = _descHandle.gpuDesc;
     ImGui_ImplDX12_Init(info);
 }
 
@@ -51,10 +52,5 @@ void ImGuiManager::Render()
 
 void ImGuiManager::CreateView()
 {
-    D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
-    heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-    // 셰이더에서 직접 참조할 수 있게 세팅
-    heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-    heapDesc.NumDescriptors = 1;
-    ThrowIfFailed(DEVICE->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(_descHeap.GetAddressOf())));
+    _descHandle = DESC_POOL->AllocDescHandle(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 }

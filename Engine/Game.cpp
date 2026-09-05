@@ -15,6 +15,7 @@ WPARAM Game::Run(GameDesc& desc)
 
 	// Graphics 초기화
 	GRAPHICS->Init(_desc.hWnd);
+	DESC_POOL->Init();
 
 	// Manager 초기화
 	TIME->Init();

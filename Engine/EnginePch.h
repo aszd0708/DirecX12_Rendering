@@ -69,6 +69,7 @@ inline void ThrowIfFailed(HRESULT hr)
 #include "TimeManager.h"
 #include "SceneManager.h"
 #include "ImGuiManager.h"
+#include "DescHeapAllocatorManager.h"
 
 // Core
 #include "Component.h"
@@ -87,3 +88,4 @@ inline void ThrowIfFailed(HRESULT hr)
 
 // POOL
 #include "CpuMemoryPool.h"
+#include "DescriptorHeapAllocator.h"
