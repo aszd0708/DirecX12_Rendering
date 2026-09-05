@@ -20,6 +20,7 @@ WPARAM Game::Run(GameDesc& desc)
 	TIME->Init();
 	INPUT->Init(_desc.hWnd);
 	CpuPoolManager::GetInstance()->Init();
+	ImGuiManager::GetInstance()->Init();
 
 	// Scene 초기화
 	_desc._scene->Init();
@@ -89,8 +90,12 @@ void Game::Update()
 
 	GRAPHICS->RenderBegin();
 
+	ImGuiManager::GetInstance()->Update();
+
 	_desc._scene->Update();
 	_desc._scene->Render();
+
+	ImGuiManager::GetInstance()->Render();
 
 	GRAPHICS->RenderEnd();
 }

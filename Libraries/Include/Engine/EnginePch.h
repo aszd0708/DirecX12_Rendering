@@ -68,6 +68,7 @@ inline void ThrowIfFailed(HRESULT hr)
 #include "InputManager.h"
 #include "TimeManager.h"
 #include "SceneManager.h"
+#include "ImGuiManager.h"
 
 // Core
 #include "Component.h"

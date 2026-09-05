@@ -199,6 +199,12 @@
     <ClInclude Include="GameObject.h">
       <Filter>03. GameObject</Filter>
     </ClInclude>
+    <ClInclude Include="ImGuiManager.h">
+      <Filter>02. Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="imgui_impl_dx12.h">
+      <Filter>98. Utils\ImGUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -230,9 +236,6 @@
     </ClCompile>
     <ClCompile Include="FileUtils.cpp">
       <Filter>98. Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="imgui_demo.cpp">
-      <Filter>98. Utils\ImGUI</Filter>
     </ClCompile>
     <ClCompile Include="imgui_draw.cpp">
       <Filter>98. Utils\ImGUI</Filter>
@@ -308,6 +311,12 @@
     </ClCompile>
     <ClCompile Include="GameObject.cpp">
       <Filter>03. GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGuiManager.cpp">
+      <Filter>02. Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui_impl_dx12.cpp">
+      <Filter>98. Utils\ImGUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
