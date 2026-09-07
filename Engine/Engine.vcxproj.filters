@@ -226,6 +226,12 @@
     <ClInclude Include="GpuBumpMemoryPool.h">
       <Filter>01. Graphics\GpuMemoryPool</Filter>
     </ClInclude>
+    <ClInclude Include="DynamicArray.h">
+      <Filter>99. Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="Array.h">
+      <Filter>99. Structures</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -353,6 +359,12 @@
     </ClCompile>
     <ClCompile Include="GpuBumpMemoryPool.cpp">
       <Filter>01. Graphics\GpuMemoryPool</Filter>
+    </ClCompile>
+    <ClCompile Include="DynamicArray.cpp">
+      <Filter>99. Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="Array.cpp">
+      <Filter>99. Structures</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
