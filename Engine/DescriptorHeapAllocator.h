@@ -1,6 +1,3 @@
-#pragma once
-#include "Stack.h"
-
 struct DescriptorHandle
 {
 	UINT8 allocatorID;

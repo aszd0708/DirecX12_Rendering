@@ -62,6 +62,8 @@ void MeshDemo::Update()
 	ImGui::LabelText("Total Usage  ", "%llu byte", totalUsage);
 
 	ImGui::LabelText("Total Time  ", "%llu ms", _totalTime);
+
+	ImGui::LabelText("TEST  ", "%d", sizeof(Texture));
 }
 
 void MeshDemo::Render()

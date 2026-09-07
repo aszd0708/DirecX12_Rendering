@@ -89,3 +89,8 @@ inline void ThrowIfFailed(HRESULT hr)
 // POOL
 #include "CpuMemoryPool.h"
 #include "DescriptorHeapAllocator.h"
+
+// Data Structure
+#include "Array.h"
+#include "DynamicArray.h"
+#include "Stack.h"

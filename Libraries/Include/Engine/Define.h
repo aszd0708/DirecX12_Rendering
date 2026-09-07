@@ -37,4 +37,7 @@ public:										\
 
 #define GET_DESC(descType)  descType = {}
 
-const uint32 SWAP_CHAIN_BUFFER_COUNT = 2;
+const UINT32 SWAP_CHAIN_BUFFER_COUNT = 2;
+
+// 64KB (64 * 1024)
+const UINT32 GPU_HEAP_MINIMUM_SIZE = 65536;

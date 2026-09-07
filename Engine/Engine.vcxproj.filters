@@ -79,6 +79,9 @@
     <Filter Include="99. Structures">
       <UniqueIdentifier>{63702443-0ba6-40fd-97d9-47ef2018f9cf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Graphics\GpuMemoryPool">
+      <UniqueIdentifier>{6c0132f1-036a-4f22-a9a2-687f953bd699}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -217,6 +220,12 @@
     <ClInclude Include="DescHeapAllocatorManager.h">
       <Filter>02. Managers</Filter>
     </ClInclude>
+    <ClInclude Include="GpuMemoryPoolInterface.h">
+      <Filter>01. Graphics\GpuMemoryPool</Filter>
+    </ClInclude>
+    <ClInclude Include="GpuBumpMemoryPool.h">
+      <Filter>01. Graphics\GpuMemoryPool</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -338,6 +347,12 @@
     </ClCompile>
     <ClCompile Include="DescHeapAllocatorManager.cpp">
       <Filter>02. Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="GpuMemoryPoolInterface.cpp">
+      <Filter>01. Graphics\GpuMemoryPool</Filter>
+    </ClCompile>
+    <ClCompile Include="GpuBumpMemoryPool.cpp">
+      <Filter>01. Graphics\GpuMemoryPool</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

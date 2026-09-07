@@ -186,6 +186,8 @@ xcopy /Y "$(SolutionDir)Engine\*.inl" "$(SolutionDir)Libraries\Include\Engine"</
     <ClInclude Include="Geometry.h" />
     <ClInclude Include="GeometryHelper.h" />
     <ClInclude Include="GlobalBuffer.h" />
+    <ClInclude Include="GpuBumpMemoryPool.h" />
+    <ClInclude Include="GpuMemoryPoolInterface.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="imconfig.h" />
     <ClInclude Include="imgui.h" />
@@ -232,6 +234,8 @@ xcopy /Y "$(SolutionDir)Engine\*.inl" "$(SolutionDir)Libraries\Include\Engine"</
     <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="GeometryHelper.cpp" />
     <ClCompile Include="GlobalBuffer.cpp" />
+    <ClCompile Include="GpuBumpMemoryPool.cpp" />
+    <ClCompile Include="GpuMemoryPoolInterface.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="imgui.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
