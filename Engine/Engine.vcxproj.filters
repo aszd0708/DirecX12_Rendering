@@ -232,6 +232,12 @@
     <ClInclude Include="Array.h">
       <Filter>99. Structures</Filter>
     </ClInclude>
+    <ClInclude Include="HashTable.h">
+      <Filter>99. Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="Hash.h">
+      <Filter>99. Structures</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -364,6 +370,12 @@
       <Filter>99. Structures</Filter>
     </ClCompile>
     <ClCompile Include="Array.cpp">
+      <Filter>99. Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="HashTable.cpp">
+      <Filter>99. Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="Hash.cpp">
       <Filter>99. Structures</Filter>
     </ClCompile>
   </ItemGroup>

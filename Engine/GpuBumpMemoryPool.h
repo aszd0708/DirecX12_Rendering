@@ -39,7 +39,7 @@ class GpuBumpMemoryPool
 	};
 
 	// 256*1024*1024
-	const UINT64 DEFAULT_SIZE = 268435456;
+	static const UINT64 DEFAULT_SIZE = 268435456;
 
 public:
 	GpuBumpMemoryPool();
