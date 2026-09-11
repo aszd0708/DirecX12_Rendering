@@ -62,12 +62,18 @@ bool CpuMemoryPool::ReleaseMemory(MemoryBlock & blockInfo)
 	UINT pageIndex = blockInfo._pageIndex;
 	if(pageIndex >= _pageCount) return false;
 
-	_pages[pageIndex]->ReleaseMemory(blockInfo);
+	bool isFull = false;
+	if (_pages[pageIndex]->CanGettingMemory() == false)
+	{
+		isFull = true;
+	}
 
-	if (_pages[pageIndex]->CanGettingMemory())
+	bool isSuccess = _pages[pageIndex]->ReleaseMemory(blockInfo);
+
+	if (isFull && isSuccess)
 	{
 		_pageStack->Push(pageIndex);
 	}
 
-	return true;
+	return isSuccess;
 }

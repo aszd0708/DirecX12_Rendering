@@ -199,7 +199,7 @@
     <ClInclude Include="Texture.h">
       <Filter>01. Graphics\Texture</Filter>
     </ClInclude>
-    <ClInclude Include="CpuPoolManager.h">
+    <ClInclude Include="CpuMemoryPoolManager.h">
       <Filter>02. Managers</Filter>
     </ClInclude>
     <ClInclude Include="GameObject.h">
@@ -220,7 +220,7 @@
     <ClInclude Include="DescHeapAllocatorManager.h">
       <Filter>02. Managers</Filter>
     </ClInclude>
-    <ClInclude Include="GpuMemoryPoolInterface.h">
+    <ClInclude Include="GpuMemoryInfo.h">
       <Filter>01. Graphics\GpuMemoryPool</Filter>
     </ClInclude>
     <ClInclude Include="GpuBumpMemoryPool.h">
@@ -237,6 +237,12 @@
     </ClInclude>
     <ClInclude Include="Hash.h">
       <Filter>99. Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="GpuDynamicMemoryPool.h">
+      <Filter>01. Graphics\GpuMemoryPool</Filter>
+    </ClInclude>
+    <ClInclude Include="GpuMemoryPoolManager.h">
+      <Filter>02. Managers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -339,7 +345,7 @@
     <ClCompile Include="Texture.cpp">
       <Filter>01. Graphics\Texture</Filter>
     </ClCompile>
-    <ClCompile Include="CpuPoolManager.cpp">
+    <ClCompile Include="CpuMemoryPoolManager.cpp">
       <Filter>02. Managers</Filter>
     </ClCompile>
     <ClCompile Include="GameObject.cpp">
@@ -360,7 +366,7 @@
     <ClCompile Include="DescHeapAllocatorManager.cpp">
       <Filter>02. Managers</Filter>
     </ClCompile>
-    <ClCompile Include="GpuMemoryPoolInterface.cpp">
+    <ClCompile Include="GpuMemoryInfo.cpp">
       <Filter>01. Graphics\GpuMemoryPool</Filter>
     </ClCompile>
     <ClCompile Include="GpuBumpMemoryPool.cpp">
@@ -377,6 +383,12 @@
     </ClCompile>
     <ClCompile Include="Hash.cpp">
       <Filter>99. Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="GpuDynamicMemoryPool.cpp">
+      <Filter>01. Graphics\GpuMemoryPool</Filter>
+    </ClCompile>
+    <ClCompile Include="GpuMemoryPoolManager.cpp">
+      <Filter>02. Managers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -22,30 +22,16 @@ void MeshDemo::Init()
 	SceneBuilder::Init();
 
 	_vInfo = new DXGI_QUERY_VIDEO_MEMORY_INFO();
-	auto start = std::chrono::steady_clock::now();
-	
 	ComPtr<IDXGIAdapter1> adapter;
-	
+
 	FACTORY->EnumAdapters1(0, adapter.GetAddressOf());
-	ComPtr<IDXGIAdapter3> adapter3;
-	adapter->QueryInterface(IID_PPV_ARGS(&adapter3));
-	adapter3->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, _vInfo);
+	adapter->QueryInterface(IID_PPV_ARGS(&_adapter));
 	
-	_curUsage = _vInfo->CurrentUsage;
 	CreateCamera();
 
 	_objs = (GameObject**)malloc(sizeof(GameObject*) * MAX_COUNT);
-	for (int i = 0; i < MAX_COUNT; ++i)
-	{
-		CreateTextureMesh(i);
-	}
-
-	adapter3->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, _vInfo);
-	_endUsage = _vInfo->CurrentUsage;
-	
-	auto end = std::chrono::steady_clock::now();
-	auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-	_totalTime = elapsed.count();
+	_testBoolean = true;
+	_isTestDone = true;
 }
 
 void MeshDemo::Update()
@@ -54,6 +40,7 @@ void MeshDemo::Update()
 
 	uint32 fps = TIME->GetFps();
 	ImGui::LabelText("FPS  ","%d", fps);
+	ImGui::Text("Used GPU Pool");
 
 	ImGui::LabelText("Start Usage  ","%llu byte", _curUsage);
 	ImGui::LabelText("End Usage  ","%llu byte", _endUsage);
@@ -61,9 +48,54 @@ void MeshDemo::Update()
 	UINT64 totalUsage = _endUsage - _curUsage;
 	ImGui::LabelText("Total Usage  ", "%llu byte", totalUsage);
 
-	ImGui::LabelText("Total Time  ", "%llu ms", _totalTime);
+	//ImGui::LabelText("Total Time  ", "%llu ms", _totalTime);
 
-	ImGui::LabelText("TEST  ", "%d", sizeof(Texture));
+	ImGui::LabelText("Current Count  ", "%d", _objCreatedCount);
+
+	ImGui::LabelText("Total Created Time  ", "%llu ms", _totalIncreaseTime);
+	ImGui::LabelText("Total Deleted Time  ", "%llu ms", _totalDeleteTime);
+	
+	if (INPUT->GetButtonUp(KEY_TYPE::I))
+	{
+		_isTestDone= false;
+		_testBoolean = true;
+		_testDecrease = false;
+		UINT64 _totalIncreaseTime = 0;
+		UINT64 _totalDeleteTime = 0;
+
+		_increaseStart = std::chrono::steady_clock::now();
+	}
+
+	if (_testBoolean && _isTestDone == false)
+	{
+		if (_testDecrease == false)
+		{
+			CreateCallBack();
+			_testDecrease = _objCreatedCount >= MAX_COUNT;
+			if (_testDecrease == true)
+			{
+				std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+				std::chrono::milliseconds elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - _increaseStart);
+				_totalIncreaseTime = elapsed.count();
+				_deleteStart = std::chrono::steady_clock::now();
+			}
+		}
+		else
+		{
+			if (_objCreatedCount > 0)
+			{
+				DeleteCallBack();
+			}
+			else
+			{
+				std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+				std::chrono::milliseconds elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - _deleteStart);
+				_totalDeleteTime = elapsed.count();
+				_isTestDone = true;
+			}
+		}
+	}
+	_testBoolean = !_testBoolean;
 }
 
 void MeshDemo::Render()
@@ -150,4 +182,54 @@ void MeshDemo::CreateTextureMesh(int index)
 	meshRednerer->Init(mesh, shader, texture);
 
 	AddGameObject(obj->GetMemoryEntry());
+}
+
+void MeshDemo::DelectTextureMesh(int index)
+{
+	auto block = _objs[index]->GetMemoryEntry();
+	RemoveGameObject(block);
+}
+
+void MeshDemo::CreateCallBack()
+{
+	auto start = std::chrono::steady_clock::now();
+	_adapter->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, _vInfo);
+	
+	_curUsage = _vInfo->CurrentUsage;
+
+	for (int i = 0; i < 64; ++i)
+	{
+		if (_objCreatedCount >= MAX_COUNT) break;
+
+		CreateTextureMesh(_objCreatedCount);
+		_objCreatedCount++;
+	}
+
+	_adapter->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, _vInfo);
+	_endUsage = _vInfo->CurrentUsage;
+	auto end = std::chrono::steady_clock::now();
+	auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+	_totalTime = elapsed.count();
+}
+
+void MeshDemo::DeleteCallBack()
+{
+	auto start = std::chrono::steady_clock::now();
+	_adapter->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, _vInfo);
+
+	_curUsage = _vInfo->CurrentUsage;
+
+	for (int i = 0; i < 64; ++i)
+	{
+		if (_objCreatedCount <= 0) break;
+		_objCreatedCount--;
+
+		DelectTextureMesh(_objCreatedCount);
+	}
+
+	_adapter->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, _vInfo);
+	_endUsage = _vInfo->CurrentUsage;
+	auto end = std::chrono::steady_clock::now();
+	auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+	_totalTime = elapsed.count();
 }

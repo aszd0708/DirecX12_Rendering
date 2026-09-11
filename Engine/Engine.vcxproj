@@ -177,7 +177,7 @@ xcopy /Y "$(SolutionDir)Engine\*.inl" "$(SolutionDir)Libraries\Include\Engine"</
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ConstantBuffer.h" />
-    <ClInclude Include="CpuPoolManager.h" />
+    <ClInclude Include="CpuMemoryPoolManager.h" />
     <ClInclude Include="Define.h" />
     <ClInclude Include="DescHeapAllocatorManager.h" />
     <ClInclude Include="DescriptorHeapAllocator.h" />
@@ -189,7 +189,9 @@ xcopy /Y "$(SolutionDir)Engine\*.inl" "$(SolutionDir)Libraries\Include\Engine"</
     <ClInclude Include="GeometryHelper.h" />
     <ClInclude Include="GlobalBuffer.h" />
     <ClInclude Include="GpuBumpMemoryPool.h" />
-    <ClInclude Include="GpuMemoryPoolInterface.h" />
+    <ClInclude Include="GpuDynamicMemoryPool.h" />
+    <ClInclude Include="GpuMemoryInfo.h" />
+    <ClInclude Include="GpuMemoryPoolManager.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="Hash.h" />
     <ClInclude Include="HashTable.h" />
@@ -231,7 +233,7 @@ xcopy /Y "$(SolutionDir)Engine\*.inl" "$(SolutionDir)Libraries\Include\Engine"</
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="ConstantBuffer.cpp" />
-    <ClCompile Include="CpuPoolManager.cpp" />
+    <ClCompile Include="CpuMemoryPoolManager.cpp" />
     <ClCompile Include="DescHeapAllocatorManager.cpp" />
     <ClCompile Include="DescriptorHeapAllocator.cpp" />
     <ClCompile Include="FileUtils.cpp" />
@@ -241,7 +243,9 @@ xcopy /Y "$(SolutionDir)Engine\*.inl" "$(SolutionDir)Libraries\Include\Engine"</
     <ClCompile Include="GeometryHelper.cpp" />
     <ClCompile Include="GlobalBuffer.cpp" />
     <ClCompile Include="GpuBumpMemoryPool.cpp" />
-    <ClCompile Include="GpuMemoryPoolInterface.cpp" />
+    <ClCompile Include="GpuDynamicMemoryPool.cpp" />
+    <ClCompile Include="GpuMemoryInfo.cpp" />
+    <ClCompile Include="GpuMemoryPoolManager.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="Hash.cpp" />
     <ClCompile Include="HashTable.cpp" />

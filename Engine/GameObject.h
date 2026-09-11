@@ -1,6 +1,6 @@
 #pragma once
 #include "Component.h"
-#include "CpuPoolManager.h"
+#include "CpuMemoryPoolManager.h"
 
 class GameObject : public IMemoryBlockHanlde
 {
@@ -31,7 +31,7 @@ public:
 			isSuccess = _fixedComponentList->GetMemoryBlock((int)type, memoryEntry);
 			if(isSuccess == false) return nullptr;
 
-			CpuMemoryPool* pool = CpuPoolManager::GetInstance()->GetMemoryPool(memoryEntry.block._poolID);
+			CpuMemoryPool* pool = CpuMemoryPoolManager::GetInstance()->GetMemoryPool(memoryEntry.block._poolID);
 
 			isSuccess = pool->GetObjectByMemoryBlock<C>(memoryEntry.block, &component);
 			if (isSuccess == false) return nullptr;
@@ -46,7 +46,7 @@ public:
 				isSuccess = _componentList->GetMemoryBlock(i, memoryEntry);
 				if (isSuccess == false) return nullptr;
 
-				CpuMemoryPool* pool = CpuPoolManager::GetInstance()->GetMemoryPool(memoryEntry.block._poolID);
+				CpuMemoryPool* pool = CpuMemoryPoolManager::GetInstance()->GetMemoryPool(memoryEntry.block._poolID);
 				if (memoryEntry.type == typeIndex)
 				{
 					isSuccess = pool->GetObjectByMemoryBlock<C>(memoryEntry.block, &component);
@@ -68,15 +68,15 @@ public:
 		switch (type)
 		{
 			case eComponentType::Renderer:
-				poolID = (UINT8)CpuPoolManager::ePoolID::RENDERER;
+				poolID = (UINT8)CpuMemoryPoolManager::ePoolID::RENDERER;
 			break;
 			default:
-				bool bFindPooID = CpuPoolManager::GetInstance()->GetPoolID(sizeof(C), poolID);
+				bool bFindPooID = CpuMemoryPoolManager::GetInstance()->GetPoolID(sizeof(C), poolID);
 				assert(bFindPooID);
 			break;
 		}
 
-		CpuMemoryPool* pool = CpuPoolManager::GetInstance()->GetMemoryPool(poolID);
+		CpuMemoryPool* pool = CpuMemoryPoolManager::GetInstance()->GetMemoryPool(poolID);
 
 		C* component = nullptr;
 		bool isSuccess = pool->GetMemory(&component);

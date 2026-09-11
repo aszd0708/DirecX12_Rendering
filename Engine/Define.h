@@ -22,6 +22,8 @@ public:										\
 #define COMMAND_QUEUE		GRAPHICS->GetQueue()
 #define COMMAND_ALLOCATOR	GRAPHICS->GetAllocator()
 #define COMMAND_LIST		GRAPHICS->GetList()
+#define COMMAND_SUB_ALLOCATOR	GRAPHICS->GetSubAllocator()
+#define COMMAND_SUB_LIST		GRAPHICS->GetSubList()
 #define INPUT				GET_SINGLE(InputManager)
 #define TIME				GET_SINGLE(TimeManager)
 #define DT					TIME->GetDeltaTime()
@@ -29,6 +31,8 @@ public:										\
 #define INSTANCING			GET_SINGLE(InstancingManager)
 #define GUI					GET_SINGLE(ImGuiManager)
 #define DESC_POOL			GET_SINGLE(DescHeapAllocatorManager)
+#define CPU_MEM_POOL		GET_SINGLE(CpuMemoryPoolManager)
+#define GPU_MEM_POOL		GET_SINGLE(GpuMemoryPoolManager)
 //#define SCENE		GET_SINGLE(SceneManager)
 //#define CUR_SCENE	SCENE->GetCurrentScene()
 

@@ -3,7 +3,7 @@
 #include "ConstantBuffer.h"
 #include "GlobalBuffer.h"
 
-CpuPoolManager::ePoolID Renderer::s_PoolID = CpuPoolManager::ePoolID::RENDERER;
+CpuMemoryPoolManager::ePoolID Renderer::s_PoolID = CpuMemoryPoolManager::ePoolID::RENDERER;
 
 Renderer::Renderer(eComponentType type) : Component(type)
 {

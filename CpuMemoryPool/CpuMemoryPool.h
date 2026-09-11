@@ -66,7 +66,10 @@ inline bool CpuMemoryPool::GetMemory(OUT T** memory, Args&&... args)
 	UINT index = 0;
 	bool isSuccecss = _pageStack->GetIndex(index);
 	isSuccess = _pages[index]->GetMemory(blockInfo, &rawPtr);
-	if (isSuccess == false) return false;
+	if (isSuccess == false)
+	{
+		return false;
+	}
 
 	if (_pages[index]->CanGettingMemory() == false)
 	{

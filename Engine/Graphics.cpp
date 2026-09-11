@@ -50,11 +50,13 @@ void Graphics::CreateCommandQueue()
 void Graphics::CreateCommandAllocator()
 {
 	ThrowIfFailed(_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&_commandAllocator)));
+	ThrowIfFailed(_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&_commandAllocatorSub)));
 }
 
 void Graphics::CreateCommandList()
 {
 	ThrowIfFailed(_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, _commandAllocator.Get(), nullptr, IID_PPV_ARGS(&_commandList)));
+	ThrowIfFailed(_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, _commandAllocatorSub.Get(), nullptr, IID_PPV_ARGS(&_commandListSub)));
 	_commandList->Close();
 
 	_viewport.TopLeftX = 0;

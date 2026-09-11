@@ -1,12 +1,5 @@
 #pragma once
-#include "GpuMemoryPoolInterface.h"
-
-struct GpuBumpMemoryHandle
-{
-	UINT8 pageIndex;
-	UINT64 size;
-	UINT64 offset;
-};
+#include "GpuMemoryInfo.h"
 
 class GpuBumpMemoryPage
 {
@@ -15,7 +8,7 @@ public:
 	~GpuBumpMemoryPage();
 
 public:
-	bool Alloc(UINT64 size, OUT GpuBumpMemoryHandle& handle);
+	bool Alloc(UINT64 size, OUT GpuMemoryHandle& handle);
 	void Reset();
 
 private:
@@ -31,28 +24,22 @@ private:
 
 class GpuBumpMemoryPool
 {
-	enum eBumpMemoryPoolType : UINT8
-	{
-		SIZE_64KB = 0,
-		SIZE_4MB = 1,
-		MAX
-	};
-
 	// 256*1024*1024
-	const UINT64 DEFAULT_SIZE = 268435456;
+	static const UINT64 DEFAULT_SIZE = 268435456;
 
 public:
-	GpuBumpMemoryPool();
-	GpuBumpMemoryPool(UINT64 size);
+	GpuBumpMemoryPool(UINT8 poolID, bool using4MBSize);
+	GpuBumpMemoryPool(UINT8 poolID, UINT64 size, bool using4MBSize);
 	~GpuBumpMemoryPool();
 	
 private:
+	Array<GpuBumpMemoryPage*> ComputePageCount(bool using4MBSize);
 	void CreateHeap();
 
 public:
-	const ComPtr<ID3D12Heap>& GetMemoryHeap();
+	ComPtr<ID3D12Heap>& GetMemoryHeap();
 
-	bool GetMemoryHandle(eBumpMemoryPoolType type, UINT64 size, OUT GpuBumpMemoryHandle& handle);
+	bool GetMemoryHandle(eGpuMemoryPoolType type, UINT64 size, OUT GpuMemoryHandle& handle);
 
 	/// <summary>
 	/// 더이상 참조하는 오브젝트가 없을 때 호출.
@@ -66,10 +53,10 @@ public:
 	void ResetAllPage();
 
 private:
+	UINT8 _poolID;
 	UINT64 _totalSize;
 	UINT8 _totalPageCount;
 	Array<GpuBumpMemoryPage*> _pages;
 
 	ComPtr<ID3D12Heap> _memoryHeap;
 };
-

@@ -1,7 +1,7 @@
 #pragma once
 #include "Component.h"
 #include "GlobalBuffer.h"
-#include "CpuPoolManager.h"
+#include "CpuMemoryPoolManager.h"
 
 class ConstantBuffer;
 
@@ -10,7 +10,7 @@ class Renderer : public Component
 	DECLARE_COMPONENT_TYPE(eComponentType::Renderer);
 
 public:
-	static CpuPoolManager::ePoolID s_PoolID;
+	static CpuMemoryPoolManager::ePoolID s_PoolID;
 
 public:
 	Renderer(eComponentType type);

@@ -28,14 +28,20 @@ void MemoryBlockStack::CreateStack()
 const bool MemoryBlockStack::Pop(OUT UINT& index)
 {
     bool isSuccess = GetIndex(index);
-    if (isSuccess == false) return false;
+    if (isSuccess == false)
+    {
+        return false;
+    }
     _currentCount--;
     return true;
 }
 
 const bool MemoryBlockStack::GetIndex(OUT UINT& index)
 {
-    if (CanPop() == false) return false;
+    if (CanPop() == false)
+    {
+        return false;
+    }
 
     UINT& returnNode = _nodes[_totalCount - _currentCount];
 

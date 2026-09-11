@@ -2,7 +2,8 @@
 #include "Game.h"
 #include "SceneBuilder.h"
 #include "Graphics.h"
-#include "CpuPoolManager.h"
+#include "CpuMemoryPoolManager.h"
+#include "GpuMemoryPoolManager.h"
 
 WPARAM Game::Run(GameDesc& desc)
 {
@@ -20,7 +21,14 @@ WPARAM Game::Run(GameDesc& desc)
 	// Manager 초기화
 	TIME->Init();
 	INPUT->Init(_desc.hWnd);
-	CpuPoolManager::GetInstance()->Init();
+	CPU_MEM_POOL->Init();
+
+	GpuMemoryPoolManager::sMemoryPoolManagerInfo info = {};
+	info.initPoolFlag = GpuMemoryPoolManager::ePoolID::BUMP_ONLY_64KB | GpuMemoryPoolManager::ePoolID::DYNAMIC_ONLY_64;
+	info.bumbOnly64KBMaxSize = 256 * 1024 * 1024; //(UINT64)4096 * (UINT64)1024 * (UINT64)1024;
+	info.dynamicOnly64KBMaxSize = (UINT64)4096 * (UINT64)1024 * (UINT64)1024;
+	GPU_MEM_POOL->Init(info);
+
 	ImGuiManager::GetInstance()->Init();
 
 	// Scene 초기화

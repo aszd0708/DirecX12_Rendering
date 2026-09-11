@@ -56,6 +56,13 @@ inline void ThrowIfFailed(HRESULT hr)
 #pragma comment(lib, "dxguid.lib")
 #pragma comment(lib, "CpuMemoryPool.lib")
 
+
+// Data Structure
+#include "Array.h"
+#include "DynamicArray.h"
+#include "Stack.h"
+#include "HashTable.h"
+
 #ifdef _DEBUG
 #pragma comment(lib, "DirectXTex/DirectXTex_debug.lib")
 #else
@@ -88,9 +95,7 @@ inline void ThrowIfFailed(HRESULT hr)
 
 // POOL
 #include "CpuMemoryPool.h"
+#include "GpuMemoryInfo.h"
+#include "GpuBumpMemoryPool.h"
+#include "GpuDynamicMemoryPool.h"
 #include "DescriptorHeapAllocator.h"
-
-// Data Structure
-#include "Array.h"
-#include "DynamicArray.h"
-#include "Stack.h"

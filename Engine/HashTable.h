@@ -234,7 +234,7 @@ inline bool HashTable<K, V>::FindValue(const K& key)
 template<typename K, typename V>
 inline UINT32 HashTable<K, V>::GetCapacity()
 {
-	return PRIME[_capacityIndex];
+	return PRIMES[_capacityIndex];
 }
 
 template<typename K, typename V>

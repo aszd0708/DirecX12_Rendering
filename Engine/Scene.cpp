@@ -29,12 +29,13 @@ void Scene::DeleteObjs()
 			_renderList->RemoveUnordered(entry.block);
 
 			GameObject* obj = nullptr;
-			CpuMemoryPool* pool = CpuPoolManager::GetInstance()->GetMemoryPool(entry.block._poolID);
+			CpuMemoryPool* pool = CpuMemoryPoolManager::GetInstance()->GetMemoryPool(entry.block._poolID);
 			if (pool != nullptr)
 			{
 				isSuccess = pool->GetObjectByMemoryBlock(entry.block, &obj);
 				if (isSuccess)
 				{
+					obj->OnDestroy();
 					pool->ReleaseMemory(obj);
 				}
 			}
@@ -52,7 +53,7 @@ void Scene::Awake()
 		if (isSuccess)
 		{
 			GameObject* render = nullptr;
-			bool isSuccess = CpuPoolManager::GetInstance()->Resolve(entity, &render);
+			bool isSuccess = CpuMemoryPoolManager::GetInstance()->Resolve(entity, &render);
 			if (isSuccess)
 			{
 				render->Awake();
@@ -70,7 +71,7 @@ void Scene::Start()
 		if (isSuccess)
 		{
 			GameObject* render = nullptr;
-			bool isSuccess = CpuPoolManager::GetInstance()->Resolve(entity, &render);
+			bool isSuccess = CpuMemoryPoolManager::GetInstance()->Resolve(entity, &render);
 			if (isSuccess)
 			{
 				render->Start();
@@ -88,7 +89,7 @@ void Scene::Update()
 		if (isSuccess)
 		{
 			GameObject* render = nullptr;
-			bool isSuccess = CpuPoolManager::GetInstance()->Resolve(entity, &render);
+			bool isSuccess = CpuMemoryPoolManager::GetInstance()->Resolve(entity, &render);
 			if (isSuccess)
 			{
 				render->Update();
@@ -106,7 +107,7 @@ void Scene::LateUpdate()
 		if (isSuccess)
 		{
 			GameObject* render = nullptr;
-			bool isSuccess = CpuPoolManager::GetInstance()->Resolve(entity, &render);
+			bool isSuccess = CpuMemoryPoolManager::GetInstance()->Resolve(entity, &render);
 			if (isSuccess)
 			{
 				render->LateUpdate();
@@ -126,7 +127,7 @@ void Scene::OnDestory()
 		if (isSuccess)
 		{
 			GameObject* render = nullptr;
-			bool isSuccess = CpuPoolManager::GetInstance()->Resolve(entity, &render);
+			bool isSuccess = CpuMemoryPoolManager::GetInstance()->Resolve(entity, &render);
 			if (isSuccess)
 			{
 				render->OnDestroy();
@@ -149,7 +150,7 @@ void Scene::Render()
 		if (isSuccess)
 		{
 			Renderer* render = nullptr;
-			bool isSuccess = CpuPoolManager::GetInstance()->Resolve(entity, &render);
+			bool isSuccess = CpuMemoryPoolManager::GetInstance()->Resolve(entity, &render);
 			if (isSuccess)
 			{
 				render->Render();
@@ -178,7 +179,7 @@ void Scene::RegisterGameObject(MemoryEntry& objMemory)
 	{
 		_objList->Add(objMemory);
 		GameObject* obj = nullptr;
-		bool isSuccess = CpuPoolManager::GetInstance()->Resolve(objMemory, &obj);
+		bool isSuccess = CpuMemoryPoolManager::GetInstance()->Resolve(objMemory, &obj);
 		assert(isSuccess);
 		obj->Awake();
 		obj->Start();
@@ -249,13 +250,13 @@ void Scene::UnregisterRenderer(MemoryEntry& memoryEntity)
 bool Scene::CreateGameObject(OUT GameObject** obj)
 {
 	UINT8 poolID;
-	bool isSuccess = CpuPoolManager::GetInstance()->GetPoolID(sizeof(GameObject), poolID);
+	bool isSuccess = CpuMemoryPoolManager::GetInstance()->GetPoolID(sizeof(GameObject), poolID);
 	if (isSuccess == false)
 	{
 		return isSuccess;
 	}
 
-	CpuMemoryPool* pool = CpuPoolManager::GetInstance()->GetMemoryPool(poolID);
+	CpuMemoryPool* pool = CpuMemoryPoolManager::GetInstance()->GetMemoryPool(poolID);
 
 	isSuccess = pool->GetMemory(obj);
 	return isSuccess;

@@ -1,5 +1,5 @@
 #pragma once
-#include "GpuMemoryPoolInterface.h"
+#include "GpuMemoryInfo.h"
 
 class GpuBumpMemoryPage
 {
@@ -28,17 +28,18 @@ class GpuBumpMemoryPool
 	static const UINT64 DEFAULT_SIZE = 268435456;
 
 public:
-	GpuBumpMemoryPool(UINT8 poolID);
-	GpuBumpMemoryPool(UINT8 poolID, UINT64 size);
+	GpuBumpMemoryPool(UINT8 poolID, bool using4MBSize);
+	GpuBumpMemoryPool(UINT8 poolID, UINT64 size, bool using4MBSize);
 	~GpuBumpMemoryPool();
 	
 private:
+	Array<GpuBumpMemoryPage*> ComputePageCount(bool using4MBSize);
 	void CreateHeap();
 
 public:
-	const ComPtr<ID3D12Heap>& GetMemoryHeap();
+	ComPtr<ID3D12Heap>& GetMemoryHeap();
 
-	bool GetMemoryHandle(eMemoryPoolType type, UINT64 size, OUT GpuMemoryHandle& handle);
+	bool GetMemoryHandle(eGpuMemoryPoolType type, UINT64 size, OUT GpuMemoryHandle& handle);
 
 	/// <summary>
 	/// 더이상 참조하는 오브젝트가 없을 때 호출.

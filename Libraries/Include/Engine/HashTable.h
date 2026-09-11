@@ -29,8 +29,12 @@ private:
 public:
 	void Add(const K& key, const V& value);
 	bool GetValue(const K& key, OUT V& value);
-	bool Remove(const K& key, OUT V& value);
+	bool RemoveAndGetValue(const K& key, OUT V& value);
+	bool RemoveKey(const K& key);
 	bool FindValue(const K& key);
+
+	UINT32 GetCapacity();
+	bool IsOccupiedAt(UINT32 index, OUT K& key, OUT V& value);
 
 private:
 	/// <summary>
@@ -194,7 +198,7 @@ inline bool HashTable<K, V>::GetValue(const K & key, OUT V & value)
 }
 
 template<typename K, typename V>
-inline bool HashTable<K, V>::Remove(const K& key, OUT V& value)
+inline bool HashTable<K, V>::RemoveAndGetValue(const K& key, OUT V& value)
 {
 	UINT32 index = 0;
 	bool isSuccess = FindIndex(key, index);
@@ -208,8 +212,41 @@ inline bool HashTable<K, V>::Remove(const K& key, OUT V& value)
 }
 
 template<typename K, typename V>
+inline bool HashTable<K, V>::RemoveKey(const K& key)
+{
+	UINT32 index = 0;
+	bool isSuccess = FindIndex(key, index);
+	if (isSuccess)
+	{
+		_table[index].condition = eHashTableCondition::TOMBSTONE;
+		_count--;
+	}
+	return isSuccess;
+}
+
+template<typename K, typename V>
 inline bool HashTable<K, V>::FindValue(const K& key)
 {
 	UINT32 index = 0;
 	return FindIndex(key, index);
+}
+
+template<typename K, typename V>
+inline UINT32 HashTable<K, V>::GetCapacity()
+{
+	return PRIMES[_capacityIndex];
+}
+
+template<typename K, typename V>
+inline bool HashTable<K, V>::IsOccupiedAt(UINT32 index, OUT K& key, OUT V& value)
+{
+	if(PRIMES[_capacityIndex] <= index) return false;
+	
+	if (_table[index].condition == eHashTableCondition::OCCUPIED)
+	{
+		key = _table[index].key;
+		value = _table[index].value;
+		return true;
+	}
+	return false;
 }

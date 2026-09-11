@@ -46,7 +46,10 @@ bool MemoryPage::GetMemory(OUT MemoryBlock& blockInfo, OUT BYTE** memory)
 {
     UINT index = 0;
     bool isSuccess = _usableIndexStack->Pop(index);
-    if(isSuccess == false) return false;
+    if(isSuccess == false)
+    {
+        return false;
+    }
 
     blockInfo = _blockInfos[index];
     *memory = &_blocks[index * (int)_size];
@@ -55,6 +58,9 @@ bool MemoryPage::GetMemory(OUT MemoryBlock& blockInfo, OUT BYTE** memory)
 
 bool MemoryPage::ReleaseMemory(MemoryBlock& blockInfo)
 {
+    if (blockInfo._gen != _blockInfos[blockInfo._index]._gen)
+        return false;
+
     _usableIndexStack->Push(blockInfo._index);
     _blockInfos[blockInfo._index]._gen++;
     return true;

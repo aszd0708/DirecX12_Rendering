@@ -40,7 +40,7 @@ void Component::OnDestroy()
 
 bool Component::GetGameObject(OUT GameObject** gameObject)
 {
-	bool isSuccess = CpuPoolManager::GetInstance()->Resolve(_gameObjectMemory, gameObject);
+	bool isSuccess = CpuMemoryPoolManager::GetInstance()->Resolve(_gameObjectMemory, gameObject);
 	return isSuccess;
 }
 

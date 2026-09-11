@@ -1,7 +1,7 @@
 #include "pch.h"
-#include "CpuPoolManager.h"
+#include "CpuMemoryPoolManager.h"
 
-void CpuPoolManager::Init()
+void CpuMemoryPoolManager::Init()
 {
 	_memoryPools = (CpuMemoryPool**)malloc(sizeof(CpuMemoryPool*) * (int)ePoolID::MAX);
 
@@ -16,7 +16,7 @@ void CpuPoolManager::Init()
 	_memoryPools[(UINT8)ePoolID::RENDERER] = new CpuMemoryPool(eBlockSize::BYTE_512, (int)ePoolID::RENDERER);
 }
 
-void CpuPoolManager::Release()
+void CpuMemoryPoolManager::Release()
 {
 	for (int i = 0; i < (int)ePoolID::MAX; ++i)
 	{
@@ -25,7 +25,7 @@ void CpuPoolManager::Release()
 	free(_memoryPools);
 }
 
-bool CpuPoolManager::GetPoolID(UINT size, OUT UINT8& poolID)
+bool CpuMemoryPoolManager::GetPoolID(UINT size, OUT UINT8& poolID)
 {
 	int poolIndex = (int)ePoolID::MAX;
 	int poolSize = (int)eBlockSize::BYTE_64;
@@ -48,7 +48,7 @@ bool CpuPoolManager::GetPoolID(UINT size, OUT UINT8& poolID)
 	return true;
 }
 
-CpuMemoryPool* CpuPoolManager::GetMemoryPool(UINT8& poolID)
+CpuMemoryPool* CpuMemoryPoolManager::GetMemoryPool(UINT8& poolID)
 {
 	return _memoryPools[poolID];
 }

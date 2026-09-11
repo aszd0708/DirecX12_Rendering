@@ -12,8 +12,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	desc.hInstance = hInstance;
 	desc.vsync = false;
 	desc.hWnd = NULL;
-	desc.width = 1280;
-	desc.height = 720;
+	desc.width = 800;
+	desc.height = 600;
 
 	GAME->Run(desc);
 

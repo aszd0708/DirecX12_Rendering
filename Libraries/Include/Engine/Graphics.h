@@ -34,6 +34,9 @@ public:
 	ComPtr<ID3D12CommandAllocator> GetAllocator() { return _commandAllocator; }
 	ComPtr<ID3D12GraphicsCommandList> GetList() { return _commandList; }
 
+	ComPtr<ID3D12CommandAllocator> GetSubAllocator() { return _commandAllocatorSub; }
+	ComPtr<ID3D12GraphicsCommandList> GetSubList() { return _commandListSub; }
+
 private:
 	HWND _hwnd = {};
 
@@ -42,6 +45,9 @@ private:
 	ComPtr<ID3D12CommandQueue> _commandQueue;
 	ComPtr<ID3D12CommandAllocator> _commandAllocator;
 	ComPtr<ID3D12GraphicsCommandList> _commandList;
+
+	ComPtr<ID3D12CommandAllocator> _commandAllocatorSub;
+	ComPtr<ID3D12GraphicsCommandList> _commandListSub;
 
 	ComPtr<IDXGISwapChain3> _swapChain;
 	ComPtr<ID3D12Resource> _renderTargets[SWAP_CHAIN_BUFFER_COUNT];

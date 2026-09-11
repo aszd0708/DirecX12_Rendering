@@ -61,6 +61,7 @@ bool GpuDynamicMemoryPage::Alloc(UINT64 size, OUT GpuMemoryHandle & handle)
 				_handlers[index].offset = alignedOffset;
 				_handlers[index].size = size;
 				_handlers[index].pageIndex = _pageIndex;
+				handle = _handlers[index];
 				_currentSize -= size;
 
 				if ((alignedOffset + size) == (offset + emptySize))
@@ -170,27 +171,50 @@ void GpuDynamicMemoryPage::IncreaseHandlerSize(UINT32 size)
 ///GpuDynamicMemoryPool///
 //////////////////////////
 
-GpuDynamicMemoryPool::GpuDynamicMemoryPool(UINT8 poolID) : GpuDynamicMemoryPool(poolID, DEFAULT_SIZE)
+GpuDynamicMemoryPool::GpuDynamicMemoryPool(UINT8 poolID, bool using4MBSize) : GpuDynamicMemoryPool(poolID, DEFAULT_SIZE, using4MBSize)
 {
 
 }
 
-GpuDynamicMemoryPool::GpuDynamicMemoryPool(UINT8 poolID, UINT64 size) : _poolID(poolID), _totalSize(size), _pages((int)eMemoryPoolType::MAX)
+GpuDynamicMemoryPool::GpuDynamicMemoryPool(UINT8 poolID, UINT64 size, bool using4MBSize) : _poolID(poolID), _totalSize(size), _pages(ComputePageCount(using4MBSize))
 {
 	CreateHeap();
 
-	UINT64 msaaSize = size / 8;
-	UINT64 alignement = D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT;
-	UINT64 msaaPageStartOffset = ((size - msaaSize) + alignement - 1) & ~(alignement - 1);
+	if (using4MBSize)
+	{
+		UINT64 msaaSize = size / 8;
+		UINT64 alignement = D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT;
+		UINT64 msaaPageStartOffset = ((size - msaaSize) + alignement - 1) & ~(alignement - 1);
 
-	_totalPageCount = (int)eMemoryPoolType::MAX;
-	_pages[(int)eMemoryPoolType::SIZE_64KB] = new GpuDynamicMemoryPage(0, D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT, msaaPageStartOffset, (int)eMemoryPoolType::SIZE_64KB);
-	_pages[(int)eMemoryPoolType::SIZE_4MB] = new GpuDynamicMemoryPage(msaaPageStartOffset, D3D12_DEFAULT_MSAA_RESOURCE_PLACEMENT_ALIGNMENT, msaaSize, (int)eMemoryPoolType::SIZE_4MB);
+		_totalPageCount = (int)eGpuMemoryPoolType::MAX;
+		_pages[(int)eGpuMemoryPoolType::SIZE_64KB] = new GpuDynamicMemoryPage(0, D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT, msaaPageStartOffset, (int)eGpuMemoryPoolType::SIZE_64KB);
+		_pages[(int)eGpuMemoryPoolType::SIZE_4MB] = new GpuDynamicMemoryPage(msaaPageStartOffset, D3D12_DEFAULT_MSAA_RESOURCE_PLACEMENT_ALIGNMENT, msaaSize, (int)eGpuMemoryPoolType::SIZE_4MB);
+	}
+	else
+	{
+		_totalPageCount = (int)eGpuMemoryPoolType::SIZE_64KB + 1;
+		_pages[(int)eGpuMemoryPoolType::SIZE_64KB] = new GpuDynamicMemoryPage(0, D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT, size, (int)eGpuMemoryPoolType::SIZE_64KB);
+	}
 }
 
 GpuDynamicMemoryPool::~GpuDynamicMemoryPool()
 {
+	for (int i = 0; i < _pages.GetCount(); ++i)
+	{
+		delete _pages[i];
+	}
+}
 
+Array<GpuDynamicMemoryPage*> GpuDynamicMemoryPool::ComputePageCount(bool using4MBSize)
+{
+	if (using4MBSize)
+	{
+		return Array<GpuDynamicMemoryPage*>((int)eGpuMemoryPoolType::MAX);
+	}
+	else
+	{
+		return Array<GpuDynamicMemoryPage*>((int)eGpuMemoryPoolType::SIZE_64KB + 1);
+	}
 }
 
 void GpuDynamicMemoryPool::CreateHeap()
@@ -203,7 +227,9 @@ void GpuDynamicMemoryPool::CreateHeap()
 
 	properties.Type = D3D12_HEAP_TYPE_DEFAULT;
 	properties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
-	properties.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
+	properties.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN; 
+	properties.CreationNodeMask = 1;
+	properties.VisibleNodeMask = 1;
 	desc.Properties = properties;
 
 	desc.Alignment = D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT;
@@ -217,16 +243,17 @@ const ComPtr<ID3D12Heap>& GpuDynamicMemoryPool::GetMemoryHeap()
 	return _memoryHeap;
 }
 
-bool GpuDynamicMemoryPool::GetMemoryHandle(eMemoryPoolType type, UINT64 size, OUT GpuMemoryHandle& handle)
+bool GpuDynamicMemoryPool::GetMemoryHandle(eGpuMemoryPoolType type, UINT64 size, OUT GpuMemoryHandle& handle)
 {
 	assert((int)type < _pages.GetCount());
 
 	bool isSuccess = _pages[(int)type]->Alloc(size, handle);
+	handle.poolType = type;
 	handle.memoryPoolID = _poolID;
 	return isSuccess;
 }
 
-bool GpuDynamicMemoryPool::ReleaseMemoryHandle(eMemoryPoolType type, const GpuMemoryHandle& handle)
+bool GpuDynamicMemoryPool::ReleaseMemoryHandle(eGpuMemoryPoolType type, const GpuMemoryHandle& handle)
 {
 	bool isSuccess = _pages[(int)type]->Free(handle);
 	return isSuccess;

@@ -31,5 +31,7 @@ private:
 
 	D3D12_DESCRIPTOR_HEAP_DESC _heapDesc;
 	DescriptorHandle _descHandle;
+
+	GpuMemoryHandle _memoryHandle;
 };
 
