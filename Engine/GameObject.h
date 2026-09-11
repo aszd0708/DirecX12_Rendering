@@ -6,7 +6,7 @@ class GameObject : public IMemoryBlockHanlde
 {
 public:
 	GameObject();
-	~GameObject();
+	virtual ~GameObject();
 
 public:
 	virtual void SetMemoryHandler(const MemoryBlock& handler) override;

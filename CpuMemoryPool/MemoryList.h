@@ -57,6 +57,8 @@ public:
 
 	bool FindMemory(const MemoryBlock& block, OUT int& index);
 
+	void Clear();
+
 private:
 	UINT _count;
 	UINT _capacity;

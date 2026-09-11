@@ -27,8 +27,20 @@ void Scene::DeleteObjs()
 		{
 			_objList->RemoveUnordered(entry.block);
 			_renderList->RemoveUnordered(entry.block);
+
+			GameObject* obj = nullptr;
+			CpuMemoryPool* pool = CpuPoolManager::GetInstance()->GetMemoryPool(entry.block._poolID);
+			if (pool != nullptr)
+			{
+				isSuccess = pool->GetObjectByMemoryBlock(entry.block, &obj);
+				if (isSuccess)
+				{
+					pool->ReleaseMemory(obj);
+				}
+			}
 		}
 	}
+	_deletedObjs->Clear();
 }
 
 void Scene::Awake()

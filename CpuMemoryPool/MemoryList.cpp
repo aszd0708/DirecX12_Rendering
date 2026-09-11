@@ -179,3 +179,12 @@ bool MemoryList::FindMemory(const MemoryBlock& block, OUT int& index)
 	}
 	return true; 
 }
+
+void MemoryList::Clear()
+{
+	for (int i = 0; i < _capacity; ++i)
+	{
+		_list[i].isValied = false;
+	}
+	_count = 0;
+}

@@ -16,10 +16,18 @@ GameObject::~GameObject()
 	{
 		MemoryEntry memoryEntry;
 		isSuccess = _fixedComponentList->GetMemoryBlock(i, memoryEntry);
-		assert(isSuccess);
+		if(isSuccess == false) continue;
 
 		CpuMemoryPool* pool = CpuPoolManager::GetInstance()->GetMemoryPool(memoryEntry.block._poolID);
-		pool->ReleaseMemory(memoryEntry.block);
+		Component* component = nullptr;
+		if (pool != nullptr)
+		{
+			isSuccess = pool->GetObjectByMemoryBlock(memoryEntry.block, &component);
+			if (isSuccess)
+			{
+				pool->ReleaseMemory(component);
+			}
+		}
 	}
 	for (int i = 0; i < _componentList->GetCount(); ++i)
 	{
@@ -28,7 +36,15 @@ GameObject::~GameObject()
 		assert(isSuccess);
 
 		CpuMemoryPool* pool = CpuPoolManager::GetInstance()->GetMemoryPool(memoryEntry.block._poolID);
-		pool->ReleaseMemory(memoryEntry.block);
+		Component* component = nullptr;
+		if (pool != nullptr)
+		{
+			isSuccess = pool->GetObjectByMemoryBlock(memoryEntry.block, &component);
+			if (isSuccess)
+			{
+				pool->ReleaseMemory(component);
+			}
+		}
 	}
 	delete _fixedComponentList;
 	delete _componentList;
