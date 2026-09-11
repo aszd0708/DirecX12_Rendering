@@ -1,0 +1,247 @@
+#include "pch.h"
+#include "GpuDynamicMemoryPool.h"
+
+//////////////////////////
+///GpuDynamicMemoryPage///
+//////////////////////////
+
+GpuDynamicMemoryPage::GpuDynamicMemoryPage(UINT64 offset, UINT64 alignment, UINT64 size, UINT8 pageIndex) 
+: _offset(offset), _defaultOffset(offset), _alignment(alignment), _currentSize(size), _totalSize(size), _pageIndex(pageIndex),
+_handlerCount(DEFAULT_MEMORY_HANDLER_ARRAY_SIZE), _handlers(DEFAULT_MEMORY_HANDLER_ARRAY_SIZE), _indexes(DEFAULT_MEMORY_HANDLER_ARRAY_SIZE),
+_startReleaseTable(), _endReleaseTable()
+{
+	for (int i = 0; i < _handlers.GetCount(); ++i)
+	{
+		_indexes.Push(i);
+		_handlers[i].gen = 0;
+		_handlers[i].arrayIndex = i;
+		_handlers[i].pageIndex = _pageIndex;
+	}
+
+	_startReleaseTable.Add(_defaultOffset, _totalSize);
+	_endReleaseTable.Add(_defaultOffset + _totalSize, _defaultOffset);
+}
+
+GpuDynamicMemoryPage::~GpuDynamicMemoryPage()
+{
+
+}
+
+bool GpuDynamicMemoryPage::Alloc(UINT64 size, OUT GpuMemoryHandle & handle)
+{
+	if(_currentSize < size) 
+	{
+		assert(false);
+		return false;
+	}
+
+	if (_indexes.GetCount() <= 0)
+	{
+		IncreaseHandlerSize(_handlerCount * 2);
+	}
+
+	UINT32 index = 0;
+	bool isSuccess = _indexes.Pop(index);
+	if (isSuccess == false)
+	{
+		return false;
+	}
+
+	UINT32 tableCapacity = _startReleaseTable.GetCapacity();
+	for (UINT32 i = 0; i < tableCapacity; ++i)
+	{
+		UINT64 offset;
+		UINT64 emptySize;
+		if (_startReleaseTable.IsOccupiedAt(i, offset, emptySize))
+		{
+			UINT64 alignedOffset = (offset + _alignment - 1) & ~(_alignment - 1);
+			if ((alignedOffset + size) <= (offset + emptySize))
+			{
+				_handlers[index].arrayIndex = index;
+				_handlers[index].offset = alignedOffset;
+				_handlers[index].size = size;
+				_handlers[index].pageIndex = _pageIndex;
+				_currentSize -= size;
+
+				if ((alignedOffset + size) == (offset + emptySize))
+				{
+					_startReleaseTable.RemoveKey(offset);
+					_endReleaseTable.RemoveKey(offset + emptySize);
+				}
+				else if ((alignedOffset + size) < (offset + emptySize))
+				{
+					_startReleaseTable.RemoveKey(offset);
+					_startReleaseTable.Add(alignedOffset + size, (offset + emptySize) - (alignedOffset + size));
+					_endReleaseTable.RemoveKey(offset + emptySize);
+					_endReleaseTable.Add(offset + emptySize, alignedOffset + size);
+				}
+
+
+				return true;
+			}
+		}
+	}
+
+	// 남는 사이즈는 있지만 자리가 없음
+	return false;
+}
+
+bool GpuDynamicMemoryPage::Free(const GpuMemoryHandle& handle)
+{
+	if (_handlers.GetCount() <= handle.arrayIndex) { assert(false); return false; }
+	if (_handlers[handle.arrayIndex].gen != handle.gen) { assert(false); return false; }
+
+	UINT64 offset = handle.offset;
+	UINT64 size = handle.size;
+
+	UINT64 frontNeighborStart = _totalSize + 1;
+	UINT64 backNeighborSize = _totalSize + 1;
+	// 블록 앞에 빈 블록이 있음
+	_endReleaseTable.GetValue(offset, frontNeighborStart);
+	// 블록 뒤에 빈 블록이 있음
+	_startReleaseTable.GetValue((offset + size), backNeighborSize);
+
+	if (frontNeighborStart != _totalSize + 1)
+	{
+		_startReleaseTable.Add(frontNeighborStart, (offset + size) - frontNeighborStart);
+		_endReleaseTable.Add(offset + size, frontNeighborStart);
+
+		_endReleaseTable.RemoveKey(offset);
+	}
+	if (backNeighborSize != _totalSize + 1)
+	{
+		_startReleaseTable.Add(offset, backNeighborSize + size);
+		_endReleaseTable.Add(offset + size + backNeighborSize, offset);
+
+		UINT64 temp = 0;
+		_startReleaseTable.RemoveKey(offset + size);
+	}
+
+	if (frontNeighborStart == _totalSize + 1 && backNeighborSize == _totalSize + 1)
+	{
+		_startReleaseTable.Add(offset, size);
+		_endReleaseTable.Add(offset + size, offset);
+	}
+
+	_handlers[handle.arrayIndex].gen++;
+	_handlers[handle.arrayIndex].size = 0;
+	_handlers[handle.arrayIndex].offset = 0;
+
+	_indexes.Push(handle.arrayIndex);
+
+	_currentSize += handle.size;
+
+	return true;
+}
+
+void GpuDynamicMemoryPage::Reset()
+{
+	_currentSize = _totalSize;
+	_indexes.Clear();
+	for (int i = 0; i < _handlers.GetCount(); ++i)
+	{
+		_indexes.Push(i);
+		_handlers[i].gen = 0;
+		_handlers[i].arrayIndex = i;
+		_handlers[i].pageIndex = _pageIndex;
+	}
+
+	_startReleaseTable.Add(_defaultOffset, _totalSize);
+	_endReleaseTable.Add(_defaultOffset + _totalSize, _defaultOffset);
+}
+
+void GpuDynamicMemoryPage::IncreaseHandlerSize(UINT32 size)
+{
+	_handlers.SetCount(size);
+	
+	for (int i = _handlerCount; i < size; ++i)
+	{
+		_indexes.Push(i);
+		_handlers[i].gen = 0;
+		_handlers[i].arrayIndex = i;
+		_handlers[i].pageIndex = _pageIndex;
+	}
+
+	_handlerCount = size;
+}
+
+
+//////////////////////////
+///GpuDynamicMemoryPool///
+//////////////////////////
+
+GpuDynamicMemoryPool::GpuDynamicMemoryPool(UINT8 poolID) : GpuDynamicMemoryPool(poolID, DEFAULT_SIZE)
+{
+
+}
+
+GpuDynamicMemoryPool::GpuDynamicMemoryPool(UINT8 poolID, UINT64 size) : _poolID(poolID), _totalSize(size), _pages((int)eMemoryPoolType::MAX)
+{
+	CreateHeap();
+
+	UINT64 msaaSize = size / 8;
+	UINT64 alignement = D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT;
+	UINT64 msaaPageStartOffset = ((size - msaaSize) + alignement - 1) & ~(alignement - 1);
+
+	_totalPageCount = (int)eMemoryPoolType::MAX;
+	_pages[(int)eMemoryPoolType::SIZE_64KB] = new GpuDynamicMemoryPage(0, D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT, msaaPageStartOffset, (int)eMemoryPoolType::SIZE_64KB);
+	_pages[(int)eMemoryPoolType::SIZE_4MB] = new GpuDynamicMemoryPage(msaaPageStartOffset, D3D12_DEFAULT_MSAA_RESOURCE_PLACEMENT_ALIGNMENT, msaaSize, (int)eMemoryPoolType::SIZE_4MB);
+}
+
+GpuDynamicMemoryPool::~GpuDynamicMemoryPool()
+{
+
+}
+
+void GpuDynamicMemoryPool::CreateHeap()
+{
+	D3D12_HEAP_DESC desc;
+	desc.SizeInBytes = _totalSize;
+
+	// Property
+	D3D12_HEAP_PROPERTIES properties;
+
+	properties.Type = D3D12_HEAP_TYPE_DEFAULT;
+	properties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
+	properties.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
+	desc.Properties = properties;
+
+	desc.Alignment = D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT;
+	desc.Flags = D3D12_HEAP_FLAG_ALLOW_ALL_BUFFERS_AND_TEXTURES;
+
+	ThrowIfFailed(DEVICE->CreateHeap(&desc, IID_PPV_ARGS(_memoryHeap.GetAddressOf())));
+}
+
+const ComPtr<ID3D12Heap>& GpuDynamicMemoryPool::GetMemoryHeap()
+{
+	return _memoryHeap;
+}
+
+bool GpuDynamicMemoryPool::GetMemoryHandle(eMemoryPoolType type, UINT64 size, OUT GpuMemoryHandle& handle)
+{
+	assert((int)type < _pages.GetCount());
+
+	bool isSuccess = _pages[(int)type]->Alloc(size, handle);
+	handle.memoryPoolID = _poolID;
+	return isSuccess;
+}
+
+bool GpuDynamicMemoryPool::ReleaseMemoryHandle(eMemoryPoolType type, const GpuMemoryHandle& handle)
+{
+	bool isSuccess = _pages[(int)type]->Free(handle);
+	return isSuccess;
+}
+
+void GpuDynamicMemoryPool::ResetPage(UINT8 pageIndex)
+{
+	assert(pageIndex < _pages.GetCount());
+	_pages[pageIndex]->Reset();
+}
+
+void GpuDynamicMemoryPool::ResetAllPage()
+{
+	for (int i = 0; i < _pages.GetCount(); ++i)
+	{
+		ResetPage(i);
+	}
+}

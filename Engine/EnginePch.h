@@ -94,3 +94,4 @@ inline void ThrowIfFailed(HRESULT hr)
 #include "Array.h"
 #include "DynamicArray.h"
 #include "Stack.h"
+#include "HashTable.h"

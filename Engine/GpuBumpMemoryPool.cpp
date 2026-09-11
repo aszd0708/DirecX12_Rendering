@@ -14,7 +14,7 @@ GpuBumpMemoryPage::~GpuBumpMemoryPage()
 {
 }
 
-bool GpuBumpMemoryPage::Alloc(UINT64 size, OUT GpuBumpMemoryHandle& handle)
+bool GpuBumpMemoryPage::Alloc(UINT64 size, OUT GpuMemoryHandle& handle)
 {
 	assert(_alignment != 0 && (_alignment & (_alignment - 1)) == 0);
 	
@@ -25,6 +25,7 @@ bool GpuBumpMemoryPage::Alloc(UINT64 size, OUT GpuBumpMemoryHandle& handle)
 		return false;
 	}
 
+	handle.gen = 0;
 	handle.offset = alignedOffset;
 	handle.pageIndex = _pageIndex;
 	handle.size = size;
@@ -43,11 +44,11 @@ void GpuBumpMemoryPage::Reset()
 // GpuBumpMemoryPool //
 ///////////////////////
 
-GpuBumpMemoryPool::GpuBumpMemoryPool() : GpuBumpMemoryPool(DEFAULT_SIZE)
+GpuBumpMemoryPool::GpuBumpMemoryPool(UINT8 poolID) : GpuBumpMemoryPool(poolID, DEFAULT_SIZE)
 {
 }
 
-GpuBumpMemoryPool::GpuBumpMemoryPool(UINT64 size) : _totalSize(size), _pages((int)eBumpMemoryPoolType::MAX)
+GpuBumpMemoryPool::GpuBumpMemoryPool(UINT8 poolID, UINT64 size) : _poolID(poolID), _totalSize(size), _pages((int)eMemoryPoolType::MAX)
 {
 	CreateHeap();
 
@@ -55,9 +56,9 @@ GpuBumpMemoryPool::GpuBumpMemoryPool(UINT64 size) : _totalSize(size), _pages((in
 	UINT64 alignement = D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT;
 	UINT64 msaaPageStartOffset = ((size - msaaSize) + alignement - 1) & ~(alignement - 1);
 	
-	_totalPageCount = (int)eBumpMemoryPoolType::MAX;
-	_pages[(int)eBumpMemoryPoolType::SIZE_64KB] = new GpuBumpMemoryPage(0, D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT, msaaPageStartOffset, (int)eBumpMemoryPoolType::SIZE_64KB);
-	_pages[(int)eBumpMemoryPoolType::SIZE_4MB] = new GpuBumpMemoryPage(msaaPageStartOffset, D3D12_DEFAULT_MSAA_RESOURCE_PLACEMENT_ALIGNMENT, msaaSize, (int)eBumpMemoryPoolType::SIZE_4MB);
+	_totalPageCount = (int)eMemoryPoolType::MAX;
+	_pages[(int)eMemoryPoolType::SIZE_64KB] = new GpuBumpMemoryPage(0, D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT, msaaPageStartOffset, (int)eMemoryPoolType::SIZE_64KB);
+	_pages[(int)eMemoryPoolType::SIZE_4MB] = new GpuBumpMemoryPage(msaaPageStartOffset, D3D12_DEFAULT_MSAA_RESOURCE_PLACEMENT_ALIGNMENT, msaaSize, (int)eMemoryPoolType::SIZE_4MB);
 }
 
 GpuBumpMemoryPool::~GpuBumpMemoryPool()
@@ -92,11 +93,13 @@ const ComPtr<ID3D12Heap>& GpuBumpMemoryPool::GetMemoryHeap()
 	return _memoryHeap;
 }
 
-bool GpuBumpMemoryPool::GetMemoryHandle(eBumpMemoryPoolType type, UINT64 size, OUT GpuBumpMemoryHandle& handle)
+bool GpuBumpMemoryPool::GetMemoryHandle(eMemoryPoolType type, UINT64 size, OUT GpuMemoryHandle& handle)
 {
 	assert((int)type < _pages.GetCount());
 
-	return _pages[(int)type]->Alloc(size, handle);
+	bool isSuccess = _pages[(int)type]->Alloc(size, handle);
+	handle.memoryPoolID = _poolID;
+	return isSuccess;
 }
 
 void GpuBumpMemoryPool::ResetPage(UINT8 pageIndex)
