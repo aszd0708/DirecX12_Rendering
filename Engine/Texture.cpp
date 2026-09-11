@@ -5,6 +5,7 @@
 
 Texture::Texture(wstring filePath) : _filePath(filePath)
 {
+	_memoryHandle = {};
 	CreateTexture();
 }
 
@@ -15,6 +16,7 @@ Texture::~Texture()
 	switch (_memoryHandle.memoryPoolID)
 	{
 		case (UINT8)GpuMemoryPoolManager::ePoolID::DYNAMIC:
+		case (UINT8)GpuMemoryPoolManager::ePoolID::DYNAMIC_ONLY_64:
 			D3D12_RESOURCE_DESC desc = _resource->GetDesc();
 			D3D12_RESOURCE_ALLOCATION_INFO info = DEVICE->GetResourceAllocationInfo(0, 1, &desc);
 			eGpuMemoryPoolType poolType = GetMemoryPoolType(info.Alignment);
@@ -59,8 +61,6 @@ void Texture::CreateResource()
 	bool isSuccess = GPU_MEM_POOL->GetMemory(GpuMemoryPoolManager::ePoolID::DYNAMIC_ONLY_64, poolType, info.SizeInBytes, _memoryHandle);
 	assert(isSuccess);
 	ThrowIfFailed(DEVICE->CreatePlacedResource(heap.Get(), _memoryHandle.offset, &defaultHeapDesc, D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(_resource.GetAddressOf())));
-
-	//ThrowIfFailed(DEVICE->CreateCommittedResource(&defaultHeapProperties, D3D12_HEAP_FLAG_NONE, &defaultHeapDesc, D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(_resource.GetAddressOf())));
 
 	// Create Upload Buffer
 	ComPtr<ID3D12Resource> uploadResource;
