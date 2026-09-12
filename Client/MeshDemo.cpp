@@ -40,7 +40,7 @@ void MeshDemo::Update()
 
 	uint32 fps = TIME->GetFps();
 	ImGui::LabelText("FPS  ","%d", fps);
-	ImGui::Text("Not Used GPU Pool");
+	//ImGui::Text("Not Used GPU Pool");
 
 	ImGui::LabelText("Start Usage  ","%llu byte", _curUsage);
 	ImGui::LabelText("End Usage  ","%llu byte", _endUsage);
@@ -78,20 +78,6 @@ void MeshDemo::Update()
 				std::chrono::milliseconds elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - _increaseStart);
 				_totalIncreaseTime = elapsed.count();
 				_deleteStart = std::chrono::steady_clock::now();
-			}
-		}
-		else
-		{
-			if (_objCreatedCount > 0)
-			{
-				DeleteCallBack();
-			}
-			else
-			{
-				std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-				std::chrono::milliseconds elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - _deleteStart);
-				_totalDeleteTime = elapsed.count();
-				_isTestDone = true;
 			}
 		}
 	}

@@ -11,7 +11,7 @@ enum class eGpuMemoryPoolType : UINT8
 struct GpuMemoryHandle
 {
 	// Dynamic
-	UINT8 gen;
+	UINT16 gen;
 	UINT8 memoryPoolID;
 
 	// Bumb, Dynamic 공용

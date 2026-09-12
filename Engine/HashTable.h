@@ -166,7 +166,7 @@ inline void HashTable<K, V>::Add(const K & key, const V & value)
 			}
 			case eHashTableCondition::TOMBSTONE:
 			{
-				tombstoneIndex = i;
+				tombstoneIndex = hashResult;
 				foundTombstone = true;
 			}
 			break;

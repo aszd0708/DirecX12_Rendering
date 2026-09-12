@@ -36,12 +36,13 @@ public:
 	UINT32 GetCapacity();
 	bool IsOccupiedAt(UINT32 index, OUT K& key, OUT V& value);
 
+	UINT32 _count;
+
 private:
 	/// <summary>
 	/// PRIMES 배열 참고
 	/// </summary>
 	UINT8 _capacityIndex;
-	UINT32 _count;
 
 	TableNode* _table;
 };
@@ -166,7 +167,7 @@ inline void HashTable<K, V>::Add(const K & key, const V & value)
 			}
 			case eHashTableCondition::TOMBSTONE:
 			{
-				tombstoneIndex = i;
+				tombstoneIndex = hashResult;
 				foundTombstone = true;
 			}
 			break;

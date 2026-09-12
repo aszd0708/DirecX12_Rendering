@@ -24,10 +24,10 @@ WPARAM Game::Run(GameDesc& desc)
 	CPU_MEM_POOL->Init();
 
 	GpuMemoryPoolManager::sMemoryPoolManagerInfo info = {};
-	info.initPoolFlag = GpuMemoryPoolManager::ePoolID::BUMP_ONLY_64KB | GpuMemoryPoolManager::ePoolID::DYNAMIC_UPLOAD;
-	info.bumbOnly64KBMaxSize = (UINT64)4096 * 1024 * 1024; //(UINT64)4096 * (UINT64)1024 * (UINT64)1024;
-	//info.dynamicOnly64KBMaxSize = (UINT64)4096 * (UINT64)1024 * (UINT64)1024;
-	info.dynamicUploadMaxSize = (UINT64)256 * (UINT64)1024 * (UINT64)1024;
+	info.initPoolFlag = GpuMemoryPoolManager::ePoolID::BUMP_ONLY_64KB  | GpuMemoryPoolManager::ePoolID::DYNAMIC_UPLOAD;
+	//info.bumbOnly64KBMaxSize = 256 * 1024 * 1024; //(UINT64)4096 * (UINT64)1024 * (UINT64)1024;
+	info.bumbOnly64KBMaxSize = (UINT64)4096 * (UINT64)1024 * (UINT64)1024;
+	info.dynamicUploadMaxSize = 256 * (UINT64)1024 * (UINT64)1024;
 	GPU_MEM_POOL->Init(info);
 
 	ImGuiManager::GetInstance()->Init();
