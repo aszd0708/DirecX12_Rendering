@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "GpuBumpMemoryPool.h"
+#include "GpuMemoryPoolManager.h"
 
 ///////////////////////
 // GpuBumpMemoryPage //
@@ -50,6 +51,8 @@ GpuBumpMemoryPool::GpuBumpMemoryPool(UINT8 poolID, bool using4MBSize) : GpuBumpM
 
 GpuBumpMemoryPool::GpuBumpMemoryPool(UINT8 poolID, UINT64 size, bool using4MBSize) : _poolID(poolID), _totalSize(size), _pages(ComputePageCount(using4MBSize))
 {
+	assert(poolID != (int)GpuMemoryPoolManager::ePoolID::DYNAMIC_UPLOAD);
+	
 	CreateHeap();
 	
 	if (using4MBSize)

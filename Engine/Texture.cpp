@@ -52,13 +52,11 @@ void Texture::CreateResource()
 	defaultHeapDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
 	defaultHeapDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
 	defaultHeapDesc.SampleDesc.Count = 1;
-
-	D3D12_HEAP_PROPERTIES defaultHeapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
 	
-	ComPtr<ID3D12Heap> heap = GPU_MEM_POOL->GetMemoryHeap(GpuMemoryPoolManager::ePoolID::DYNAMIC_ONLY_64);
+	ComPtr<ID3D12Heap> heap = GPU_MEM_POOL->GetMemoryHeap(GpuMemoryPoolManager::ePoolID::BUMP_ONLY_64KB);
 	D3D12_RESOURCE_ALLOCATION_INFO info = DEVICE->GetResourceAllocationInfo(0, 1, &defaultHeapDesc);
 	eGpuMemoryPoolType poolType = GetMemoryPoolType(info.Alignment);
-	bool isSuccess = GPU_MEM_POOL->GetMemory(GpuMemoryPoolManager::ePoolID::DYNAMIC_ONLY_64, poolType, info.SizeInBytes, _memoryHandle);
+	bool isSuccess = GPU_MEM_POOL->GetMemory(GpuMemoryPoolManager::ePoolID::BUMP_ONLY_64KB, poolType, info.SizeInBytes, _memoryHandle);
 	assert(isSuccess);
 	ThrowIfFailed(DEVICE->CreatePlacedResource(heap.Get(), _memoryHandle.offset, &defaultHeapDesc, D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(_resource.GetAddressOf())));
 
@@ -71,10 +69,16 @@ void Texture::CreateResource()
 	uint64 totalByte;
 	DEVICE->GetCopyableFootprints(&defaultHeapDesc, 0, 1, 0, &rootPrintLayout, &numRows, &rowSizeInBytes, &totalByte);
 
-	D3D12_HEAP_PROPERTIES uploadHeapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 	D3D12_RESOURCE_DESC uploadHeapBuffer = CD3DX12_RESOURCE_DESC::Buffer(totalByte);
 
-	ThrowIfFailed(DEVICE->CreateCommittedResource(&uploadHeapProperties, D3D12_HEAP_FLAG_NONE, &uploadHeapBuffer, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(uploadResource.GetAddressOf())));
+	ComPtr<ID3D12Heap> uploadHeap = GPU_MEM_POOL->GetMemoryHeap(GpuMemoryPoolManager::ePoolID::DYNAMIC_UPLOAD);
+	D3D12_RESOURCE_ALLOCATION_INFO uploadInfo = DEVICE->GetResourceAllocationInfo(0, 1, &uploadHeapBuffer);
+	eGpuMemoryPoolType uploadPoolType = GetMemoryPoolType(uploadInfo.Alignment);
+	GpuMemoryHandle uploadGpuHandle = {};
+	isSuccess = GPU_MEM_POOL->GetMemory(GpuMemoryPoolManager::ePoolID::DYNAMIC_UPLOAD, uploadPoolType, uploadInfo.SizeInBytes, uploadGpuHandle);
+	assert(isSuccess);
+
+	ThrowIfFailed(DEVICE->CreatePlacedResource(uploadHeap.Get(), uploadGpuHandle.offset, &uploadHeapBuffer, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(uploadResource.GetAddressOf())));
 
 	void* data;
 	uploadResource->Map(0, nullptr, &data);
@@ -106,9 +110,13 @@ void Texture::CreateResource()
 	// Wait GPU
 	ID3D12CommandList* lists[] = { GRAPHICS->GetSubList().Get() };
 	COMMAND_QUEUE->ExecuteCommandLists(1, lists);
+	
 
 	// TODO : 나중에 Fence도 풀로 만들어 관리
 	GRAPHICS->WaitForGPU();
+
+	//호출 위치를 "Fence 완료 확인 후"
+	GPU_MEM_POOL->ReleaseMemory(uploadGpuHandle);
 
 	stbi_image_free(textureInfo);
 }

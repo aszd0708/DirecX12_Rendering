@@ -34,4 +34,3 @@ private:
 
 	GpuMemoryHandle _memoryHandle;
 };
-

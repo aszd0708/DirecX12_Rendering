@@ -13,6 +13,8 @@ public:
 
 		BUMP_ONLY_64KB = 1 << 2,
 		DYNAMIC_ONLY_64 = 1 << 3,
+
+		DYNAMIC_UPLOAD = 1 << 4,
 		
 		MAX
 	};
@@ -23,6 +25,7 @@ public:
 		UINT64 dynamicMaxSize;
 		UINT64 bumbOnly64KBMaxSize;
 		UINT64 dynamicOnly64KBMaxSize;
+		UINT64 dynamicUploadMaxSize;
 	};
 
 public:
@@ -44,6 +47,8 @@ private:
 
 	GpuBumpMemoryPool* _bumpPoolOnly64KB = nullptr;
 	GpuDynamicMemoryPool* _dynamicPoolOnly64KB = nullptr;
+
+	GpuDynamicMemoryPool* _dyanamicPoolUpload = nullptr;
 };
 
 inline GpuMemoryPoolManager::ePoolID operator&(GpuMemoryPoolManager::ePoolID lhs, GpuMemoryPoolManager::ePoolID rhs)

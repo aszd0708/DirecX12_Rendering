@@ -40,7 +40,7 @@ void MeshDemo::Update()
 
 	uint32 fps = TIME->GetFps();
 	ImGui::LabelText("FPS  ","%d", fps);
-	ImGui::Text("Used GPU Pool");
+	ImGui::Text("Not Used GPU Pool");
 
 	ImGui::LabelText("Start Usage  ","%llu byte", _curUsage);
 	ImGui::LabelText("End Usage  ","%llu byte", _endUsage);

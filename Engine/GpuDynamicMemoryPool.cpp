@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "GpuDynamicMemoryPool.h"
+#include "GpuMemoryPoolManager.h"
 
 //////////////////////////
 ///GpuDynamicMemoryPage///
@@ -64,18 +65,28 @@ bool GpuDynamicMemoryPage::Alloc(UINT64 size, OUT GpuMemoryHandle & handle)
 				handle = _handlers[index];
 				_currentSize -= size;
 
-				if ((alignedOffset + size) == (offset + emptySize))
+				// 앞 비어있는 공간 존재할 시
+				if (alignedOffset > offset)
 				{
-					_startReleaseTable.RemoveKey(offset);
-					_endReleaseTable.RemoveKey(offset + emptySize);
+					_startReleaseTable.Add(offset, alignedOffset - offset);
+					_endReleaseTable.Add(alignedOffset, offset);
 				}
-				else if ((alignedOffset + size) < (offset + emptySize))
+				else
 				{
 					_startReleaseTable.RemoveKey(offset);
+				}
+
+				// 뒤 비어있는 공간 존재할 시
+				if ((alignedOffset + size) < (offset + emptySize))
+				{
 					_startReleaseTable.Add(alignedOffset + size, (offset + emptySize) - (alignedOffset + size));
-					_endReleaseTable.RemoveKey(offset + emptySize);
 					_endReleaseTable.Add(offset + emptySize, alignedOffset + size);
 				}
+				else
+				{
+					_endReleaseTable.RemoveKey(offset + emptySize);
+				}
+
 
 
 				return true;
@@ -102,23 +113,33 @@ bool GpuDynamicMemoryPage::Free(const GpuMemoryHandle& handle)
 	// 블록 뒤에 빈 블록이 있음
 	_startReleaseTable.GetValue((offset + size), backNeighborSize);
 
-	if (frontNeighborStart != _totalSize + 1)
+	// 구간 시작 끝 둘다
+	if (frontNeighborStart != _totalSize + 1 && backNeighborSize != _totalSize + 1)
+	{
+		_startReleaseTable.Add(frontNeighborStart, offset + size + backNeighborSize - frontNeighborStart);
+		_endReleaseTable.Add((offset + size + backNeighborSize), frontNeighborStart);
+
+		_startReleaseTable.RemoveKey(offset + size);
+		_endReleaseTable.RemoveKey(offset);
+	}
+
+	else if (frontNeighborStart != _totalSize + 1)
 	{
 		_startReleaseTable.Add(frontNeighborStart, (offset + size) - frontNeighborStart);
 		_endReleaseTable.Add(offset + size, frontNeighborStart);
 
 		_endReleaseTable.RemoveKey(offset);
 	}
-	if (backNeighborSize != _totalSize + 1)
+
+	else if (backNeighborSize != _totalSize + 1)
 	{
 		_startReleaseTable.Add(offset, backNeighborSize + size);
 		_endReleaseTable.Add(offset + size + backNeighborSize, offset);
 
-		UINT64 temp = 0;
 		_startReleaseTable.RemoveKey(offset + size);
 	}
 
-	if (frontNeighborStart == _totalSize + 1 && backNeighborSize == _totalSize + 1)
+	else if (frontNeighborStart == _totalSize + 1 && backNeighborSize == _totalSize + 1)
 	{
 		_startReleaseTable.Add(offset, size);
 		_endReleaseTable.Add(offset + size, offset);
@@ -180,6 +201,11 @@ GpuDynamicMemoryPool::GpuDynamicMemoryPool(UINT8 poolID, UINT64 size, bool using
 {
 	CreateHeap();
 
+	if (_poolID == (int)(GpuMemoryPoolManager::ePoolID::DYNAMIC_UPLOAD))
+	{
+		using4MBSize = false;
+	}
+
 	if (using4MBSize)
 	{
 		UINT64 msaaSize = size / 8;
@@ -225,15 +251,28 @@ void GpuDynamicMemoryPool::CreateHeap()
 	// Property
 	D3D12_HEAP_PROPERTIES properties;
 
-	properties.Type = D3D12_HEAP_TYPE_DEFAULT;
-	properties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
-	properties.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN; 
-	properties.CreationNodeMask = 1;
-	properties.VisibleNodeMask = 1;
-	desc.Properties = properties;
+	if (_poolID == (int)(GpuMemoryPoolManager::ePoolID::DYNAMIC_UPLOAD))
+	{
+		properties.Type = D3D12_HEAP_TYPE_UPLOAD;
+		properties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
+		properties.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
+		properties.CreationNodeMask = 1;
+		properties.VisibleNodeMask = 1;
+		desc.Properties = properties;
+		desc.Flags = D3D12_HEAP_FLAG_ALLOW_ONLY_BUFFERS;
+	}
+	else
+	{
+		properties.Type = D3D12_HEAP_TYPE_DEFAULT;
+		properties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
+		properties.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
+		properties.CreationNodeMask = 1;
+		properties.VisibleNodeMask = 1;
+		desc.Properties = properties;
+		desc.Flags = D3D12_HEAP_FLAG_ALLOW_ALL_BUFFERS_AND_TEXTURES;
+	}
 
 	desc.Alignment = D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT;
-	desc.Flags = D3D12_HEAP_FLAG_ALLOW_ALL_BUFFERS_AND_TEXTURES;
 
 	ThrowIfFailed(DEVICE->CreateHeap(&desc, IID_PPV_ARGS(_memoryHeap.GetAddressOf())));
 }

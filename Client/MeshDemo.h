@@ -5,7 +5,7 @@
 class MeshDemo : public SceneBuilder
 {
 private:
-	static const UINT MAX_COUNT = 64;
+	static const UINT MAX_COUNT = 512;
 
 public:
 	MeshDemo(string sceneName);

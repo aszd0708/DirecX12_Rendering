@@ -20,6 +20,10 @@ void GpuMemoryPoolManager::Init(sMemoryPoolManagerInfo info)
 	{
 		_dynamicPoolOnly64KB = new GpuDynamicMemoryPool((int)ePoolID::DYNAMIC_ONLY_64, info.dynamicOnly64KBMaxSize, false);
 	}
+	if ((info.initPoolFlag & ePoolID::DYNAMIC_UPLOAD) == ePoolID::DYNAMIC_UPLOAD)
+	{
+		_dyanamicPoolUpload = new GpuDynamicMemoryPool((int)ePoolID::DYNAMIC_UPLOAD, info.dynamicUploadMaxSize, false);
+	}
 }
 
 void GpuMemoryPoolManager::Release()
@@ -28,6 +32,7 @@ void GpuMemoryPoolManager::Release()
 	delete _dynamicPool;
 	delete _bumpPoolOnly64KB;
 	delete _dynamicPoolOnly64KB;
+	delete _dyanamicPoolUpload;
 }
 
 bool GpuMemoryPoolManager::GetMemory(ePoolID poolID, eGpuMemoryPoolType type, UINT64 size, OUT GpuMemoryHandle& handle)
@@ -49,6 +54,9 @@ bool GpuMemoryPoolManager::GetMemory(ePoolID poolID, eGpuMemoryPoolType type, UI
 	case ePoolID::DYNAMIC_ONLY_64:
 		isSuccess = _dynamicPoolOnly64KB->GetMemoryHandle(type, size, handle);
 		break;
+	case ePoolID::DYNAMIC_UPLOAD:
+		isSuccess = _dyanamicPoolUpload->GetMemoryHandle(type, size, handle);
+		break;
 	}
 	return isSuccess;
 }
@@ -68,6 +76,9 @@ bool GpuMemoryPoolManager::ReleaseMemory(const GpuMemoryHandle & handle)
 		break;
 	case ePoolID::DYNAMIC_ONLY_64:
 		isSuccess = _dynamicPoolOnly64KB->ReleaseMemoryHandle(handle.poolType, handle);
+		break;
+	case ePoolID::DYNAMIC_UPLOAD:
+		isSuccess = _dyanamicPoolUpload->ReleaseMemoryHandle(handle.poolType, handle);
 		break;
 	}
 	return isSuccess;
@@ -91,6 +102,10 @@ void GpuMemoryPoolManager::ResetAllMemporyPool()
 	{
 		_dynamicPoolOnly64KB->ResetAllPage();
 	}
+	if (_dyanamicPoolUpload != nullptr)
+	{
+		_dyanamicPoolUpload->ResetAllPage();
+	}
 }
 
 const ComPtr<ID3D12Heap>& GpuMemoryPoolManager::GetMemoryHeap(ePoolID poolID)
@@ -107,6 +122,8 @@ const ComPtr<ID3D12Heap>& GpuMemoryPoolManager::GetMemoryHeap(ePoolID poolID)
 		return _bumpPoolOnly64KB->GetMemoryHeap();
 	case ePoolID::DYNAMIC_ONLY_64:
 		return _dynamicPoolOnly64KB->GetMemoryHeap();
+	case ePoolID::DYNAMIC_UPLOAD:
+		return _dyanamicPoolUpload->GetMemoryHeap();
 	}
 	return nullptr;
 }
