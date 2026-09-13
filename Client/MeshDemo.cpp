@@ -64,23 +64,47 @@ void MeshDemo::Update()
 		UINT64 _totalDeleteTime = 0;
 
 		_increaseStart = std::chrono::steady_clock::now();
+		CreateCallBack();
 	}
 
-	if (_testBoolean && _isTestDone == false)
+	if (INPUT->GetButtonUp(KEY_TYPE::U))
 	{
-		if (_testDecrease == false)
-		{
-			CreateCallBack();
-			_testDecrease = _objCreatedCount >= MAX_COUNT;
-			if (_testDecrease == true)
-			{
-				std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-				std::chrono::milliseconds elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - _increaseStart);
-				_totalIncreaseTime = elapsed.count();
-				_deleteStart = std::chrono::steady_clock::now();
-			}
-		}
+		_isTestDone = false;
+		_testBoolean = true;
+		_testDecrease = true;
+		UINT64 _totalIncreaseTime = 0;
+		UINT64 _totalDeleteTime = 0;
+
+		_increaseStart = std::chrono::steady_clock::now();
 	}
+
+	//if (_testBoolean && _isTestDone == false)
+	//{
+	//	if (_testDecrease == false)
+	//	{
+	//		CreateCallBack();
+	//		_testDecrease = _objCreatedCount >= MAX_COUNT;
+	//		if (_testDecrease == true)
+	//		{
+	//			std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+	//			std::chrono::milliseconds elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - _increaseStart);
+	//			_totalIncreaseTime = elapsed.count();
+	//			_deleteStart = std::chrono::steady_clock::now();
+	//		}
+	//	}
+	//	if (_testDecrease == true)
+	//	{
+	//		DeleteCallBack();
+	//		_testDecrease = _objCreatedCount >= MAX_COUNT;
+	//		if (_testDecrease == true)
+	//		{
+	//			std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+	//			std::chrono::milliseconds elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - _increaseStart);
+	//			_totalIncreaseTime = elapsed.count();
+	//			_deleteStart = std::chrono::steady_clock::now();
+	//		}
+	//	}
+	//}
 	_testBoolean = !_testBoolean;
 }
 
@@ -142,8 +166,6 @@ void MeshDemo::CreateTextureMesh(int index)
 	GeometryHelper::CreateCube(geometry);
 	shared_ptr<Mesh<VertexTextureData>> mesh = make_shared<Mesh<VertexTextureData>>(geometry);
 
-	shared_ptr<Texture> texture = make_shared<Texture>(L"../Resources/Leather.jpg");
-
 
 	ShaderInfo shaderInfo = {};
 	shaderInfo._path = L"TextureMesh";
@@ -165,7 +187,16 @@ void MeshDemo::CreateTextureMesh(int index)
 	shared_ptr<Shader> shader = make_shared<Shader>(shaderInfo);
 
 	MeshRenderer<VertexTextureData>* meshRednerer = obj->AddComponent<MeshRenderer<VertexTextureData>>();
-	meshRednerer->Init(mesh, shader, texture);
+
+	TextureInfo textureInfo = {};
+	textureInfo.filePath = L"../Resources/Leather.jpg";
+	textureInfo.format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	textureInfo.mipLevels = 1;
+
+	MemoryBlock textureMemoryBlock = {};
+	RESOURCES->GetTexture(textureInfo, textureMemoryBlock);
+
+	meshRednerer->Init(mesh, shader, textureMemoryBlock);
 
 	AddGameObject(obj->GetMemoryEntry());
 }
@@ -183,7 +214,7 @@ void MeshDemo::CreateCallBack()
 	
 	_curUsage = _vInfo->CurrentUsage;
 
-	for (int i = 0; i < 64; ++i)
+	for (int i = 0; i < 2; ++i)
 	{
 		if (_objCreatedCount >= MAX_COUNT) break;
 
@@ -205,7 +236,7 @@ void MeshDemo::DeleteCallBack()
 
 	_curUsage = _vInfo->CurrentUsage;
 
-	for (int i = 0; i < 64; ++i)
+	for (int i = 0; i < 2; ++i)
 	{
 		if (_objCreatedCount <= 0) break;
 		_objCreatedCount--;

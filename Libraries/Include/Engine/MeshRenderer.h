@@ -19,7 +19,7 @@ public:
 
 public:
 	void Init(shared_ptr<Mesh<T>> mesh, shared_ptr<Shader> shader);
-	void Init(shared_ptr<Mesh<T>> mesh, shared_ptr<Shader> shader, shared_ptr<Texture> texture);
+	void Init(shared_ptr<Mesh<T>> mesh, shared_ptr<Shader> shader, MemoryBlock& texture);
 	virtual void Render() override;
 
 public:
@@ -28,19 +28,22 @@ public:
 private:
 	shared_ptr<Mesh<T>> _mesh;
 	shared_ptr<Shader> _shader;
-	shared_ptr<Texture> _texture;
+	Texture* _texture;
 };
 
 template<typename T>
 inline MeshRenderer<T>::MeshRenderer() : Renderer(eComponentType::Renderer)
 {
-	
+
 }
 
 template<typename T>
 inline MeshRenderer<T>::~MeshRenderer()
 {
-
+	if (_texture)
+	{
+		RESOURCES->ReleaseTexture(_texture->GetTextureInfo());
+	}
 }
 
 template<typename T>
@@ -52,11 +55,13 @@ inline void MeshRenderer<T>::Init(shared_ptr<Mesh<T>> mesh, shared_ptr<Shader> s
 }
 
 template<typename T>
-inline void MeshRenderer<T>::Init(shared_ptr<Mesh<T>> mesh, shared_ptr<Shader> shader, shared_ptr<Texture> texture)
+inline void MeshRenderer<T>::Init(shared_ptr<Mesh<T>> mesh, shared_ptr<Shader> shader, MemoryBlock& texture)
 {
 	_mesh = mesh;
 	_shader = shader;
-	_texture = texture;
+
+	bool isSuccess = CPU_MEM_POOL->GetMemoryPool(texture._poolID)->GetObjectByMemoryBlock(texture, &_texture);
+	assert(isSuccess);
 }
 
 template<typename T>
@@ -86,7 +91,7 @@ inline void MeshRenderer<T>::Render()
 	COMMAND_LIST->SetGraphicsRootConstantBufferView(1, GetWorldMatrixBuffer()->GetAddress());
 
 	// Texture 전달
-	if(_texture != nullptr)
+	if (_texture != nullptr)
 	{
 		COMMAND_LIST->SetGraphicsRootDescriptorTable(2, _texture->GetHandle());
 	}

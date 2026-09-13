@@ -82,6 +82,12 @@
     <Filter Include="01. Graphics\GpuMemoryPool">
       <UniqueIdentifier>{6c0132f1-036a-4f22-a9a2-687f953bd699}</UniqueIdentifier>
     </Filter>
+    <Filter Include="99. ResourceInfo">
+      <UniqueIdentifier>{0c6206f0-91e5-4314-81a6-b9a4a3a937d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="00. Engine\Pool">
+      <UniqueIdentifier>{bb991374-baca-4180-a349-1e01b4c9a9a3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -244,6 +250,15 @@
     <ClInclude Include="GpuMemoryPoolManager.h">
       <Filter>02. Managers</Filter>
     </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>02. Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="TexturePool.h">
+      <Filter>00. Engine\Pool</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureInfo.h">
+      <Filter>00. Engine\Pool</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -389,6 +404,15 @@
     </ClCompile>
     <ClCompile Include="GpuMemoryPoolManager.cpp">
       <Filter>02. Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>02. Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="TexturePool.cpp">
+      <Filter>00. Engine\Pool</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureInfo.cpp">
+      <Filter>00. Engine\Pool</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

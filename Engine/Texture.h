@@ -1,4 +1,5 @@
 #pragma once
+#include "TextureInfo.h"
 
 struct TextureFormat
 {
@@ -8,12 +9,13 @@ struct TextureFormat
 	int channelsInFile;
 };
 
-class Texture
+class Texture : public IMemoryBlockHanlde
 {
 
 public:
-	Texture(wstring filePath);
-	~Texture();
+	Texture(TextureInfo textureInfo);
+	Texture(wstring filePath, DXGI_FORMAT format, UINT16 mipLevels);
+	virtual ~Texture();
 
 public:
 	void CreateTexture();
@@ -22,9 +24,10 @@ public:
 
 public:
 	D3D12_GPU_DESCRIPTOR_HANDLE GetHandle() { return _descHandle.gpuDesc; }
+	const TextureInfo& GetTextureInfo() { return _textureInfo; }
 
 private:
-	wstring _filePath;
+	TextureInfo _textureInfo;
 
 	ComPtr<ID3D12Resource> _resource;
 	D3D12_SHADER_RESOURCE_VIEW_DESC _resourceDesc;

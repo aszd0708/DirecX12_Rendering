@@ -21,6 +21,7 @@ WPARAM Game::Run(GameDesc& desc)
 	// Manager 초기화
 	TIME->Init();
 	INPUT->Init(_desc.hWnd);
+	RESOURCES->Init();
 	CPU_MEM_POOL->Init();
 
 	GpuMemoryPoolManager::sMemoryPoolManagerInfo info = {};

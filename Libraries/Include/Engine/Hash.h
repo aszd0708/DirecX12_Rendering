@@ -22,7 +22,8 @@ struct Hash
 	}
 };
 
-template<> struct Hash<wstring>
+template<> 
+struct Hash<wstring>
 {
 	static UINT64 GetHash(const wstring& key)
 	{

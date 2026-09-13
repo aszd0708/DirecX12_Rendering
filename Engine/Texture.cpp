@@ -2,9 +2,21 @@
 #include "Texture.h"
 #include "Utils.h"
 #include "GpuMemoryPoolManager.h"
+#include "TextureInfo.h"
 
-Texture::Texture(wstring filePath) : _filePath(filePath)
+Texture::Texture(TextureInfo textureInfo) : _textureInfo(textureInfo)
 {
+	_memoryHandle = {};
+	CreateTexture();
+}
+
+Texture::Texture(wstring filePath, DXGI_FORMAT format, UINT16 mipLevels)
+{
+	_textureInfo = {};
+	_textureInfo.filePath = filePath;
+	_textureInfo.format = format;
+	_textureInfo.mipLevels = mipLevels;
+
 	_memoryHandle = {};
 	CreateTexture();
 }
@@ -38,7 +50,7 @@ void Texture::CreateResource()
 	TextureFormat textureFormat = {};
 
 	// Read Texture File
-	string path = Utils::ToString(_filePath);
+	string path = Utils::ToString(_textureInfo.filePath);
 	BYTE* textureInfo = stbi_load(path.c_str(), &textureFormat.x, &textureFormat.y, &textureFormat.channelsInFile, 4);
 
 	// Create Default Buffer
@@ -46,9 +58,10 @@ void Texture::CreateResource()
 	defaultHeapDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
 	defaultHeapDesc.Width = textureFormat.x;
 	defaultHeapDesc.Height = textureFormat.y;
-	defaultHeapDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	//defaultHeapDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	defaultHeapDesc.Format = _textureInfo.format;
 	defaultHeapDesc.DepthOrArraySize = 1;
-	defaultHeapDesc.MipLevels = 1;
+	defaultHeapDesc.MipLevels = _textureInfo.mipLevels;
 	defaultHeapDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
 	defaultHeapDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
 	defaultHeapDesc.SampleDesc.Count = 1;

@@ -77,6 +77,7 @@ inline void ThrowIfFailed(HRESULT hr)
 #include "SceneManager.h"
 #include "ImGuiManager.h"
 #include "DescHeapAllocatorManager.h"
+#include "ResourceManager.h"
 
 // Core
 #include "Component.h"
