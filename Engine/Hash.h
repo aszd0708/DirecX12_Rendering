@@ -20,6 +20,11 @@ struct Hash
 		}
 		return hash;
 	}
+
+	static void HashCombine(UINT64& seed, const UINT64& hashedValue)
+	{
+		seed ^= hashedValue + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+	}
 };
 
 template<> 

@@ -1,28 +1,38 @@
 #pragma once
-#include "Geometry.h"
-#include "VertexData.h"
+#include "GpuBufferInfo.h"
+
+struct Geometry
+{
+	UINT8 vertexSize;
+	eIndexBufferSize indexSize;
+
+	Array<D3D12_INPUT_ELEMENT_DESC> desces;
+
+	Array<BYTE> vertices;
+	Array<BYTE> indices;
+};
 
 class GeometryHelper
 {
 public:
-	static void CreateQuad(shared_ptr<Geometry<VertexColorData>> geometry, Color color);
-	static void CreateCube(shared_ptr<Geometry<VertexColorData>> geometry, Color color);
-	static void CreateSphere(shared_ptr<Geometry<VertexColorData>> geometry, Color color);
-	static void CreateGrid(shared_ptr<Geometry<VertexColorData>> geometry, int32 sizeX, int32 sizeZ, Color color);
-
-	static void CreateQuad(shared_ptr<Geometry<VertexTextureData>> geometry);
-	static void CreateCube(shared_ptr<Geometry<VertexTextureData>> geometry);
-	static void CreateSphere(shared_ptr<Geometry<VertexTextureData>> geometry);
-	static void CreateGrid(shared_ptr<Geometry<VertexTextureData>> geometry, int32 sizeX, int32 sizeZ);
-
-	static void CreateQuad(shared_ptr<Geometry<VertexTextureNormalData>> geometry);
-	static void CreateCube(shared_ptr<Geometry<VertexTextureNormalData>> geometry);
-	static void CreateGrid(shared_ptr<Geometry<VertexTextureNormalData>> geometry, int32 sizeX, int32 sizeZ);
-	static void CreateSphere(shared_ptr<Geometry<VertexTextureNormalData>> geometry); 
-
-	static void CreateQuad(shared_ptr<Geometry<VertexTextureNormalTangentData>> geometry);
-	static void CreateCube(shared_ptr<Geometry<VertexTextureNormalTangentData>> geometry);
-	static void CreateGrid(shared_ptr<Geometry<VertexTextureNormalTangentData>> geometry, int32 sizeX, int32 sizeZ);
-	static void CreateSphere(shared_ptr<Geometry<VertexTextureNormalTangentData>> geometry);
+	static Geometry CreateQuadVertexColorData(Color color);
+	static Geometry CreateCubeVertexColorData(Color color);
+	static Geometry CreateSphereVertexColorData(Color color);
+	static Geometry CreateGridVertexColorData(INT32 sizeX, INT32 sizeZ, Color color);
+		   
+	static Geometry CreateQuadVertexTextureData();
+	static Geometry CreateCubeVertexTextureData();
+	static Geometry CreateSphereVertexTextureData();
+	static Geometry CreateGridVertexTextureData(INT32 sizeX, INT32 sizeZ);
+		   
+	static Geometry CreateQuadVertexTextureNormalData();
+	static Geometry CreateCubeVertexTextureNormalData();
+	static Geometry CreateSphereVertexTextureNormalData();
+	static Geometry CreateGridVertexTextureNormalData(INT32 sizeX, INT32 sizeZ);
+		   
+	static Geometry CreateQuadVertexTextureNormalTangentData();
+	static Geometry CreateCubeVertexTextureNormalTangentData();
+	static Geometry CreateSphereVertexTextureNormalTangentData();
+	static Geometry CreateGridVertexTextureNormalTangentData(INT32 sizeX, INT32 sizeZ);
 };
 

@@ -3,26 +3,26 @@
 
 void GpuMemoryPoolManager::Init(sMemoryPoolManagerInfo info)
 {
-	_usingPoolIDs = info.initPoolFlag;
-	if ((info.initPoolFlag & ePoolID::BUMP) == ePoolID::BUMP)
+	_usingMemoryPoolIDs = info.initPoolFlag;
+	if ((info.initPoolFlag & eMemoryPoolID::BUMP) == eMemoryPoolID::BUMP)
 	{
-		_bumpPool = new GpuBumpMemoryPool((int)ePoolID::BUMP, info.bumbMaxSize, true);
+		_bumpPool = new GpuBumpMemoryPool((int)eMemoryPoolID::BUMP, info.bumbMaxSize, true);
 	}
-	if ((info.initPoolFlag & ePoolID::DYNAMIC) == ePoolID::DYNAMIC)
+	if ((info.initPoolFlag & eMemoryPoolID::DYNAMIC) == eMemoryPoolID::DYNAMIC)
 	{
-		_dynamicPool = new GpuDynamicMemoryPool((int)ePoolID::DYNAMIC, info.dynamicMaxSize, true);
+		_dynamicPool = new GpuDynamicMemoryPool((int)eMemoryPoolID::DYNAMIC, info.dynamicMaxSize, true);
 	}
-	if ((info.initPoolFlag & ePoolID::BUMP_ONLY_64KB) == ePoolID::BUMP_ONLY_64KB)
+	if ((info.initPoolFlag & eMemoryPoolID::BUMP_ONLY_64KB) == eMemoryPoolID::BUMP_ONLY_64KB)
 	{
-		_bumpPoolOnly64KB = new GpuBumpMemoryPool((int)ePoolID::BUMP_ONLY_64KB, info.bumbOnly64KBMaxSize, false);
+		_bumpPoolOnly64KB = new GpuBumpMemoryPool((int)eMemoryPoolID::BUMP_ONLY_64KB, info.bumbOnly64KBMaxSize, false);
 	}
-	if ((info.initPoolFlag & ePoolID::DYNAMIC_ONLY_64) == ePoolID::DYNAMIC_ONLY_64)
+	if ((info.initPoolFlag & eMemoryPoolID::DYNAMIC_ONLY_64) == eMemoryPoolID::DYNAMIC_ONLY_64)
 	{
-		_dynamicPoolOnly64KB = new GpuDynamicMemoryPool((int)ePoolID::DYNAMIC_ONLY_64, info.dynamicOnly64KBMaxSize, false);
+		_dynamicPoolOnly64KB = new GpuDynamicMemoryPool((int)eMemoryPoolID::DYNAMIC_ONLY_64, info.dynamicOnly64KBMaxSize, false);
 	}
-	if ((info.initPoolFlag & ePoolID::DYNAMIC_UPLOAD) == ePoolID::DYNAMIC_UPLOAD)
+	if ((info.initPoolFlag & eMemoryPoolID::DYNAMIC_UPLOAD) == eMemoryPoolID::DYNAMIC_UPLOAD)
 	{
-		_dyanamicPoolUpload = new GpuDynamicMemoryPool((int)ePoolID::DYNAMIC_UPLOAD, info.dynamicUploadMaxSize, false);
+		_dyanamicPoolUpload = new GpuDynamicMemoryPool((int)eMemoryPoolID::DYNAMIC_UPLOAD, info.dynamicUploadMaxSize, false);
 	}
 }
 
@@ -35,26 +35,26 @@ void GpuMemoryPoolManager::Release()
 	delete _dyanamicPoolUpload;
 }
 
-bool GpuMemoryPoolManager::GetMemory(ePoolID poolID, eGpuMemoryPoolType type, UINT64 size, OUT GpuMemoryHandle& handle)
+bool GpuMemoryPoolManager::GetMemory(eMemoryPoolID poolID, eGpuMemoryPoolType type, UINT64 size, OUT GpuMemoryHandle& handle)
 {
-	if (HasFlag(_usingPoolIDs, poolID) == false) return false;
+	if (HasFlag(_usingMemoryPoolIDs, poolID) == false) return false;
 
 	bool isSuccess = false;
 	switch (poolID)
 	{
-	case ePoolID::BUMP:
+	case eMemoryPoolID::BUMP:
 		isSuccess = _bumpPool->GetMemoryHandle(type, size, handle);
 		break;
-	case ePoolID::DYNAMIC:
+	case eMemoryPoolID::DYNAMIC:
 		isSuccess = _dynamicPool->GetMemoryHandle(type, size, handle);
 		break;
-	case ePoolID::BUMP_ONLY_64KB:
+	case eMemoryPoolID::BUMP_ONLY_64KB:
 		isSuccess = _bumpPoolOnly64KB->GetMemoryHandle(type, size, handle);
 		break;
-	case ePoolID::DYNAMIC_ONLY_64:
+	case eMemoryPoolID::DYNAMIC_ONLY_64:
 		isSuccess = _dynamicPoolOnly64KB->GetMemoryHandle(type, size, handle);
 		break;
-	case ePoolID::DYNAMIC_UPLOAD:
+	case eMemoryPoolID::DYNAMIC_UPLOAD:
 		isSuccess = _dyanamicPoolUpload->GetMemoryHandle(type, size, handle);
 		break;
 	}
@@ -64,20 +64,20 @@ bool GpuMemoryPoolManager::GetMemory(ePoolID poolID, eGpuMemoryPoolType type, UI
 bool GpuMemoryPoolManager::ReleaseMemory(const GpuMemoryHandle & handle)
 {
 	bool isSuccess = false;
-	switch ((ePoolID)handle.memoryPoolID)
+	switch ((eMemoryPoolID)handle.memoryPoolID)
 	{
-	case ePoolID::BUMP:
-	case ePoolID::BUMP_ONLY_64KB:
+	case eMemoryPoolID::BUMP:
+	case eMemoryPoolID::BUMP_ONLY_64KB:
 		// Bump 타입은 해제가 없음
 		assert(false);
 		break;
-	case ePoolID::DYNAMIC:
+	case eMemoryPoolID::DYNAMIC:
 		isSuccess = _dynamicPool->ReleaseMemoryHandle(handle.poolType, handle);
 		break;
-	case ePoolID::DYNAMIC_ONLY_64:
+	case eMemoryPoolID::DYNAMIC_ONLY_64:
 		isSuccess = _dynamicPoolOnly64KB->ReleaseMemoryHandle(handle.poolType, handle);
 		break;
-	case ePoolID::DYNAMIC_UPLOAD:
+	case eMemoryPoolID::DYNAMIC_UPLOAD:
 		isSuccess = _dyanamicPoolUpload->ReleaseMemoryHandle(handle.poolType, handle);
 		break;
 	}
@@ -108,21 +108,21 @@ void GpuMemoryPoolManager::ResetAllMemporyPool()
 	}
 }
 
-const ComPtr<ID3D12Heap>& GpuMemoryPoolManager::GetMemoryHeap(ePoolID poolID)
+const ComPtr<ID3D12Heap>& GpuMemoryPoolManager::GetMemoryHeap(eMemoryPoolID poolID)
 {
-	if(HasFlag(_usingPoolIDs, poolID) == false) return nullptr;
+	if(HasFlag(_usingMemoryPoolIDs, poolID) == false) return nullptr;
 
 	switch (poolID)
 	{
-	case ePoolID::BUMP:
+	case eMemoryPoolID::BUMP:
 		return _bumpPool->GetMemoryHeap();
-	case ePoolID::DYNAMIC:
+	case eMemoryPoolID::DYNAMIC:
 		return _dynamicPool->GetMemoryHeap();
-	case ePoolID::BUMP_ONLY_64KB:
+	case eMemoryPoolID::BUMP_ONLY_64KB:
 		return _bumpPoolOnly64KB->GetMemoryHeap();
-	case ePoolID::DYNAMIC_ONLY_64:
+	case eMemoryPoolID::DYNAMIC_ONLY_64:
 		return _dynamicPoolOnly64KB->GetMemoryHeap();
-	case ePoolID::DYNAMIC_UPLOAD:
+	case eMemoryPoolID::DYNAMIC_UPLOAD:
 		return _dyanamicPoolUpload->GetMemoryHeap();
 	}
 	return nullptr;

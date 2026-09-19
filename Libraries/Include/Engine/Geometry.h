@@ -1,37 +1,27 @@
 #pragma once
 
-template<typename T>
 class Geometry
 {
 public:
-	Geometry() {} 
-	~Geometry() {}
+	Geometry(Array<D3D12_INPUT_ELEMENT_DESC> desces, UINT8 vertexSize, Array<BYTE> vertices, UINT8 indexSize, Array<BYTE> indices);
+	~Geometry();
 
-	vector<D3D12_INPUT_ELEMENT_DESC> GetVertexDesc() { return T::GetDesc(); }
+	const Array<D3D12_INPUT_ELEMENT_DESC>& GetVertexDesc() { return _desces; }
 
-	uint32 GetVertexCount() { return static_cast<uint32>(_vertices.size()); }
-	void* GetVertexData() { return _vertices.data(); }
-	const vector<T>& GetVertices() { return _vertices; }
-	uint32 GetVertexSize() { return sizeof(T); };
-	uint32 GetVertexTotalSize() { return _vertices.size() * GetVertexSize(); }
+	UINT32 GetVertexCount() { return _vertices.GetCount() / _vertexSize; }
+	void* GetVertexData() { return _vertices.GetData(); }
+	UINT32 GetVertexSize() { return _vertexSize; };
 
-	uint32 GetIndexCount() { return static_cast<uint32>(_indices.size());  }
-	void* GetIndexData() { return _indices.data(); }
-	const vector<uint32>& GetIndices() { return _indices; }
-	uint32 GetIndexSize() { return sizeof(uint32); }
-	uint32 GetIndexTotalSize() { return _indices.size() * sizeof(uint32); }
-
-	void AddVertex(const T& vertex) { _vertices.push_back(vertex); }
-	void AddVertices(const vector<T>& vertices) { _vertices.insert(_vertices.end(), vertices.begin(), vertices.end()); }
-	void SetVertices(const vector<T>& vertices) { _vertices = vertices; }
-
-	void AddIndex(uint32 index) { _indices.push_back(index); }
-	void AddIndices(const vector<uint32>& indices) { _indices.insert(_indices.end(), indices.begin(), indices.end()); }
-	void SetIndices(const vector<uint32>& indices) { _indices = indices; }
-
-	const uint32 GetTotalSize() { return GetVertexTotalSize() + GetIndexTotalSize(); }
+	UINT32 GetIndexCount() { return _indices.GetCount() / _indexSize;  }
+	void* GetIndexData() { return _indices.GetData(); }
+	UINT32 GetIndexSize() { return _indexSize; }
 
 private:
-	vector<T> _vertices;
-	vector<uint32> _indices;
+	UINT8 _vertexSize;
+	UINT8 _indexSize;
+
+	Array<BYTE> _vertices;
+	Array<BYTE> _indices;
+
+	Array<D3D12_INPUT_ELEMENT_DESC> _desces;
 };

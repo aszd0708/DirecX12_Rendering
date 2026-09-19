@@ -19,9 +19,6 @@ public:
 	void CreateRootSignature();
 	void CreatePSO();
 
-	ShaderInfo GetShaderInfo() { return _info; }
-	void SetShaderInfo(ShaderInfo info) { _info = info; }
-
 	ComPtr<ID3DBlob> GetVsBlob() { return _vsBlob; }
 	ComPtr<ID3DBlob> GetPsBlob() { return _psBlob; }
 	ComPtr<ID3D12RootSignature> GetRootSignature() { return _signature; }

@@ -51,7 +51,7 @@ GpuBumpMemoryPool::GpuBumpMemoryPool(UINT8 poolID, bool using4MBSize) : GpuBumpM
 
 GpuBumpMemoryPool::GpuBumpMemoryPool(UINT8 poolID, UINT64 size, bool using4MBSize) : _poolID(poolID), _totalSize(size), _pages(ComputePageCount(using4MBSize))
 {
-	assert(poolID != (int)GpuMemoryPoolManager::ePoolID::DYNAMIC_UPLOAD);
+	assert(poolID != (int)GpuMemoryPoolManager::eMemoryPoolID::DYNAMIC_UPLOAD);
 	
 	CreateHeap();
 	

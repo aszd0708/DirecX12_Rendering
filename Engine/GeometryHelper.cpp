@@ -2,11 +2,15 @@
 #include "GeometryHelper.h"
 #include "VertexData.h"
 
-void GeometryHelper::CreateQuad(shared_ptr<Geometry<VertexColorData>> geometry, Color color)
+Geometry GeometryHelper::CreateQuadVertexColorData(Color color)
 {
-	vector<VertexColorData> vtx;
-	vtx.resize(4);
+	Geometry geometry = {};
 
+	geometry.desces = VertexColorData::GetDesc();
+
+	UINT32 vertexTotalSize = sizeof(VertexColorData) * 4;
+	geometry.vertices = Array<BYTE>(vertexTotalSize);
+	VertexColorData* vtx = (VertexColorData*)malloc(vertexTotalSize);
 	vtx[0].position = Vec3(-0.5f, -0.5f, 0.f);
 	vtx[0].color = color;
 	vtx[1].position = Vec3(-0.5f, 0.5f, 0.f);
@@ -15,19 +19,39 @@ void GeometryHelper::CreateQuad(shared_ptr<Geometry<VertexColorData>> geometry, 
 	vtx[2].color = color;
 	vtx[3].position = Vec3(0.5f, 0.5f, 0.f);
 	vtx[3].color = color;
-	geometry->SetVertices(vtx);
+	memcpy(geometry.vertices.GetData(), vtx, vertexTotalSize);
+	geometry.vertexSize = sizeof(VertexColorData);
+	free(vtx);
 
-	vector<uint32> idx = { 0, 1, 2, 2, 1, 3 };
-	geometry->SetIndices(idx);
+	UINT32 indexTotalSize = sizeof(UINT16) * 6;
+	geometry.indices = Array<BYTE>(indexTotalSize);
+	UINT16* idx = (UINT16*)malloc(indexTotalSize);
+	idx[0] = 0;
+	idx[1] = 1;
+	idx[2] = 2;
+	idx[3] = 2;
+	idx[4] = 1;
+	idx[5] = 3;
+	memcpy(geometry.indices.GetData(), idx, indexTotalSize);
+	geometry.indexSize = eIndexBufferSize::UINT_16;
+	free(idx);
+
+	return geometry;
 }
 
-void GeometryHelper::CreateCube(shared_ptr<Geometry<VertexColorData>> geometry, Color color)
+Geometry GeometryHelper::CreateCubeVertexColorData(Color color)
 {
+	Geometry geometry = {};
+
+	geometry.desces = VertexColorData::GetDesc();
+
 	float w2 = 0.5f;
 	float h2 = 0.5f;
 	float d2 = 0.5f;
 
-	vector<VertexColorData> vtx(24);
+	UINT32 vertexTotalSize = sizeof(VertexColorData) * 24;
+	geometry.vertices = Array<BYTE>(vertexTotalSize);
+	VertexColorData* vtx = (VertexColorData*)malloc(vertexTotalSize);
 
 	// 앞면
 	vtx[0] = VertexColorData{ Vec4(-w2, -h2, -d2, 1.0f), color };
@@ -60,9 +84,13 @@ void GeometryHelper::CreateCube(shared_ptr<Geometry<VertexColorData>> geometry, 
 	vtx[22] = VertexColorData{ Vec4(+w2, +h2, +d2, 1.0f), color };
 	vtx[23] = VertexColorData{ Vec4(+w2, -h2, +d2, 1.0f), color };
 
-	geometry->SetVertices(vtx);
+	memcpy(geometry.vertices.GetData(), vtx, vertexTotalSize);
+	geometry.vertexSize = sizeof(VertexColorData);
+	free(vtx);
 
-	vector<uint32> idx(36);
+	UINT32 indexTotalSize = sizeof(UINT16) * 36;
+	geometry.indices = Array<BYTE>(indexTotalSize);
+	UINT16* idx = (UINT16*)malloc(indexTotalSize);
 
 	// 앞면
 	idx[0] = 0; idx[1] = 1; idx[2] = 2;
@@ -83,23 +111,35 @@ void GeometryHelper::CreateCube(shared_ptr<Geometry<VertexColorData>> geometry, 
 	idx[30] = 20; idx[31] = 21; idx[32] = 22;
 	idx[33] = 20; idx[34] = 22; idx[35] = 23;
 
-	geometry->SetIndices(idx);
+	memcpy(geometry.indices.GetData(), idx, indexTotalSize);
+	geometry.indexSize = eIndexBufferSize::UINT_16;
+	free(idx);
+
+	return geometry;
 }
 
-void GeometryHelper::CreateSphere(shared_ptr<Geometry<VertexColorData>> geometry, Color color)
+Geometry GeometryHelper::CreateSphereVertexColorData(Color color)
 {
+	Geometry geometry = {};
+
+	geometry.desces = VertexColorData::GetDesc();
+
 	float radius = 0.5f; // 구의 반지름
 	uint32 stackCount = 20; // 가로 분할
 	uint32 sliceCount = 20; // 세로 분할
 
-	vector<VertexColorData> vtx;
+	UINT32 vertexTotalSize = sizeof(VertexColorData) * ((stackCount - 1) * (sliceCount + 1) + 2);
+	geometry.vertices = Array<BYTE>(vertexTotalSize);
+	VertexColorData* vtx = (VertexColorData*)malloc(vertexTotalSize);
+	UINT32 index = 0;
 
-	VertexColorData v;
 
 	// 북극
-	v.position = Vec4(0.0f, radius, 0.0f, 1.0f);
-	v.color = color;
-	vtx.push_back(v);
+	VertexColorData north;
+	north.position = Vec4(0.0f, radius, 0.0f, 1.0f);
+	north.color = color;
+	vtx[index] = north;
+	index++;
 
 	float stackAngle = XM_PI / stackCount;
 	float sliceAngle = XM_2PI / sliceCount;
@@ -117,6 +157,8 @@ void GeometryHelper::CreateSphere(shared_ptr<Geometry<VertexColorData>> geometry
 		{
 			float theta = x * sliceAngle;
 
+			VertexColorData v;
+
 			v.position.x = radius * sinf(phi) * cosf(theta);
 			v.position.y = radius * cosf(phi);
 			v.position.z = radius * sinf(phi) * sinf(theta);
@@ -124,28 +166,35 @@ void GeometryHelper::CreateSphere(shared_ptr<Geometry<VertexColorData>> geometry
 
 			v.color = color;
 
-			vtx.push_back(v);
+			vtx[index] = v;
+			index++;
 		}
 	}
 
 	// 남극
-	v.position = Vec4(0.0f, -radius, 0.0f, 1.0f);
-	v.color = color;
-	vtx.push_back(v);
+	VertexColorData south;
+	south.position = Vec4(0.0f, -radius, 0.0f, 1.0f);
+	south.color = color;
+	vtx[index] = south;
 
-	geometry->SetVertices(vtx);
+	memcpy(geometry.vertices.GetData(), vtx, vertexTotalSize);
+	geometry.vertexSize = sizeof(VertexColorData);
+	free(vtx);
 
-	vector<uint32> idx(36);
 
+	UINT32 indexTotalSize = sizeof(UINT16) * ((sliceCount + 1) * 3 + (stackCount - 2) * sliceCount * 6 + (sliceCount * 3));
+	geometry.indices = Array<BYTE>(indexTotalSize);
+	UINT16* idx = (UINT16*)malloc(indexTotalSize);
+	index = 0;
 	// 북극 인덱스
 	for (uint32 i = 0; i <= sliceCount; ++i)
 	{
 		//  [0]
 		//   |  \
 		//  [i+1]-[i+2]
-		idx.push_back(0);
-		idx.push_back(i + 2);
-		idx.push_back(i + 1);
+		idx[index++] = (0);
+		idx[index++] = (i + 2);
+		idx[index++] = (i + 1);
 	}
 
 	// 몸통 인덱스
@@ -157,37 +206,49 @@ void GeometryHelper::CreateSphere(shared_ptr<Geometry<VertexColorData>> geometry
 			//  [y, x]-[y, x+1]
 			//  |		/
 			//  [y+1, x]
-			idx.push_back(1 + (y)*ringVertexCount + (x));
-			idx.push_back(1 + (y)*ringVertexCount + (x + 1));
-			idx.push_back(1 + (y + 1) * ringVertexCount + (x));
+			idx[index++] = (1 + (y)*ringVertexCount + (x));
+			idx[index++] = (1 + (y)*ringVertexCount + (x + 1));
+			idx[index++] = (1 + (y + 1) * ringVertexCount + (x));
 			//		 [y, x+1]
 			//		 /	  |
 			//  [y+1, x]-[y+1, x+1]
-			idx.push_back(1 + (y + 1) * ringVertexCount + (x));
-			idx.push_back(1 + (y)*ringVertexCount + (x + 1));
-			idx.push_back(1 + (y + 1) * ringVertexCount + (x + 1));
+			idx[index++] =(1 + (y + 1) * ringVertexCount + (x));
+			idx[index++] =(1 + (y)*ringVertexCount + (x + 1));
+			idx[index++] =(1 + (y + 1) * ringVertexCount + (x + 1));
 		}
 	}
 
 	// 남극 인덱스
-	uint32 bottomIndex = static_cast<uint32>(vtx.size()) - 1;
+	uint32 bottomIndex = static_cast<uint32>(index - 1);
 	uint32 lastRingStartIndex = bottomIndex - ringVertexCount;
 	for (uint32 i = 0; i < sliceCount; ++i)
 	{
 		//  [last+i]-[last+i+1]
 		//  |      /
 		//  [bottom]
-		idx.push_back(bottomIndex);
-		idx.push_back(lastRingStartIndex + i);
-		idx.push_back(lastRingStartIndex + i + 1);
+		idx[index++] =(bottomIndex);
+		idx[index++] =(lastRingStartIndex + i);
+		idx[index++] =(lastRingStartIndex + i + 1);
 	}
 
-	geometry->SetIndices(idx);
+
+	memcpy(geometry.indices.GetData(), idx, indexTotalSize);
+	geometry.indexSize = eIndexBufferSize::UINT_16;
+	free(idx);
+
+	return geometry;
 }
 
-void GeometryHelper::CreateGrid(shared_ptr<Geometry<VertexColorData>> geometry, int32 sizeX, int32 sizeZ, Color color)
+Geometry GeometryHelper::CreateGridVertexColorData(int32 sizeX, int32 sizeZ, Color color)
 {
-	vector<VertexColorData> vtx;
+	Geometry geometry = {};
+
+	geometry.desces = VertexColorData::GetDesc();
+
+	UINT32 vertexTotalSize = sizeof(VertexColorData) * ((sizeZ + 1) * (sizeX + 1));
+	geometry.vertices = Array<BYTE>(vertexTotalSize);
+	VertexColorData* vtx = (VertexColorData*)malloc(vertexTotalSize);
+	UINT32 index = 0;
 
 	for (int32 z = 0; z < sizeZ + 1; z++)
 	{
@@ -197,13 +258,18 @@ void GeometryHelper::CreateGrid(shared_ptr<Geometry<VertexColorData>> geometry, 
 			v.position = Vec4(static_cast<float>(x), 0, static_cast<float>(z), 1.0f);
 			v.color = color;
 
-			vtx.push_back(v);
+			vtx[index++] = v;
 		}
 	}
 
-	geometry->SetVertices(vtx);
+	memcpy(geometry.vertices.GetData(), vtx, vertexTotalSize);
+	geometry.vertexSize = sizeof(VertexColorData);
+	free(vtx);
 
-	vector<uint32> idx;
+	UINT32 indexTotalSize = sizeof(UINT16) * (sizeX * sizeZ * 6);
+	geometry.indices = Array<BYTE>(indexTotalSize);
+	UINT16* idx = (UINT16*)malloc(indexTotalSize);
+	index = 0;
 
 	for (int32 z = 0; z < sizeZ; z++)
 	{
@@ -212,27 +278,34 @@ void GeometryHelper::CreateGrid(shared_ptr<Geometry<VertexColorData>> geometry, 
 			//  [0]
 			//   |	\
 			//  [2] - [1]
-			idx.push_back((sizeX + 1) * (z + 1) + (x));
-			idx.push_back((sizeX + 1) * (z)+(x + 1));
-			idx.push_back((sizeX + 1) * (z)+(x));
+			idx[index++] = ((sizeX + 1) * (z + 1) + (x));
+			idx[index++] = ((sizeX + 1) * (z)+(x + 1));
+			idx[index++] = ((sizeX + 1) * (z)+(x));
 			//  [1] - [2]
 			//   	\  |
 			//		  [0]
-			idx.push_back((sizeX + 1) * (z)+(x + 1));
-			idx.push_back((sizeX + 1) * (z + 1) + (x));
-			idx.push_back((sizeX + 1) * (z + 1) + (x + 1));
+			idx[index++] = ((sizeX + 1) * (z)+(x + 1));
+			idx[index++] = ((sizeX + 1) * (z + 1) + (x));
+			idx[index++] = ((sizeX + 1) * (z + 1) + (x + 1));
 		}
 	}
 
-	geometry->SetIndices(idx);
+	memcpy(geometry.indices.GetData(), idx, indexTotalSize);
+	geometry.indexSize = eIndexBufferSize::UINT_16;
+	free(idx);
+
+	return geometry;
 }
 
-
-void GeometryHelper::CreateQuad(shared_ptr<Geometry<VertexTextureData>> geometry)
+Geometry GeometryHelper::CreateQuadVertexTextureData()
 {
-	vector<VertexTextureData> vtx;
-	vtx.resize(4);
+	Geometry geometry = {};
 
+	geometry.desces = VertexTextureData::GetDesc();
+
+	UINT32 vertexTotalSize = sizeof(VertexTextureData) * 4;
+	geometry.vertices = Array<BYTE>(vertexTotalSize);
+	VertexTextureData* vtx = (VertexTextureData*)malloc(vertexTotalSize);
 	vtx[0].position = Vec3(-0.5f, -0.5f, 0.f);
 	vtx[0].uv = Vec2(0.f, 1.f);
 	vtx[1].position = Vec3(-0.5f, 0.5f, 0.f);
@@ -241,19 +314,39 @@ void GeometryHelper::CreateQuad(shared_ptr<Geometry<VertexTextureData>> geometry
 	vtx[2].uv = Vec2(1.f, 1.f);
 	vtx[3].position = Vec3(0.5f, 0.5f, 0.f);
 	vtx[3].uv = Vec2(1.f, 0.f);
-	geometry->SetVertices(vtx);
+	memcpy(geometry.vertices.GetData(), vtx, vertexTotalSize);
+	geometry.vertexSize = sizeof(VertexTextureData);
+	free(vtx);
 
-	vector<uint32> idx = { 0, 1, 2, 2, 1, 3 };
-	geometry->SetIndices(idx);
+	UINT32 indexTotalSize = sizeof(UINT16) * 6;
+	geometry.indices = Array<BYTE>(indexTotalSize);
+	UINT16* idx = (UINT16*)malloc(indexTotalSize);
+	idx[0] = 0;
+	idx[1] = 1;
+	idx[2] = 2;
+	idx[3] = 2;
+	idx[4] = 1;
+	idx[5] = 3;
+	memcpy(geometry.indices.GetData(), idx, indexTotalSize);
+	geometry.indexSize = eIndexBufferSize::UINT_16;
+	free(idx);
+
+	return geometry;
 }
 
-void GeometryHelper::CreateCube(shared_ptr<Geometry<VertexTextureData>> geometry)
+Geometry GeometryHelper::CreateCubeVertexTextureData()
 {
+	Geometry geometry = {};
+
+	geometry.desces = VertexTextureData::GetDesc();
+
 	float w2 = 0.5f;
 	float h2 = 0.5f;
 	float d2 = 0.5f;
 
-	vector<VertexTextureData> vtx(24);
+	UINT32 vertexTotalSize = sizeof(VertexTextureData) * 24;
+	geometry.vertices = Array<BYTE>(vertexTotalSize);
+	VertexTextureData* vtx = (VertexTextureData*)malloc(vertexTotalSize);
 
 	// 앞면
 	vtx[0] = VertexTextureData{ Vec3(-w2, -h2, -d2), Vec2(0.0f, 1.0f) };
@@ -286,9 +379,13 @@ void GeometryHelper::CreateCube(shared_ptr<Geometry<VertexTextureData>> geometry
 	vtx[22] = VertexTextureData{ Vec3(+w2, +h2, +d2), Vec2(1.0f, 0.0f) };
 	vtx[23] = VertexTextureData{ Vec3(+w2, -h2, +d2), Vec2(1.0f, 1.0f) };
 
-	geometry->SetVertices(vtx);
+	memcpy(geometry.vertices.GetData(), vtx, vertexTotalSize);
+	geometry.vertexSize = sizeof(VertexTextureData);
+	free(vtx);
 
-	vector<uint32> idx(36);
+	UINT32 indexTotalSize = sizeof(UINT16) * 36;
+	geometry.indices = Array<BYTE>(indexTotalSize);
+	UINT16* idx = (UINT16*)malloc(indexTotalSize);
 
 	// 앞면
 	idx[0] = 0; idx[1] = 1; idx[2] = 2;
@@ -309,23 +406,34 @@ void GeometryHelper::CreateCube(shared_ptr<Geometry<VertexTextureData>> geometry
 	idx[30] = 20; idx[31] = 21; idx[32] = 22;
 	idx[33] = 20; idx[34] = 22; idx[35] = 23;
 
-	geometry->SetIndices(idx);
+	memcpy(geometry.indices.GetData(), idx, indexTotalSize);
+	geometry.indexSize = eIndexBufferSize::UINT_16;
+	free(idx);
+
+	return geometry;
 }
 
-void GeometryHelper::CreateSphere(shared_ptr<Geometry<VertexTextureData>> geometry)
+Geometry GeometryHelper::CreateSphereVertexTextureData()
 {
+	Geometry geometry = {};
+
+	geometry.desces = VertexTextureData::GetDesc();
+
 	float radius = 0.5f; // 구의 반지름
 	uint32 stackCount = 20; // 가로 분할
 	uint32 sliceCount = 20; // 세로 분할
 
-	vector<VertexTextureData> vtx;
-
-	VertexTextureData v;
+	UINT32 vertexTotalSize = sizeof(VertexTextureData) * ((stackCount - 1) * (sliceCount + 1) + 2);
+	geometry.vertices = Array<BYTE>(vertexTotalSize);
+	VertexTextureData* vtx = (VertexTextureData*)malloc(vertexTotalSize);
+	UINT32 index = 0;
 
 	// 북극
-	v.position = Vec3(0.0f, radius, 0.0f);
-	v.uv = Vec2(0.5f, 0.0f);
-	vtx.push_back(v);
+	VertexTextureData north;
+	north.position = Vec3(0.0f, radius, 0.0f);
+	north.uv = Vec2(0.5f, 0.0f);
+	vtx[index] = north;
+	index++;
 
 	float stackAngle = XM_PI / stackCount;
 	float sliceAngle = XM_2PI / sliceCount;
@@ -343,34 +451,43 @@ void GeometryHelper::CreateSphere(shared_ptr<Geometry<VertexTextureData>> geomet
 		{
 			float theta = x * sliceAngle;
 
+			VertexTextureData v;
+
 			v.position.x = radius * sinf(phi) * cosf(theta);
 			v.position.y = radius * cosf(phi);
 			v.position.z = radius * sinf(phi) * sinf(theta);
 
 			v.uv = Vec2(deltaU * x, deltaV * y);
 
-			vtx.push_back(v);
+			vtx[index] = v;
+			index++;
 		}
 	}
 
 	// 남극
-	v.position = Vec3(0.0f, -radius, 0.0f);
-	v.uv = Vec2(0.5f, 1.0f);
-	vtx.push_back(v);
+	VertexTextureData south;
+	south.position = Vec3(0.0f, -radius, 0.0f);
+	south.uv = Vec2(0.5f, 1.0f);
+	vtx[index] = south;
 
-	geometry->SetVertices(vtx);
+	memcpy(geometry.vertices.GetData(), vtx, vertexTotalSize);
+	geometry.vertexSize = sizeof(VertexTextureData);
+	free(vtx);
 
-	vector<uint32> idx(36);
 
+	UINT32 indexTotalSize = sizeof(UINT16) * ((sliceCount + 1) * 3 + (stackCount - 2) * sliceCount * 6 + (sliceCount * 3));
+	geometry.indices = Array<BYTE>(indexTotalSize);
+	UINT16* idx = (UINT16*)malloc(indexTotalSize);
+	index = 0;
 	// 북극 인덱스
 	for (uint32 i = 0; i <= sliceCount; ++i)
 	{
 		//  [0]
 		//   |  \
 		//  [i+1]-[i+2]
-		idx.push_back(0);
-		idx.push_back(i + 2);
-		idx.push_back(i + 1);
+		idx[index++] = (0);
+		idx[index++] = (i + 2);
+		idx[index++] = (i + 1);
 	}
 
 	// 몸통 인덱스
@@ -382,37 +499,49 @@ void GeometryHelper::CreateSphere(shared_ptr<Geometry<VertexTextureData>> geomet
 			//  [y, x]-[y, x+1]
 			//  |		/
 			//  [y+1, x]
-			idx.push_back(1 + (y)*ringVertexCount + (x));
-			idx.push_back(1 + (y)*ringVertexCount + (x + 1));
-			idx.push_back(1 + (y + 1) * ringVertexCount + (x));
+			idx[index++] = (1 + (y)*ringVertexCount + (x));
+			idx[index++] = (1 + (y)*ringVertexCount + (x + 1));
+			idx[index++] = (1 + (y + 1) * ringVertexCount + (x));
 			//		 [y, x+1]
 			//		 /	  |
 			//  [y+1, x]-[y+1, x+1]
-			idx.push_back(1 + (y + 1) * ringVertexCount + (x));
-			idx.push_back(1 + (y)*ringVertexCount + (x + 1));
-			idx.push_back(1 + (y + 1) * ringVertexCount + (x + 1));
+			idx[index++] = (1 + (y + 1) * ringVertexCount + (x));
+			idx[index++] = (1 + (y)*ringVertexCount + (x + 1));
+			idx[index++] = (1 + (y + 1) * ringVertexCount + (x + 1));
 		}
 	}
 
 	// 남극 인덱스
-	uint32 bottomIndex = static_cast<uint32>(vtx.size()) - 1;
+	uint32 bottomIndex = static_cast<uint32>(index - 1);
 	uint32 lastRingStartIndex = bottomIndex - ringVertexCount;
 	for (uint32 i = 0; i < sliceCount; ++i)
 	{
 		//  [last+i]-[last+i+1]
 		//  |      /
 		//  [bottom]
-		idx.push_back(bottomIndex);
-		idx.push_back(lastRingStartIndex + i);
-		idx.push_back(lastRingStartIndex + i + 1);
+		idx[index++] = (bottomIndex);
+		idx[index++] = (lastRingStartIndex + i);
+		idx[index++] = (lastRingStartIndex + i + 1);
 	}
 
-	geometry->SetIndices(idx);
+
+	memcpy(geometry.indices.GetData(), idx, indexTotalSize);
+	geometry.indexSize = eIndexBufferSize::UINT_16;
+	free(idx);
+
+	return geometry;
 }
 
-void GeometryHelper::CreateGrid(shared_ptr<Geometry<VertexTextureData>> geometry, int32 sizeX, int32 sizeZ)
+Geometry GeometryHelper::CreateGridVertexTextureData(INT32 sizeX, INT32 sizeZ)
 {
-	vector<VertexTextureData> vtx;
+	Geometry geometry = {};
+
+	geometry.desces = VertexTextureData::GetDesc();
+
+	UINT32 vertexTotalSize = sizeof(VertexTextureData) * ((sizeZ + 1) * (sizeX + 1));
+	geometry.vertices = Array<BYTE>(vertexTotalSize);
+	VertexTextureData* vtx = (VertexTextureData*)malloc(vertexTotalSize);
+	UINT32 index = 0;
 
 	for (int32 z = 0; z < sizeZ + 1; z++)
 	{
@@ -422,13 +551,18 @@ void GeometryHelper::CreateGrid(shared_ptr<Geometry<VertexTextureData>> geometry
 			v.position = Vec3(static_cast<float>(x), 0, static_cast<float>(z));
 			v.uv = Vec2(static_cast<float>(x), static_cast<float>(z));
 
-			vtx.push_back(v);
+			vtx[index++] = v;
 		}
 	}
 
-	geometry->SetVertices(vtx);
+	memcpy(geometry.vertices.GetData(), vtx, vertexTotalSize);
+	geometry.vertexSize = sizeof(VertexTextureData);
+	free(vtx);
 
-	vector<uint32> idx;
+	UINT32 indexTotalSize = sizeof(UINT16) * (sizeX * sizeZ * 6);
+	geometry.indices = Array<BYTE>(indexTotalSize);
+	UINT16* idx = (UINT16*)malloc(indexTotalSize);
+	index = 0;
 
 	for (int32 z = 0; z < sizeZ; z++)
 	{
@@ -437,26 +571,34 @@ void GeometryHelper::CreateGrid(shared_ptr<Geometry<VertexTextureData>> geometry
 			//  [0]
 			//   |	\
 			//  [2] - [1]
-			idx.push_back((sizeX + 1) * (z + 1) + (x));
-			idx.push_back((sizeX + 1) * (z)+(x + 1));
-			idx.push_back((sizeX + 1) * (z)+(x));
+			idx[index++] = ((sizeX + 1) * (z + 1) + (x));
+			idx[index++] = ((sizeX + 1) * (z)+(x + 1));
+			idx[index++] = ((sizeX + 1) * (z)+(x));
 			//  [1] - [2]
 			//   	\  |
 			//		  [0]
-			idx.push_back((sizeX + 1) * (z)+(x + 1));
-			idx.push_back((sizeX + 1) * (z + 1) + (x));
-			idx.push_back((sizeX + 1) * (z + 1) + (x + 1));
+			idx[index++] = ((sizeX + 1) * (z)+(x + 1));
+			idx[index++] = ((sizeX + 1) * (z + 1) + (x));
+			idx[index++] = ((sizeX + 1) * (z + 1) + (x + 1));
 		}
 	}
 
-	geometry->SetIndices(idx);
+	memcpy(geometry.indices.GetData(), idx, indexTotalSize);
+	geometry.indexSize = eIndexBufferSize::UINT_16;
+	free(idx);
+
+	return geometry;
 }
 
-void GeometryHelper::CreateQuad(shared_ptr<Geometry<VertexTextureNormalData>> geometry)
+Geometry GeometryHelper::CreateQuadVertexTextureNormalData()
 {
-	vector<VertexTextureNormalData> vtx;
-	vtx.resize(4);
+	Geometry geometry = {};
 
+	//geometry.descs = VertexTextureNormalData::GetDesc();
+
+	UINT32 vertexTotalSize = sizeof(VertexTextureNormalData) * 4;
+	geometry.vertices = Array<BYTE>(vertexTotalSize);
+	VertexTextureNormalData* vtx = (VertexTextureNormalData*)malloc(vertexTotalSize);
 	vtx[0].position = Vec3(-0.5f, -0.5f, 0.f);
 	vtx[0].uv = Vec2(0.f, 1.f);
 	vtx[0].normal = Vec3(0.f, 0.f, -1.f);
@@ -468,20 +610,40 @@ void GeometryHelper::CreateQuad(shared_ptr<Geometry<VertexTextureNormalData>> ge
 	vtx[2].normal = Vec3(0.f, 0.f, -1.f);
 	vtx[3].position = Vec3(0.5f, 0.5f, 0.f);
 	vtx[3].uv = Vec2(1.f, 0.f);
-	vtx[2].normal = Vec3(0.f, 0.f, -1.f);
-	geometry->SetVertices(vtx);
+	vtx[3].normal = Vec3(0.f, 0.f, -1.f);
+	memcpy(geometry.vertices.GetData(), vtx, vertexTotalSize);
+	geometry.vertexSize = sizeof(VertexTextureNormalData);
+	free(vtx);
 
-	vector<uint32> idx = { 0, 1, 2, 2, 1, 3 };
-	geometry->SetIndices(idx);
+	UINT32 indexTotalSize = sizeof(UINT16) * 6;
+	geometry.indices = Array<BYTE>(indexTotalSize);
+	UINT16* idx = (UINT16*)malloc(indexTotalSize);
+	idx[0] = 0;
+	idx[1] = 1;
+	idx[2] = 2;
+	idx[3] = 2;
+	idx[4] = 1;
+	idx[5] = 3;
+	memcpy(geometry.indices.GetData(), idx, indexTotalSize);
+	geometry.indexSize = eIndexBufferSize::UINT_16;
+	free(idx);
+
+	return geometry;
 }
 
-void GeometryHelper::CreateCube(shared_ptr<Geometry<VertexTextureNormalData>> geometry)
+Geometry GeometryHelper::CreateCubeVertexTextureNormalData()
 {
+	Geometry geometry = {};
+
+	//geometry.descs = VertexTextureNormalData::GetDesc();
+
 	float w2 = 0.5f;
 	float h2 = 0.5f;
 	float d2 = 0.5f;
 
-	vector<VertexTextureNormalData> vtx(24);
+	UINT32 vertexTotalSize = sizeof(VertexTextureNormalData) * 24;
+	geometry.vertices = Array<BYTE>(vertexTotalSize);
+	VertexTextureNormalData* vtx = (VertexTextureNormalData*)malloc(vertexTotalSize);
 
 	// 앞면
 	vtx[0] = VertexTextureNormalData(Vec3(-w2, -h2, -d2), Vec2(0.0f, 1.0f), Vec3(0.0f, 0.0f, -1.0f));
@@ -514,9 +676,13 @@ void GeometryHelper::CreateCube(shared_ptr<Geometry<VertexTextureNormalData>> ge
 	vtx[22] = VertexTextureNormalData(Vec3(+w2, +h2, +d2), Vec2(1.0f, 0.0f), Vec3(1.0f, 0.0f, 0.0f));
 	vtx[23] = VertexTextureNormalData(Vec3(+w2, -h2, +d2), Vec2(1.0f, 1.0f), Vec3(1.0f, 0.0f, 0.0f));
 
-	geometry->SetVertices(vtx);
+	memcpy(geometry.vertices.GetData(), vtx, vertexTotalSize);
+	geometry.vertexSize = sizeof(VertexTextureNormalData);
+	free(vtx);
 
-	vector<uint32> idx(36);
+	UINT32 indexTotalSize = sizeof(UINT16) * 36;
+	geometry.indices = Array<BYTE>(indexTotalSize);
+	UINT16* idx = (UINT16*)malloc(indexTotalSize);
 
 	// 앞면
 	idx[0] = 0; idx[1] = 1; idx[2] = 2;
@@ -537,12 +703,23 @@ void GeometryHelper::CreateCube(shared_ptr<Geometry<VertexTextureNormalData>> ge
 	idx[30] = 20; idx[31] = 21; idx[32] = 22;
 	idx[33] = 20; idx[34] = 22; idx[35] = 23;
 
-	geometry->SetIndices(idx);
+	memcpy(geometry.indices.GetData(), idx, indexTotalSize);
+	geometry.indexSize = eIndexBufferSize::UINT_16;
+	free(idx);
+
+	return geometry;
 }
 
-void GeometryHelper::CreateGrid(shared_ptr<Geometry<VertexTextureNormalData>> geometry, int32 sizeX, int32 sizeZ)
+Geometry GeometryHelper::CreateGridVertexTextureNormalData(INT32 sizeX, INT32 sizeZ)
 {
-	vector<VertexTextureNormalData> vtx;
+	Geometry geometry = {};
+
+	//geometry.descs = VertexTextureNormalData::GetDesc();
+
+	UINT32 vertexTotalSize = sizeof(VertexTextureNormalData) * ((sizeZ + 1) * (sizeX + 1));
+	geometry.vertices = Array<BYTE>(vertexTotalSize);
+	VertexTextureNormalData* vtx = (VertexTextureNormalData*)malloc(vertexTotalSize);
+	UINT32 index = 0;
 
 	for (int32 z = 0; z < sizeZ + 1; z++)
 	{
@@ -553,13 +730,18 @@ void GeometryHelper::CreateGrid(shared_ptr<Geometry<VertexTextureNormalData>> ge
 			v.uv = Vec2(static_cast<float>(x), static_cast<float>(sizeZ - z));
 			v.normal = Vec3(0.f, 1.f, 0.f);
 
-			vtx.push_back(v);
+			vtx[index++] = v;
 		}
 	}
 
-	geometry->SetVertices(vtx);
+	memcpy(geometry.vertices.GetData(), vtx, vertexTotalSize);
+	geometry.vertexSize = sizeof(VertexTextureNormalData);
+	free(vtx);
 
-	vector<uint32> idx;
+	UINT32 indexTotalSize = sizeof(UINT16) * (sizeX * sizeZ * 6);
+	geometry.indices = Array<BYTE>(indexTotalSize);
+	UINT16* idx = (UINT16*)malloc(indexTotalSize);
+	index = 0;
 
 	for (int32 z = 0; z < sizeZ; z++)
 	{
@@ -568,37 +750,48 @@ void GeometryHelper::CreateGrid(shared_ptr<Geometry<VertexTextureNormalData>> ge
 			//  [0]
 			//   |	\
 			//  [2] - [1]
-			idx.push_back((sizeX + 1) * (z + 1) + (x));
-			idx.push_back((sizeX + 1) * (z)+(x + 1));
-			idx.push_back((sizeX + 1) * (z)+(x));
+			idx[index++] = ((sizeX + 1) * (z + 1) + (x));
+			idx[index++] = ((sizeX + 1) * (z)+(x + 1));
+			idx[index++] = ((sizeX + 1) * (z)+(x));
 			//  [1] - [2]
 			//   	\  |
 			//		  [0]
-			idx.push_back((sizeX + 1) * (z)+(x + 1));
-			idx.push_back((sizeX + 1) * (z + 1) + (x));
-			idx.push_back((sizeX + 1) * (z + 1) + (x + 1));
+			idx[index++] = ((sizeX + 1) * (z)+(x + 1));
+			idx[index++] = ((sizeX + 1) * (z + 1) + (x));
+			idx[index++] = ((sizeX + 1) * (z + 1) + (x + 1));
 		}
 	}
 
-	geometry->SetIndices(idx);
+	memcpy(geometry.indices.GetData(), idx, indexTotalSize);
+	geometry.indexSize = eIndexBufferSize::UINT_16;
+	free(idx);
+
+	return geometry;
 }
 
-void GeometryHelper::CreateSphere(shared_ptr<Geometry<VertexTextureNormalData>> geometry)
+Geometry GeometryHelper::CreateSphereVertexTextureNormalData()
 {
+	Geometry geometry = {};
+
+	//geometry.descs = VertexTextureNormalData::GetDesc();
+
 	float radius = 0.5f; // 구의 반지름
 	uint32 stackCount = 20; // 가로 분할
 	uint32 sliceCount = 20; // 세로 분할
 
-	vector<VertexTextureNormalData> vtx;
-
-	VertexTextureNormalData v;
+	UINT32 vertexTotalSize = sizeof(VertexTextureNormalData) * ((stackCount - 1) * (sliceCount + 1) + 2);
+	geometry.vertices = Array<BYTE>(vertexTotalSize);
+	VertexTextureNormalData* vtx = (VertexTextureNormalData*)malloc(vertexTotalSize);
+	UINT32 index = 0;
 
 	// 북극
-	v.position = Vec3(0.0f, radius, 0.0f);
-	v.uv = Vec2(0.5f, 0.0f);
-	v.normal = v.position;
-	v.normal.Normalize();
-	vtx.push_back(v);
+	VertexTextureNormalData north;
+	north.position = Vec3(0.0f, radius, 0.0f);
+	north.uv = Vec2(0.5f, 0.0f);
+	north.normal = north.position;
+	north.normal.Normalize();
+	vtx[index] = north;
+	index++;
 
 	float stackAngle = XM_PI / stackCount;
 	float sliceAngle = XM_2PI / sliceCount;
@@ -616,6 +809,8 @@ void GeometryHelper::CreateSphere(shared_ptr<Geometry<VertexTextureNormalData>> 
 		{
 			float theta = x * sliceAngle;
 
+			VertexTextureNormalData v;
+
 			v.position.x = radius * sinf(phi) * cosf(theta);
 			v.position.y = radius * cosf(phi);
 			v.position.z = radius * sinf(phi) * sinf(theta);
@@ -625,30 +820,37 @@ void GeometryHelper::CreateSphere(shared_ptr<Geometry<VertexTextureNormalData>> 
 			v.normal = v.position;
 			v.normal.Normalize();
 
-			vtx.push_back(v);
+			vtx[index] = v;
+			index++;
 		}
 	}
 
 	// 남극
-	v.position = Vec3(0.0f, -radius, 0.0f);
-	v.uv = Vec2(0.5f, 1.0f);
-	v.normal = v.position;
-	v.normal.Normalize();
-	vtx.push_back(v);
+	VertexTextureNormalData south;
+	south.position = Vec3(0.0f, -radius, 0.0f);
+	south.uv = Vec2(0.5f, 1.0f);
+	south.normal = south.position;
+	south.normal.Normalize();
+	vtx[index] = south;
 
-	geometry->SetVertices(vtx);
+	memcpy(geometry.vertices.GetData(), vtx, vertexTotalSize);
+	geometry.vertexSize = sizeof(VertexTextureNormalData);
+	free(vtx);
 
-	vector<uint32> idx(36);
 
+	UINT32 indexTotalSize = sizeof(UINT16) * ((sliceCount + 1) * 3 + (stackCount - 2) * sliceCount * 6 + (sliceCount * 3));
+	geometry.indices = Array<BYTE>(indexTotalSize);
+	UINT16* idx = (UINT16*)malloc(indexTotalSize);
+	index = 0;
 	// 북극 인덱스
 	for (uint32 i = 0; i <= sliceCount; ++i)
 	{
 		//  [0]
 		//   |  \
 		//  [i+1]-[i+2]
-		idx.push_back(0);
-		idx.push_back(i + 2);
-		idx.push_back(i + 1);
+		idx[index++] = (0);
+		idx[index++] = (i + 2);
+		idx[index++] = (i + 1);
 	}
 
 	// 몸통 인덱스
@@ -660,39 +862,48 @@ void GeometryHelper::CreateSphere(shared_ptr<Geometry<VertexTextureNormalData>> 
 			//  [y, x]-[y, x+1]
 			//  |		/
 			//  [y+1, x]
-			idx.push_back(1 + (y)*ringVertexCount + (x));
-			idx.push_back(1 + (y)*ringVertexCount + (x + 1));
-			idx.push_back(1 + (y + 1) * ringVertexCount + (x));
+			idx[index++] = (1 + (y)*ringVertexCount + (x));
+			idx[index++] = (1 + (y)*ringVertexCount + (x + 1));
+			idx[index++] = (1 + (y + 1) * ringVertexCount + (x));
 			//		 [y, x+1]
 			//		 /	  |
 			//  [y+1, x]-[y+1, x+1]
-			idx.push_back(1 + (y + 1) * ringVertexCount + (x));
-			idx.push_back(1 + (y)*ringVertexCount + (x + 1));
-			idx.push_back(1 + (y + 1) * ringVertexCount + (x + 1));
+			idx[index++] = (1 + (y + 1) * ringVertexCount + (x));
+			idx[index++] = (1 + (y)*ringVertexCount + (x + 1));
+			idx[index++] = (1 + (y + 1) * ringVertexCount + (x + 1));
 		}
 	}
 
 	// 남극 인덱스
-	uint32 bottomIndex = static_cast<uint32>(vtx.size()) - 1;
+	uint32 bottomIndex = static_cast<uint32>(index - 1);
 	uint32 lastRingStartIndex = bottomIndex - ringVertexCount;
 	for (uint32 i = 0; i < sliceCount; ++i)
 	{
 		//  [last+i]-[last+i+1]
 		//  |      /
 		//  [bottom]
-		idx.push_back(bottomIndex);
-		idx.push_back(lastRingStartIndex + i);
-		idx.push_back(lastRingStartIndex + i + 1);
+		idx[index++] = (bottomIndex);
+		idx[index++] = (lastRingStartIndex + i);
+		idx[index++] = (lastRingStartIndex + i + 1);
 	}
 
-	geometry->SetIndices(idx);
+
+	memcpy(geometry.indices.GetData(), idx, indexTotalSize);
+	geometry.indexSize = eIndexBufferSize::UINT_16;
+	free(idx);
+
+	return geometry;
 }
 
-void GeometryHelper::CreateQuad(shared_ptr<Geometry<VertexTextureNormalTangentData>> geometry)
+Geometry GeometryHelper::CreateQuadVertexTextureNormalTangentData()
 {
-	vector<VertexTextureNormalTangentData> vtx;
-	vtx.resize(4);
+	Geometry geometry = {};
 
+	//geometry.descs = VertexTextureNormalTangentData::GetDesc();
+
+	UINT32 vertexTotalSize = sizeof(VertexTextureNormalTangentData) * 4;
+	geometry.vertices = Array<BYTE>(vertexTotalSize);
+	VertexTextureNormalTangentData* vtx = (VertexTextureNormalTangentData*)malloc(vertexTotalSize);
 	vtx[0].position = Vec3(-0.5f, -0.5f, 0.f);
 	vtx[0].uv = Vec2(0.f, 1.f);
 	vtx[0].normal = Vec3(0.f, 0.f, -1.f);
@@ -709,19 +920,39 @@ void GeometryHelper::CreateQuad(shared_ptr<Geometry<VertexTextureNormalTangentDa
 	vtx[3].uv = Vec2(1.f, 0.f);
 	vtx[3].normal = Vec3(0.f, 0.f, -1.f);
 	vtx[3].tangent = Vec3(1.0f, 0.0f, 0.0f);
-	geometry->SetVertices(vtx);
+	memcpy(geometry.vertices.GetData(), vtx, vertexTotalSize);
+	geometry.vertexSize = sizeof(VertexTextureNormalTangentData);
+	free(vtx);
 
-	vector<uint32> idx = { 0, 1, 2, 2, 1, 3 };
-	geometry->SetIndices(idx);
+	UINT32 indexTotalSize = sizeof(UINT16) * 6;
+	geometry.indices = Array<BYTE>(indexTotalSize);
+	UINT16* idx = (UINT16*)malloc(indexTotalSize);
+	idx[0] = 0;
+	idx[1] = 1;
+	idx[2] = 2;
+	idx[3] = 2;
+	idx[4] = 1;
+	idx[5] = 3;
+	memcpy(geometry.indices.GetData(), idx, indexTotalSize);
+	geometry.indexSize = eIndexBufferSize::UINT_16;
+	free(idx);
+
+	return geometry;
 }
 
-void GeometryHelper::CreateCube(shared_ptr<Geometry<VertexTextureNormalTangentData>> geometry)
+Geometry GeometryHelper::CreateCubeVertexTextureNormalTangentData()
 {
+	Geometry geometry = {};
+
+	//geometry.descs = VertexTextureNormalTangentData::GetDesc();
+
 	float w2 = 0.5f;
 	float h2 = 0.5f;
 	float d2 = 0.5f;
 
-	vector<VertexTextureNormalTangentData> vtx(24);
+	UINT32 vertexTotalSize = sizeof(VertexTextureNormalTangentData) * 24;
+	geometry.vertices = Array<BYTE>(vertexTotalSize);
+	VertexTextureNormalTangentData* vtx = (VertexTextureNormalTangentData*)malloc(vertexTotalSize);
 
 	// 앞면
 	vtx[0] = VertexTextureNormalTangentData(Vec3(-w2, -h2, -d2), Vec2(0.0f, 1.0f), Vec3(0.0f, 0.0f, -1.0f), Vec3(1.0f, 0.0f, 0.0f));
@@ -754,9 +985,13 @@ void GeometryHelper::CreateCube(shared_ptr<Geometry<VertexTextureNormalTangentDa
 	vtx[22] = VertexTextureNormalTangentData(Vec3(+w2, +h2, +d2), Vec2(1.0f, 0.0f), Vec3(1.0f, 0.0f, 0.0f), Vec3(0.0f, 0.0f, 1.0f));
 	vtx[23] = VertexTextureNormalTangentData(Vec3(+w2, -h2, +d2), Vec2(1.0f, 1.0f), Vec3(1.0f, 0.0f, 0.0f), Vec3(0.0f, 0.0f, 1.0f));
 
-	geometry->SetVertices(vtx);
+	memcpy(geometry.vertices.GetData(), vtx, vertexTotalSize);
+	geometry.vertexSize = sizeof(VertexTextureNormalTangentData);
+	free(vtx);
 
-	vector<uint32> idx(36);
+	UINT32 indexTotalSize = sizeof(UINT16) * 36;
+	geometry.indices = Array<BYTE>(indexTotalSize);
+	UINT16* idx = (UINT16*)malloc(indexTotalSize);
 
 	// 앞면
 	idx[0] = 0; idx[1] = 1; idx[2] = 2;
@@ -777,12 +1012,23 @@ void GeometryHelper::CreateCube(shared_ptr<Geometry<VertexTextureNormalTangentDa
 	idx[30] = 20; idx[31] = 21; idx[32] = 22;
 	idx[33] = 20; idx[34] = 22; idx[35] = 23;
 
-	geometry->SetIndices(idx);
+	memcpy(geometry.indices.GetData(), idx, indexTotalSize);
+	geometry.indexSize = eIndexBufferSize::UINT_16;
+	free(idx);
+
+	return geometry;
 }
 
-void GeometryHelper::CreateGrid(shared_ptr<Geometry<VertexTextureNormalTangentData>> geometry, int32 sizeX, int32 sizeZ)
+Geometry GeometryHelper::CreateGridVertexTextureNormalTangentData(int32 sizeX, int32 sizeZ)
 {
-	vector<VertexTextureNormalTangentData> vtx;
+	Geometry geometry = {};
+
+	//geometry.descs = VertexTextureNormalTangentData::GetDesc();
+
+	UINT32 vertexTotalSize = sizeof(VertexTextureNormalTangentData) * ((sizeZ + 1) * (sizeX + 1));
+	geometry.vertices = Array<BYTE>(vertexTotalSize);
+	VertexTextureNormalTangentData* vtx = (VertexTextureNormalTangentData*)malloc(vertexTotalSize);
+	UINT32 index = 0;
 
 	for (int32 z = 0; z < sizeZ + 1; z++)
 	{
@@ -794,13 +1040,18 @@ void GeometryHelper::CreateGrid(shared_ptr<Geometry<VertexTextureNormalTangentDa
 			v.normal = Vec3(0.f, 1.f, 0.f);
 			v.tangent = Vec3(1.f, 0.f, 0.f);
 
-			vtx.push_back(v);
+			vtx[index++] = v;
 		}
 	}
 
-	geometry->SetVertices(vtx);
+	memcpy(geometry.vertices.GetData(), vtx, vertexTotalSize);
+	geometry.vertexSize = sizeof(VertexTextureNormalTangentData);
+	free(vtx);
 
-	vector<uint32> idx;
+	UINT32 indexTotalSize = sizeof(UINT16) * (sizeX * sizeZ * 6);
+	geometry.indices = Array<BYTE>(indexTotalSize);
+	UINT16* idx = (UINT16*)malloc(indexTotalSize);
+	index = 0;
 
 	for (int32 z = 0; z < sizeZ; z++)
 	{
@@ -809,39 +1060,50 @@ void GeometryHelper::CreateGrid(shared_ptr<Geometry<VertexTextureNormalTangentDa
 			//  [0]
 			//   |	\
 			//  [2] - [1]
-			idx.push_back((sizeX + 1) * (z + 1) + (x));
-			idx.push_back((sizeX + 1) * (z)+(x + 1));
-			idx.push_back((sizeX + 1) * (z)+(x));
+			idx[index++] = ((sizeX + 1) * (z + 1) + (x));
+			idx[index++] = ((sizeX + 1) * (z)+(x + 1));
+			idx[index++] = ((sizeX + 1) * (z)+(x));
 			//  [1] - [2]
 			//   	\  |
 			//		  [0]
-			idx.push_back((sizeX + 1) * (z)+(x + 1));
-			idx.push_back((sizeX + 1) * (z + 1) + (x));
-			idx.push_back((sizeX + 1) * (z + 1) + (x + 1));
+			idx[index++] = ((sizeX + 1) * (z)+(x + 1));
+			idx[index++] = ((sizeX + 1) * (z + 1) + (x));
+			idx[index++] = ((sizeX + 1) * (z + 1) + (x + 1));
 		}
 	}
 
-	geometry->SetIndices(idx);
+	memcpy(geometry.indices.GetData(), idx, indexTotalSize);
+	geometry.indexSize = eIndexBufferSize::UINT_16;
+	free(idx);
+
+	return geometry;
 }
 
-void GeometryHelper::CreateSphere(shared_ptr<Geometry<VertexTextureNormalTangentData>> geometry)
+Geometry GeometryHelper::CreateSphereVertexTextureNormalTangentData()
 {
+	Geometry geometry = {};
+
+	//geometry.descs = VertexTextureNormalTangentData::GetDesc();
+
 	float radius = 0.5f; // 구의 반지름
 	uint32 stackCount = 20; // 가로 분할
 	uint32 sliceCount = 20; // 세로 분할
 
-	vector<VertexTextureNormalTangentData> vtx;
-
-	VertexTextureNormalTangentData v;
+	UINT32 vertexTotalSize = sizeof(VertexTextureNormalTangentData) * ((stackCount - 1) * (sliceCount + 1) + 2);
+	geometry.vertices = Array<BYTE>(vertexTotalSize);
+	VertexTextureNormalTangentData* vtx = (VertexTextureNormalTangentData*)malloc(vertexTotalSize);
+	UINT32 index = 0;
 
 	// 북극
-	v.position = Vec3(0.0f, radius, 0.0f);
-	v.uv = Vec2(0.5f, 0.0f);
-	v.normal = v.position;
-	v.normal.Normalize();
-	v.tangent = Vec3(1.0f, 0.0f, 0.0f);
-	v.tangent.Normalize();
-	vtx.push_back(v);
+	VertexTextureNormalTangentData north;
+	north.position = Vec3(0.0f, radius, 0.0f);
+	north.uv = Vec2(0.5f, 0.0f);
+	north.normal = north.position;
+	north.normal.Normalize();
+	north.tangent = Vec3(1.0f, 0.0f, 0.0f);
+	north.tangent.Normalize();
+	vtx[index] = north;
+	index++;
 
 	float stackAngle = XM_PI / stackCount;
 	float sliceAngle = XM_2PI / sliceCount;
@@ -859,6 +1121,8 @@ void GeometryHelper::CreateSphere(shared_ptr<Geometry<VertexTextureNormalTangent
 		{
 			float theta = x * sliceAngle;
 
+			VertexTextureNormalTangentData v;
+
 			v.position.x = radius * sinf(phi) * cosf(theta);
 			v.position.y = radius * cosf(phi);
 			v.position.z = radius * sinf(phi) * sinf(theta);
@@ -873,32 +1137,39 @@ void GeometryHelper::CreateSphere(shared_ptr<Geometry<VertexTextureNormalTangent
 			v.tangent.z = radius * sinf(phi) * cosf(theta);
 			v.tangent.Normalize();
 
-			vtx.push_back(v);
+			vtx[index] = v;
+			index++;
 		}
 	}
 
 	// 남극
-	v.position = Vec3(0.0f, -radius, 0.0f);
-	v.uv = Vec2(0.5f, 1.0f);
-	v.normal = v.position;
-	v.normal.Normalize();
-	v.tangent = Vec3(1.0f, 0.0f, 0.0f);
-	v.tangent.Normalize();
-	vtx.push_back(v);
+	VertexTextureNormalTangentData south;
+	south.position = Vec3(0.0f, -radius, 0.0f);
+	south.uv = Vec2(0.5f, 1.0f);
+	south.normal = south.position;
+	south.normal.Normalize();
+	south.tangent = Vec3(1.0f, 0.0f, 0.0f);
+	south.tangent.Normalize();
+	vtx[index] = south;
 
-	geometry->SetVertices(vtx);
+	memcpy(geometry.vertices.GetData(), vtx, vertexTotalSize);
+	geometry.vertexSize = sizeof(VertexTextureNormalTangentData);
+	free(vtx);
 
-	vector<uint32> idx(36);
 
+	UINT32 indexTotalSize = sizeof(UINT16) * ((sliceCount + 1) * 3 + (stackCount - 2) * sliceCount * 6 + (sliceCount * 3));
+	geometry.indices = Array<BYTE>(indexTotalSize);
+	UINT16* idx = (UINT16*)malloc(indexTotalSize);
+	index = 0;
 	// 북극 인덱스
 	for (uint32 i = 0; i <= sliceCount; ++i)
 	{
 		//  [0]
 		//   |  \
 		//  [i+1]-[i+2]
-		idx.push_back(0);
-		idx.push_back(i + 2);
-		idx.push_back(i + 1);
+		idx[index++] = (0);
+		idx[index++] = (i + 2);
+		idx[index++] = (i + 1);
 	}
 
 	// 몸통 인덱스
@@ -910,30 +1181,35 @@ void GeometryHelper::CreateSphere(shared_ptr<Geometry<VertexTextureNormalTangent
 			//  [y, x]-[y, x+1]
 			//  |		/
 			//  [y+1, x]
-			idx.push_back(1 + (y)*ringVertexCount + (x));
-			idx.push_back(1 + (y)*ringVertexCount + (x + 1));
-			idx.push_back(1 + (y + 1) * ringVertexCount + (x));
+			idx[index++] = (1 + (y)*ringVertexCount + (x));
+			idx[index++] = (1 + (y)*ringVertexCount + (x + 1));
+			idx[index++] = (1 + (y + 1) * ringVertexCount + (x));
 			//		 [y, x+1]
 			//		 /	  |
 			//  [y+1, x]-[y+1, x+1]
-			idx.push_back(1 + (y + 1) * ringVertexCount + (x));
-			idx.push_back(1 + (y)*ringVertexCount + (x + 1));
-			idx.push_back(1 + (y + 1) * ringVertexCount + (x + 1));
+			idx[index++] = (1 + (y + 1) * ringVertexCount + (x));
+			idx[index++] = (1 + (y)*ringVertexCount + (x + 1));
+			idx[index++] = (1 + (y + 1) * ringVertexCount + (x + 1));
 		}
 	}
 
 	// 남극 인덱스
-	uint32 bottomIndex = static_cast<uint32>(vtx.size()) - 1;
+	uint32 bottomIndex = static_cast<uint32>(index - 1);
 	uint32 lastRingStartIndex = bottomIndex - ringVertexCount;
 	for (uint32 i = 0; i < sliceCount; ++i)
 	{
 		//  [last+i]-[last+i+1]
 		//  |      /
 		//  [bottom]
-		idx.push_back(bottomIndex);
-		idx.push_back(lastRingStartIndex + i);
-		idx.push_back(lastRingStartIndex + i + 1);
+		idx[index++] = (bottomIndex);
+		idx[index++] = (lastRingStartIndex + i);
+		idx[index++] = (lastRingStartIndex + i + 1);
 	}
 
-	geometry->SetIndices(idx);
+
+	memcpy(geometry.indices.GetData(), idx, indexTotalSize);
+	geometry.indexSize = eIndexBufferSize::UINT_16;
+	free(idx);
+
+	return geometry;
 }

@@ -51,9 +51,8 @@ void Shader::CreatePSO()
 		desc.PS = psByte;
 	}
 
-	vector<D3D12_INPUT_ELEMENT_DESC> desces = _info._inputLayoutDesc;
-	desc.InputLayout.NumElements = desces.size();
-	desc.InputLayout.pInputElementDescs = desces.data();
+	desc.InputLayout.NumElements = _info._inputLayoutDesc.GetCount();
+	desc.InputLayout.pInputElementDescs = &_info._inputLayoutDesc[0];
 
 	desc.SampleMask = UINT_MAX;
 	desc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);

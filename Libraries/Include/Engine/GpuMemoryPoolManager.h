@@ -3,8 +3,9 @@ class GpuMemoryPoolManager
 {
 	DECLARE_SINGLE(GpuMemoryPoolManager);
 
+	// Memory Pool
 public:
-	enum class ePoolID : UINT8
+	enum class eMemoryPoolID : UINT8
 	{
 		NONE = 0,
 
@@ -20,7 +21,7 @@ public:
 	};
 	struct sMemoryPoolManagerInfo
 	{
-		ePoolID initPoolFlag;
+		eMemoryPoolID initPoolFlag;
 		UINT64 bumbMaxSize;
 		UINT64 dynamicMaxSize;
 		UINT64 bumbOnly64KBMaxSize;
@@ -32,15 +33,15 @@ public:
 	void Init(sMemoryPoolManagerInfo info);
 	void Release();
 
-	bool GetMemory(ePoolID poolID, eGpuMemoryPoolType type, UINT64 size, OUT GpuMemoryHandle& handle);
+	bool GetMemory(eMemoryPoolID poolID, eGpuMemoryPoolType type, UINT64 size, OUT GpuMemoryHandle& handle);
 	bool ReleaseMemory(const GpuMemoryHandle& handle);
 
 	void ResetAllMemporyPool();
 
-	const ComPtr<ID3D12Heap>& GetMemoryHeap(ePoolID poolID);
+	const ComPtr<ID3D12Heap>& GetMemoryHeap(eMemoryPoolID poolID);
 
 private:
-	ePoolID _usingPoolIDs;
+	eMemoryPoolID _usingMemoryPoolIDs;
 
 	GpuBumpMemoryPool* _bumpPool = nullptr;
 	GpuDynamicMemoryPool* _dynamicPool = nullptr;
@@ -51,21 +52,21 @@ private:
 	GpuDynamicMemoryPool* _dyanamicPoolUpload = nullptr;
 };
 
-inline GpuMemoryPoolManager::ePoolID operator&(GpuMemoryPoolManager::ePoolID lhs, GpuMemoryPoolManager::ePoolID rhs)
+inline GpuMemoryPoolManager::eMemoryPoolID operator&(GpuMemoryPoolManager::eMemoryPoolID lhs, GpuMemoryPoolManager::eMemoryPoolID rhs)
 {
-	return static_cast<GpuMemoryPoolManager::ePoolID>(static_cast<UINT8>(lhs) & static_cast<UINT8>(rhs));
+	return static_cast<GpuMemoryPoolManager::eMemoryPoolID>(static_cast<UINT8>(lhs) & static_cast<UINT8>(rhs));
 }
 
-inline GpuMemoryPoolManager::ePoolID operator|(GpuMemoryPoolManager::ePoolID lhs, GpuMemoryPoolManager::ePoolID rhs)
+inline GpuMemoryPoolManager::eMemoryPoolID operator|(GpuMemoryPoolManager::eMemoryPoolID lhs, GpuMemoryPoolManager::eMemoryPoolID rhs)
 {
-	return static_cast<GpuMemoryPoolManager::ePoolID>(static_cast<UINT8>(lhs) | static_cast<UINT8>(rhs));
+	return static_cast<GpuMemoryPoolManager::eMemoryPoolID>(static_cast<UINT8>(lhs) | static_cast<UINT8>(rhs));
 }
 
-inline bool HasFlag(GpuMemoryPoolManager::ePoolID bitmask, GpuMemoryPoolManager::ePoolID flag)
+inline bool HasFlag(GpuMemoryPoolManager::eMemoryPoolID bitmask, GpuMemoryPoolManager::eMemoryPoolID flag)
 {
-	if (flag == GpuMemoryPoolManager::ePoolID::BUMP)
+	if (flag == GpuMemoryPoolManager::eMemoryPoolID::BUMP)
 	{
-		return bitmask == GpuMemoryPoolManager::ePoolID::BUMP;
+		return bitmask == GpuMemoryPoolManager::eMemoryPoolID::BUMP;
 	}
 
 	return (bitmask & flag) == flag;

@@ -27,8 +27,8 @@ Texture::~Texture()
 
 	switch (_memoryHandle.memoryPoolID)
 	{
-		case (UINT8)GpuMemoryPoolManager::ePoolID::DYNAMIC:
-		case (UINT8)GpuMemoryPoolManager::ePoolID::DYNAMIC_ONLY_64:
+		case (UINT8)GpuMemoryPoolManager::eMemoryPoolID::DYNAMIC:
+		case (UINT8)GpuMemoryPoolManager::eMemoryPoolID::DYNAMIC_ONLY_64:
 			D3D12_RESOURCE_DESC desc = _resource->GetDesc();
 			D3D12_RESOURCE_ALLOCATION_INFO info = DEVICE->GetResourceAllocationInfo(0, 1, &desc);
 			eGpuMemoryPoolType poolType = GetMemoryPoolType(info.Alignment);
@@ -66,10 +66,10 @@ void Texture::CreateResource()
 	defaultHeapDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
 	defaultHeapDesc.SampleDesc.Count = 1;
 	
-	ComPtr<ID3D12Heap> heap = GPU_MEM_POOL->GetMemoryHeap(GpuMemoryPoolManager::ePoolID::BUMP_ONLY_64KB);
+	ComPtr<ID3D12Heap> heap = GPU_MEM_POOL->GetMemoryHeap(GpuMemoryPoolManager::eMemoryPoolID::BUMP_ONLY_64KB);
 	D3D12_RESOURCE_ALLOCATION_INFO info = DEVICE->GetResourceAllocationInfo(0, 1, &defaultHeapDesc);
 	eGpuMemoryPoolType poolType = GetMemoryPoolType(info.Alignment);
-	bool isSuccess = GPU_MEM_POOL->GetMemory(GpuMemoryPoolManager::ePoolID::BUMP_ONLY_64KB, poolType, info.SizeInBytes, _memoryHandle);
+	bool isSuccess = GPU_MEM_POOL->GetMemory(GpuMemoryPoolManager::eMemoryPoolID::BUMP_ONLY_64KB, poolType, info.SizeInBytes, _memoryHandle);
 	assert(isSuccess);
 	ThrowIfFailed(DEVICE->CreatePlacedResource(heap.Get(), _memoryHandle.offset, &defaultHeapDesc, D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(_resource.GetAddressOf())));
 
@@ -84,11 +84,11 @@ void Texture::CreateResource()
 
 	D3D12_RESOURCE_DESC uploadHeapBuffer = CD3DX12_RESOURCE_DESC::Buffer(totalByte);
 
-	ComPtr<ID3D12Heap> uploadHeap = GPU_MEM_POOL->GetMemoryHeap(GpuMemoryPoolManager::ePoolID::DYNAMIC_UPLOAD);
+	ComPtr<ID3D12Heap> uploadHeap = GPU_MEM_POOL->GetMemoryHeap(GpuMemoryPoolManager::eMemoryPoolID::DYNAMIC_UPLOAD);
 	D3D12_RESOURCE_ALLOCATION_INFO uploadInfo = DEVICE->GetResourceAllocationInfo(0, 1, &uploadHeapBuffer);
 	eGpuMemoryPoolType uploadPoolType = GetMemoryPoolType(uploadInfo.Alignment);
 	GpuMemoryHandle uploadGpuHandle = {};
-	isSuccess = GPU_MEM_POOL->GetMemory(GpuMemoryPoolManager::ePoolID::DYNAMIC_UPLOAD, uploadPoolType, uploadInfo.SizeInBytes, uploadGpuHandle);
+	isSuccess = GPU_MEM_POOL->GetMemory(GpuMemoryPoolManager::eMemoryPoolID::DYNAMIC_UPLOAD, uploadPoolType, uploadInfo.SizeInBytes, uploadGpuHandle);
 	assert(isSuccess);
 
 	ThrowIfFailed(DEVICE->CreatePlacedResource(uploadHeap.Get(), uploadGpuHandle.offset, &uploadHeapBuffer, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(uploadResource.GetAddressOf())));

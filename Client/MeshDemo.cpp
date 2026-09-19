@@ -51,9 +51,6 @@ void MeshDemo::Update()
 	//ImGui::LabelText("Total Time  ", "%llu ms", _totalTime);
 
 	ImGui::LabelText("Current Count  ", "%d", _objCreatedCount);
-
-	ImGui::LabelText("Total Created Time  ", "%llu ms", _totalIncreaseTime);
-	ImGui::LabelText("Total Deleted Time  ", "%llu ms", _totalDeleteTime);
 	
 	if (INPUT->GetButtonUp(KEY_TYPE::I))
 	{
@@ -129,6 +126,7 @@ void MeshDemo::CreateCamera()
 
 void MeshDemo::CreateMesh()
 {
+/*
 	bool isSuccess = GetScene()->CreateGameObject(&_meshObj);
 	assert(isSuccess);
 	_meshObj->AddComponent<Transform>();
@@ -150,6 +148,7 @@ void MeshDemo::CreateMesh()
 	meshRednerer->Init(mesh, shader);
 
 	AddGameObject(_meshObj->GetMemoryEntry());
+	*/
 }
 
 void MeshDemo::CreateTextureMesh(int index)
@@ -162,14 +161,16 @@ void MeshDemo::CreateTextureMesh(int index)
 	Transform* t =obj->AddComponent<Transform>();
 	Vec3 pos = Vec3(rand() % 100, rand() % 100, rand() % 100);
 	t->SetPosition(pos);
-	shared_ptr<Geometry<VertexTextureData>> geometry = make_shared<Geometry<VertexTextureData>>();
-	GeometryHelper::CreateCube(geometry);
-	shared_ptr<Mesh<VertexTextureData>> mesh = make_shared<Mesh<VertexTextureData>>(geometry);
 
+	MeshInfo meshInfo = {};
+	meshInfo.filePath = L"CubeVertexTextureData";
+	meshInfo.geometry = GeometryHelper::CreateCubeVertexTextureData();
+	MemoryBlock meshMemoryBlock = {};
+	RESOURCES->GetMesh(meshInfo, GpuBufferPoolManager::eBufferPoolID::VERTEX_BUMP, GpuBufferPoolManager::eBufferPoolID::INDEX_BUMP, meshMemoryBlock);
 
 	ShaderInfo shaderInfo = {};
 	shaderInfo._path = L"TextureMesh";
-	shaderInfo._inputLayoutDesc = VertexTextureData::GetDesc();
+	shaderInfo._inputLayoutDesc = meshInfo.geometry.desces;
 	CD3DX12_ROOT_PARAMETER rootParams[3] = { {} };
 	for (int i = 0; i < 2; ++i)
 	{
@@ -184,9 +185,9 @@ void MeshDemo::CreateTextureMesh(int index)
 	shaderInfo._signatureRootParamCount = 3;
 	shaderInfo._sampler = CD3DX12_STATIC_SAMPLER_DESC(0);
 
-	shared_ptr<Shader> shader = make_shared<Shader>(shaderInfo);
+	shared_ptr<Shader> shader = make_shared<Shader>(move(shaderInfo));
 
-	MeshRenderer<VertexTextureData>* meshRednerer = obj->AddComponent<MeshRenderer<VertexTextureData>>();
+	MeshRenderer* meshRednerer = obj->AddComponent<MeshRenderer>();
 
 	TextureInfo textureInfo = {};
 	textureInfo.filePath = L"../Resources/Leather.jpg";
@@ -196,7 +197,7 @@ void MeshDemo::CreateTextureMesh(int index)
 	MemoryBlock textureMemoryBlock = {};
 	RESOURCES->GetTexture(textureInfo, textureMemoryBlock);
 
-	meshRednerer->Init(mesh, shader, textureMemoryBlock);
+	meshRednerer->Init(meshMemoryBlock, shader, textureMemoryBlock);
 
 	AddGameObject(obj->GetMemoryEntry());
 }
@@ -214,7 +215,7 @@ void MeshDemo::CreateCallBack()
 	
 	_curUsage = _vInfo->CurrentUsage;
 
-	for (int i = 0; i < 2; ++i)
+	for (int i = 0; i < 1; ++i)
 	{
 		if (_objCreatedCount >= MAX_COUNT) break;
 

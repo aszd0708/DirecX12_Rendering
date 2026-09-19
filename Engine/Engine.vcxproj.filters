@@ -88,6 +88,15 @@
     <Filter Include="00. Engine\Pool">
       <UniqueIdentifier>{bb991374-baca-4180-a349-1e01b4c9a9a3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="00. Engine\Pool\TexturePool">
+      <UniqueIdentifier>{d30ec5e3-c858-49ce-96d3-2cd2d617b6ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Graphics\GpuMemoryPool\Buffer">
+      <UniqueIdentifier>{aff359a7-02cc-489b-9114-7a9cc618b020}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Graphics\GpuMemoryPool\Memory">
+      <UniqueIdentifier>{758d4580-033f-4fe5-b253-daf7faddde11}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -116,9 +125,6 @@
     </ClInclude>
     <ClInclude Include="TimeManager.h">
       <Filter>02. Managers</Filter>
-    </ClInclude>
-    <ClInclude Include="Geometry.h">
-      <Filter>01. Graphics\Buffer</Filter>
     </ClInclude>
     <ClInclude Include="VertexData.h">
       <Filter>01. Graphics\Buffer</Filter>
@@ -226,12 +232,6 @@
     <ClInclude Include="DescHeapAllocatorManager.h">
       <Filter>02. Managers</Filter>
     </ClInclude>
-    <ClInclude Include="GpuMemoryInfo.h">
-      <Filter>01. Graphics\GpuMemoryPool</Filter>
-    </ClInclude>
-    <ClInclude Include="GpuBumpMemoryPool.h">
-      <Filter>01. Graphics\GpuMemoryPool</Filter>
-    </ClInclude>
     <ClInclude Include="DynamicArray.h">
       <Filter>99. Structures</Filter>
     </ClInclude>
@@ -244,20 +244,44 @@
     <ClInclude Include="Hash.h">
       <Filter>99. Structures</Filter>
     </ClInclude>
-    <ClInclude Include="GpuDynamicMemoryPool.h">
-      <Filter>01. Graphics\GpuMemoryPool</Filter>
-    </ClInclude>
     <ClInclude Include="GpuMemoryPoolManager.h">
       <Filter>02. Managers</Filter>
     </ClInclude>
     <ClInclude Include="ResourceManager.h">
       <Filter>02. Managers</Filter>
     </ClInclude>
-    <ClInclude Include="TexturePool.h">
-      <Filter>00. Engine\Pool</Filter>
-    </ClInclude>
     <ClInclude Include="TextureInfo.h">
-      <Filter>00. Engine\Pool</Filter>
+      <Filter>00. Engine\Pool\TexturePool</Filter>
+    </ClInclude>
+    <ClInclude Include="TexturePool.h">
+      <Filter>00. Engine\Pool\TexturePool</Filter>
+    </ClInclude>
+    <ClInclude Include="GpuBumpMemoryPool.h">
+      <Filter>01. Graphics\GpuMemoryPool\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="GpuDynamicMemoryPool.h">
+      <Filter>01. Graphics\GpuMemoryPool\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="GpuMemoryInfo.h">
+      <Filter>01. Graphics\GpuMemoryPool\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="GpuBumpBufferPool.h">
+      <Filter>01. Graphics\GpuMemoryPool\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="GpuBufferInfo.h">
+      <Filter>01. Graphics\GpuMemoryPool\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="GpuDynamicBufferPool.h">
+      <Filter>01. Graphics\GpuMemoryPool\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="GpuBufferPoolManager.h">
+      <Filter>02. Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshPool.h">
+      <Filter>00. Engine\Pool\TexturePool</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshInfo.h">
+      <Filter>00. Engine\Pool\TexturePool</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -278,9 +302,6 @@
     </ClCompile>
     <ClCompile Include="TimeManager.cpp">
       <Filter>02. Managers</Filter>
-    </ClCompile>
-    <ClCompile Include="Geometry.cpp">
-      <Filter>01. Graphics\Buffer</Filter>
     </ClCompile>
     <ClCompile Include="VertexData.cpp">
       <Filter>01. Graphics\Buffer</Filter>
@@ -381,12 +402,6 @@
     <ClCompile Include="DescHeapAllocatorManager.cpp">
       <Filter>02. Managers</Filter>
     </ClCompile>
-    <ClCompile Include="GpuMemoryInfo.cpp">
-      <Filter>01. Graphics\GpuMemoryPool</Filter>
-    </ClCompile>
-    <ClCompile Include="GpuBumpMemoryPool.cpp">
-      <Filter>01. Graphics\GpuMemoryPool</Filter>
-    </ClCompile>
     <ClCompile Include="DynamicArray.cpp">
       <Filter>99. Structures</Filter>
     </ClCompile>
@@ -399,20 +414,44 @@
     <ClCompile Include="Hash.cpp">
       <Filter>99. Structures</Filter>
     </ClCompile>
-    <ClCompile Include="GpuDynamicMemoryPool.cpp">
-      <Filter>01. Graphics\GpuMemoryPool</Filter>
-    </ClCompile>
     <ClCompile Include="GpuMemoryPoolManager.cpp">
       <Filter>02. Managers</Filter>
     </ClCompile>
     <ClCompile Include="ResourceManager.cpp">
       <Filter>02. Managers</Filter>
     </ClCompile>
-    <ClCompile Include="TexturePool.cpp">
-      <Filter>00. Engine\Pool</Filter>
-    </ClCompile>
     <ClCompile Include="TextureInfo.cpp">
-      <Filter>00. Engine\Pool</Filter>
+      <Filter>00. Engine\Pool\TexturePool</Filter>
+    </ClCompile>
+    <ClCompile Include="TexturePool.cpp">
+      <Filter>00. Engine\Pool\TexturePool</Filter>
+    </ClCompile>
+    <ClCompile Include="GpuBumpMemoryPool.cpp">
+      <Filter>01. Graphics\GpuMemoryPool\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="GpuDynamicMemoryPool.cpp">
+      <Filter>01. Graphics\GpuMemoryPool\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="GpuMemoryInfo.cpp">
+      <Filter>01. Graphics\GpuMemoryPool\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="GpuBumpBufferPool.cpp">
+      <Filter>01. Graphics\GpuMemoryPool\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="GpuBufferInfo.cpp">
+      <Filter>01. Graphics\GpuMemoryPool\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="GpuDynamicBufferPool.cpp">
+      <Filter>01. Graphics\GpuMemoryPool\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="GpuBufferPoolManager.cpp">
+      <Filter>02. Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshPool.cpp">
+      <Filter>00. Engine\Pool\TexturePool</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshInfo.cpp">
+      <Filter>00. Engine\Pool\TexturePool</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

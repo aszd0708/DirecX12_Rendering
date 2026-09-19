@@ -185,9 +185,12 @@ xcopy /Y "$(SolutionDir)Engine\*.inl" "$(SolutionDir)Libraries\Include\Engine"</
     <ClInclude Include="FileUtils.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject.h" />
-    <ClInclude Include="Geometry.h" />
     <ClInclude Include="GeometryHelper.h" />
     <ClInclude Include="GlobalBuffer.h" />
+    <ClInclude Include="GpuBumpBufferPool.h" />
+    <ClInclude Include="GpuDynamicBufferPool.h" />
+    <ClInclude Include="GpuBufferInfo.h" />
+    <ClInclude Include="GpuBufferPoolManager.h" />
     <ClInclude Include="GpuBumpMemoryPool.h" />
     <ClInclude Include="GpuDynamicMemoryPool.h" />
     <ClInclude Include="GpuMemoryInfo.h" />
@@ -206,6 +209,8 @@ xcopy /Y "$(SolutionDir)Engine\*.inl" "$(SolutionDir)Libraries\Include\Engine"</
     <ClInclude Include="imstb_truetype.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="MeshInfo.h" />
+    <ClInclude Include="MeshPool.h" />
     <ClInclude Include="MeshRenderer.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Renderer.h" />
@@ -242,9 +247,12 @@ xcopy /Y "$(SolutionDir)Engine\*.inl" "$(SolutionDir)Libraries\Include\Engine"</
     <ClCompile Include="FileUtils.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
-    <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="GeometryHelper.cpp" />
     <ClCompile Include="GlobalBuffer.cpp" />
+    <ClCompile Include="GpuBumpBufferPool.cpp" />
+    <ClCompile Include="GpuDynamicBufferPool.cpp" />
+    <ClCompile Include="GpuBufferInfo.cpp" />
+    <ClCompile Include="GpuBufferPoolManager.cpp" />
     <ClCompile Include="GpuBumpMemoryPool.cpp" />
     <ClCompile Include="GpuDynamicMemoryPool.cpp" />
     <ClCompile Include="GpuMemoryInfo.cpp" />
@@ -279,6 +287,8 @@ xcopy /Y "$(SolutionDir)Engine\*.inl" "$(SolutionDir)Libraries\Include\Engine"</
     </ClCompile>
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="MeshInfo.cpp" />
+    <ClCompile Include="MeshPool.cpp" />
     <ClCompile Include="MeshRenderer.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

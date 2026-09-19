@@ -54,8 +54,8 @@ public:
 
 private:
 	UINT8 _poolID;
-	UINT64 _totalSize;
 	UINT8 _totalPageCount;
+	UINT64 _totalSize;
 	Array<GpuBumpMemoryPage*> _pages;
 
 	ComPtr<ID3D12Heap> _memoryHeap;

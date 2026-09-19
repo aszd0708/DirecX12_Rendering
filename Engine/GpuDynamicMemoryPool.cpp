@@ -201,7 +201,7 @@ GpuDynamicMemoryPool::GpuDynamicMemoryPool(UINT8 poolID, UINT64 size, bool using
 {
 	CreateHeap();
 
-	if (_poolID == (int)(GpuMemoryPoolManager::ePoolID::DYNAMIC_UPLOAD))
+	if (_poolID == (int)(GpuMemoryPoolManager::eMemoryPoolID::DYNAMIC_UPLOAD))
 	{
 		using4MBSize = false;
 	}
@@ -251,7 +251,7 @@ void GpuDynamicMemoryPool::CreateHeap()
 	// Property
 	D3D12_HEAP_PROPERTIES properties;
 
-	if (_poolID == (int)(GpuMemoryPoolManager::ePoolID::DYNAMIC_UPLOAD))
+	if (_poolID == (int)(GpuMemoryPoolManager::eMemoryPoolID::DYNAMIC_UPLOAD))
 	{
 		properties.Type = D3D12_HEAP_TYPE_UPLOAD;
 		properties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;

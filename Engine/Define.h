@@ -33,6 +33,7 @@ public:										\
 #define DESC_POOL			GET_SINGLE(DescHeapAllocatorManager)
 #define CPU_MEM_POOL		GET_SINGLE(CpuMemoryPoolManager)
 #define GPU_MEM_POOL		GET_SINGLE(GpuMemoryPoolManager)
+#define GPU_BUFFER_POOL		GET_SINGLE(GpuBufferPoolManager)
 //#define SCENE		GET_SINGLE(SceneManager)
 //#define CUR_SCENE	SCENE->GetCurrentScene()
 

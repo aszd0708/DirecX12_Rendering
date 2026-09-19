@@ -87,7 +87,6 @@ inline void ThrowIfFailed(HRESULT hr)
 
 // Geometry
 #include "VertexData.h"
-#include "Geometry.h"
 #include "GeometryHelper.h"
 #include "Scene.h"
 
@@ -100,3 +99,6 @@ inline void ThrowIfFailed(HRESULT hr)
 #include "GpuBumpMemoryPool.h"
 #include "GpuDynamicMemoryPool.h"
 #include "DescriptorHeapAllocator.h"
+#include "GpuBufferInfo.h"
+#include "GpuBumpBufferPool.h"
+#include "GpuDynamicBufferPool.h"
