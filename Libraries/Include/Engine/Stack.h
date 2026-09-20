@@ -7,7 +7,7 @@ template<typename T>
 class Stack
 {
 private:
-	const UINT32 DEFAULT_CAPACITY = 32;
+	static const UINT32 DEFAULT_CAPACITY = 32;
 
 public:
 	Stack();

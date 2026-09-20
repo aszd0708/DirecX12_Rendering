@@ -5,6 +5,7 @@
 #include "CpuMemoryPoolManager.h"
 #include "GpuMemoryPoolManager.h"
 #include "GpuBufferPoolManager.h"
+#include "GpuCommandPool.h"
 
 WPARAM Game::Run(GameDesc& desc)
 {
@@ -38,6 +39,9 @@ WPARAM Game::Run(GameDesc& desc)
 	bufferInfo.bumpIndexMaxSize = 256 * (UINT64)1024;
 	bufferInfo.bumpVertexMaxSize = 256 * (UINT64)1024;
 	GPU_BUFFER_POOL->Init(bufferInfo);
+
+	// 일단 커맨드 풀 세개
+	GPU_COMMAND_POOL->Init(3);
 
 	ImGuiManager::GetInstance()->Init();
 

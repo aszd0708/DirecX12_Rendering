@@ -1,4 +1,5 @@
 #pragma once
+#include "GpuCommandPool.h"
 
 struct MeshInfo;
 
@@ -16,7 +17,7 @@ public:
 
 public:
 	bool PoolInMesh(const MeshInfo& key);
-	bool PoolOutMesh(MeshInfo& key, GpuBufferPoolManager::eBufferPoolID vertexPoolID, GpuBufferPoolManager::eBufferPoolID indexPoolID, OUT MemoryBlock& memoryBlock);
+	bool PoolOutMesh(MeshInfo& key, const GpuBufferPoolManager::eBufferPoolID vertexPoolID, const GpuBufferPoolManager::eBufferPoolID indexPoolID, GpuCommandInfo* commandPool, OUT MemoryBlock& memoryBlock);
 
 private:
 	/// <summary>

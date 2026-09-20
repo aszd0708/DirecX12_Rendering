@@ -2,6 +2,7 @@
 #include "CpuMemoryPool.h"
 
 struct TextureInfo;
+class GpuCommandInfo;
 
 struct TexturePoolBlock
 {
@@ -17,7 +18,7 @@ public:
 
 public:
 	bool PoolInTexture(const TextureInfo& key);
-	bool PoolOutTexture(const TextureInfo& key, OUT MemoryBlock& memoryBlock);
+	bool PoolOutTexture(const TextureInfo& key, GpuCommandInfo* commandInfo, OUT MemoryBlock& memoryBlock);
 
 private:
 	/// <summary>

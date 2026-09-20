@@ -18,8 +18,10 @@ public:
 	virtual ~Texture();
 
 public:
-	void CreateTexture();
-	void CreateResource();
+	void CreateTexture(const ComPtr<ID3D12GraphicsCommandList>& commandList, OUT GpuMemoryHandle& uploadHandle);
+
+private:
+	void CreateResource(const ComPtr<ID3D12GraphicsCommandList>& commandList, OUT GpuMemoryHandle& uploadHandle);
 	void CreateView();
 
 public:

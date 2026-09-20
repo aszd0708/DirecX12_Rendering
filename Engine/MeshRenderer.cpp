@@ -24,8 +24,6 @@ void MeshRenderer::Init(MemoryBlock meshHandler, shared_ptr<Shader> shader)
 	bool isSuccess = CPU_MEM_POOL->GetMemoryPool(meshHandler._poolID)->GetObjectByMemoryBlock(meshHandler, &_mesh);
 	assert(isSuccess);
 
-	_mesh->CreateMesh(COMMAND_SUB_ALLOCATOR, COMMAND_LIST);
-
 	_shader = shader;
 	_texture = nullptr;
 }
@@ -34,7 +32,6 @@ void MeshRenderer::Init(MemoryBlock meshHandler, shared_ptr<Shader> shader, Memo
 {
 	bool isSuccess = CPU_MEM_POOL->GetMemoryPool(meshHandler._poolID)->GetObjectByMemoryBlock(meshHandler, &_mesh);
 	assert(isSuccess);
-	_mesh->CreateMesh(COMMAND_SUB_ALLOCATOR, COMMAND_LIST);
 	_shader = shader;
 
 	isSuccess = CPU_MEM_POOL->GetMemoryPool(texture._poolID)->GetObjectByMemoryBlock(texture, &_texture);

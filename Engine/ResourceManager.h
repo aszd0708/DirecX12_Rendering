@@ -8,6 +8,8 @@ class MeshInfo;
 class TexturePool;
 class TextureInfo;
 
+class GpuCommandInfo;
+
 class ResourceManager
 {
 	DECLARE_SINGLE(ResourceManager);
@@ -15,6 +17,9 @@ class ResourceManager
 public:
 	void Init();
 	void Release();
+
+	void BeginBatch();
+	void EndBatch();
 
 	bool GetMesh(MeshInfo& info, GpuBufferPoolManager::eBufferPoolID vertexPoolID, GpuBufferPoolManager::eBufferPoolID indexPoolID, OUT MemoryBlock& memoryBlock);
 	bool ReleaseMesh(const MeshInfo& info);
@@ -25,5 +30,7 @@ public:
 private:
 	MeshPool* _meshPool;
 	TexturePool* _texturePool;
+
+	GpuCommandInfo* _commandInfo = nullptr;
 };
 

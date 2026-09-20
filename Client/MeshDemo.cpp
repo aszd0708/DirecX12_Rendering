@@ -7,6 +7,7 @@
 #include "MeshRenderer.h"
 #include "Shader.h"
 #include "ShaderInfo.h"
+#include "GpuCommandPool.h"
 #include <chrono>
 
 MeshDemo::MeshDemo(string sceneName) : SceneBuilder(sceneName)
@@ -162,6 +163,9 @@ void MeshDemo::CreateTextureMesh(int index)
 	Vec3 pos = Vec3(rand() % 100, rand() % 100, rand() % 100);
 	t->SetPosition(pos);
 
+
+	RESOURCES->BeginBatch();
+
 	MeshInfo meshInfo = {};
 	meshInfo.filePath = L"CubeVertexTextureData";
 	meshInfo.geometry = GeometryHelper::CreateCubeVertexTextureData();
@@ -198,6 +202,7 @@ void MeshDemo::CreateTextureMesh(int index)
 	RESOURCES->GetTexture(textureInfo, textureMemoryBlock);
 
 	meshRednerer->Init(meshMemoryBlock, shader, textureMemoryBlock);
+	RESOURCES->EndBatch();
 
 	AddGameObject(obj->GetMemoryEntry());
 }

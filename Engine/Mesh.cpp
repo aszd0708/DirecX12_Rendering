@@ -25,24 +25,10 @@ Mesh::~Mesh()
 		break;
 	}
 }
-void Mesh::CreateMesh(const ComPtr<ID3D12CommandAllocator>& commandAllocator, const ComPtr<ID3D12GraphicsCommandList>& commandList)
+void Mesh::CreateMesh(const ComPtr<ID3D12GraphicsCommandList>& commandList, OUT GpuMemoryHandle& vertexUploadHandle, OUT GpuMemoryHandle& indexUploadHandle)
 {
-	commandAllocator->Reset();
-	commandList->Reset(commandAllocator.Get(), nullptr);
-
-	GpuMemoryHandle uploadVertexHandle = {};
-	GpuMemoryHandle uploadIndexHandle = {};
-	CreateVertexResource(commandList, uploadVertexHandle);
-	CreateIndexResource(commandList, uploadIndexHandle);
-	 
-	commandList->Close();
-	ID3D12CommandList* lists[] = { commandList.Get() };
-	COMMAND_QUEUE->ExecuteCommandLists(1, lists);
-
-	GRAPHICS->WaitForGPU();
-
-	GPU_MEM_POOL->ReleaseMemory(uploadVertexHandle);
-	GPU_MEM_POOL->ReleaseMemory(uploadIndexHandle);
+	CreateVertexResource(commandList, vertexUploadHandle);
+	CreateIndexResource(commandList, indexUploadHandle);
 }
 
 void Mesh::CreateVertexResource(const ComPtr<ID3D12GraphicsCommandList>& commandList, OUT GpuMemoryHandle& handle)

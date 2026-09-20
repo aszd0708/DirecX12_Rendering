@@ -4,7 +4,7 @@ template<typename T>
 class DynamicArray
 {
 private:
-	const UINT32 DEFAULT_CAPACITY = 32;
+	static const UINT32 DEFAULT_CAPACITY = 32;
 
 public:
 	DynamicArray();
@@ -20,6 +20,7 @@ public:
 	bool RemoveAt(UINT32 index);
 	bool Find(const T& value);
 	const UINT32& GetCount() { return _count; }
+	void Clear();
 
 	T& operator[](int index);
 	const T& operator[](int index) const;
@@ -127,6 +128,12 @@ inline bool DynamicArray<T>::Find(const T& value)
 	}
 
 	return false;
+}
+
+template<typename T>
+inline void DynamicArray<T>::Clear()
+{
+	_count = 0;
 }
 
 template<typename T>

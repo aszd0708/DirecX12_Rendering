@@ -3,7 +3,7 @@
 template<typename T>
 class Array
 {
-	const UINT32 DEFAULT_SIZE = 32;
+	static const UINT32 DEFAULT_SIZE = 32;
 
 public:
 	Array();

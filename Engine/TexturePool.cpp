@@ -2,6 +2,7 @@
 #include "TexturePool.h"
 #include "TextureInfo.h"
 #include "Texture.h"
+#include "GpuCommandPool.h"
 
 TexturePool::TexturePool() : _table()
 {
@@ -44,7 +45,7 @@ bool TexturePool::PoolInTexture(const TextureInfo& key)
 	return isSuccess;
 }
 
-bool TexturePool::PoolOutTexture(const TextureInfo& key, OUT MemoryBlock& memoryBlock)
+bool TexturePool::PoolOutTexture(const TextureInfo& key, GpuCommandInfo* commandInfo, OUT MemoryBlock& memoryBlock)
 {
 	UINT64 hashValue = Hash<TextureInfo>::GetHash(key);
 	TexturePoolBlock poolBlock = {};
@@ -64,6 +65,12 @@ bool TexturePool::PoolOutTexture(const TextureInfo& key, OUT MemoryBlock& memory
 
 		isSuccess = CPU_MEM_POOL->GetMemoryPool(poolID)->GetMemory(&texture, key);
 		assert(isSuccess && "CPU 메모리 풀 메모리 부족");
+
+		// 텍스처 생성
+		GpuMemoryHandle uploadHandle;
+		texture->CreateTexture(commandInfo->GetCommandList(), uploadHandle);
+		commandInfo->AddUploadHandle(uploadHandle);
+		commandInfo->AddCommandCount();
 
 		memoryBlock = texture->GetMemoryHandler();
 

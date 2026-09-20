@@ -188,6 +188,7 @@ xcopy /Y "$(SolutionDir)Engine\*.inl" "$(SolutionDir)Libraries\Include\Engine"</
     <ClInclude Include="GeometryHelper.h" />
     <ClInclude Include="GlobalBuffer.h" />
     <ClInclude Include="GpuBumpBufferPool.h" />
+    <ClInclude Include="GpuCommandPool.h" />
     <ClInclude Include="GpuDynamicBufferPool.h" />
     <ClInclude Include="GpuBufferInfo.h" />
     <ClInclude Include="GpuBufferPoolManager.h" />
@@ -250,6 +251,7 @@ xcopy /Y "$(SolutionDir)Engine\*.inl" "$(SolutionDir)Libraries\Include\Engine"</
     <ClCompile Include="GeometryHelper.cpp" />
     <ClCompile Include="GlobalBuffer.cpp" />
     <ClCompile Include="GpuBumpBufferPool.cpp" />
+    <ClCompile Include="GpuCommandPool.cpp" />
     <ClCompile Include="GpuDynamicBufferPool.cpp" />
     <ClCompile Include="GpuBufferInfo.cpp" />
     <ClCompile Include="GpuBufferPoolManager.cpp" />

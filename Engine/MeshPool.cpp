@@ -2,6 +2,7 @@
 #include "MeshPool.h"
 #include "MeshInfo.h"
 #include "Mesh.h"
+#include "GpuCommandPool.h"
 
 MeshPool::MeshPool() : _table()
 {}
@@ -40,7 +41,7 @@ bool MeshPool::PoolInMesh(const MeshInfo& key)
 	return isSuccess;
 }
 
-bool MeshPool::PoolOutMesh(MeshInfo& key, GpuBufferPoolManager::eBufferPoolID vertexPoolID, GpuBufferPoolManager::eBufferPoolID indexPoolID, OUT MemoryBlock& memoryBlock)
+bool MeshPool::PoolOutMesh(MeshInfo& key, const GpuBufferPoolManager::eBufferPoolID vertexPoolID, const GpuBufferPoolManager::eBufferPoolID indexPoolID, GpuCommandInfo* commandInfo, OUT MemoryBlock& memoryBlock)
 {
 	UINT64 hashValue = Hash<MeshInfo>::GetHash(key);
 	MeshPoolBlock poolBlock = {};
@@ -60,6 +61,14 @@ bool MeshPool::PoolOutMesh(MeshInfo& key, GpuBufferPoolManager::eBufferPoolID ve
 
 		isSuccess = CPU_MEM_POOL->GetMemoryPool(cpuPoolID)->GetMemory(&mesh, key, vertexPoolID, indexPoolID);
 		assert(isSuccess && "CPU 메모리 풀 메모리 부족");
+
+		// 매시 생성
+		GpuMemoryHandle vertexUploadHandler;
+		GpuMemoryHandle indexUploadHandler;
+		mesh->CreateMesh(commandInfo->GetCommandList(), vertexUploadHandler, indexUploadHandler);
+		commandInfo->AddUploadHandle(vertexUploadHandler);
+		commandInfo->AddUploadHandle(indexUploadHandler);
+		commandInfo->AddCommandCount();
 
 		memoryBlock = mesh->GetMemoryHandler();
 
