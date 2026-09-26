@@ -25,19 +25,13 @@ public:
 	virtual void Render();
 
 public:
-	void SetGlobalBuffer(ConstantBuffer* globalBuffer) { _globalBuffer = globalBuffer; };
-	ConstantBuffer* GetGlobalBuffer() { return _globalBuffer; }
 	void SetWorldMatrixBuffer(ConstantBuffer* worldMatrixBuffer) { _worldTransformBuffer = worldMatrixBuffer; };
 	ConstantBuffer* GetWorldMatrixBuffer() { return _worldTransformBuffer; }
 
 protected:
-	void PushGlobalBuffer(const Matrix& view, const Matrix& projection, OUT D3D12_GPU_VIRTUAL_ADDRESS& address);
 	void PushWorldMatrixBuffer(OUT D3D12_GPU_VIRTUAL_ADDRESS& address);
 
 private:
-	GlobalDesc _globalDesc;
-	ConstantBuffer* _globalBuffer;
-
 	TransformDesc _worldTransformDesc;
 	ConstantBuffer* _worldTransformBuffer;
 

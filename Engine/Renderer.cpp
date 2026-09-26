@@ -7,13 +7,11 @@ CpuMemoryPoolManager::ePoolID Renderer::s_PoolID = CpuMemoryPoolManager::ePoolID
 
 Renderer::Renderer(eComponentType type) : Component(type)
 {
-	_globalBuffer = new ConstantBuffer(sizeof(GlobalDesc));
 	_worldTransformBuffer = new ConstantBuffer(sizeof(TransformDesc));
 }
 
 Renderer::~Renderer()
 {
-	delete _globalBuffer;
 	delete _worldTransformBuffer;
 }
 
@@ -33,18 +31,6 @@ void Renderer::Init()
 void Renderer::Render()
 {
 
-}
-
-void Renderer::PushGlobalBuffer(const Matrix& view, const Matrix& projection, OUT D3D12_GPU_VIRTUAL_ADDRESS& address)
-{
-	if (_globalBuffer == nullptr) return;
-
-	_globalDesc.V = view.Transpose();
-	_globalDesc.P = projection.Transpose();
-	_globalDesc.VP = (view * projection).Transpose();;
-	_globalDesc.VInv = view.Invert().Transpose();
-
-	_globalBuffer->PushDataSafe<GlobalDesc>(_globalDesc, address);
 }
 
 void Renderer::PushWorldMatrixBuffer(OUT D3D12_GPU_VIRTUAL_ADDRESS& address)

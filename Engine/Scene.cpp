@@ -2,12 +2,16 @@
 #include "Scene.h"
 #include "Renderer.h"
 #include "GameObject.h"
+#include "GlobalConstantBuffer.h"
+#include "Camera.h"
 
-Scene::Scene(string _sceneName) : _sceneName(_sceneName)
+Scene::Scene(string _sceneName) : _sceneName(_sceneName), _id(0)
 {
 	_objList = new MemoryList();
 	_deletedObjs = new MemoryList();
 	_renderList = new MemoryList();
+
+	GlobalConstantBuffer::GetInstance()->Init();
 }
 
 Scene::~Scene()
@@ -15,6 +19,8 @@ Scene::~Scene()
 	delete _objList;
 	delete _deletedObjs;
 	delete _renderList;
+
+	GlobalConstantBuffer::GetInstance()->Release();
 }
 
 void Scene::DeleteObjs()
@@ -138,11 +144,15 @@ void Scene::OnDestory()
 
 void Scene::Render()
 {
+	// 카메라 버퍼 세팅
+	GlobalConstantBuffer::GetInstance()->PushCameraBuffer(Camera::S_MatView, Camera::S_MatProjection);
+
 	ID3D12DescriptorHeap* descHeap = DESC_POOL->GetDescriptorHeapAllocator(D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	if (descHeap != nullptr)
 	{
 		COMMAND_LIST->SetDescriptorHeaps(1, &descHeap);
 	}
+
 	for (int i = 0; i < _renderList->GetCount(); ++i)
 	{
 		MemoryEntry entity;

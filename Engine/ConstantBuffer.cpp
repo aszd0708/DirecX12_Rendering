@@ -22,10 +22,17 @@ D3D12_GPU_VIRTUAL_ADDRESS ConstantBuffer::GetAddress()
 	return GPU_CONSTNAT_POOL->GetMemoryResource()->GetGPUVirtualAddress() + _handle.offset;
 }
 
-void ConstantBuffer::PushData(const void* sendData, UINT32 dataSize, OUT D3D12_GPU_VIRTUAL_ADDRESS& address)
+void ConstantBuffer::PushDataWithGetAddress(const void* sendData, UINT32 dataSize, OUT D3D12_GPU_VIRTUAL_ADDRESS& address)
 {
 	CreateBuffer(dataSize);
 	address = GetAddress();
+	CHAR* startOffset = (CHAR*)GPU_CONSTNAT_POOL->GetMappedBase() + _handle.offset;
+	memcpy(startOffset, sendData, dataSize);
+}
+
+void ConstantBuffer::PushData(const void* sendData, UINT32 dataSize)
+{
+	CreateBuffer(dataSize);
 	CHAR* startOffset = (CHAR*)GPU_CONSTNAT_POOL->GetMappedBase() + _handle.offset;
 	memcpy(startOffset, sendData, dataSize);
 }

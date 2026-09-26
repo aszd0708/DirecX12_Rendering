@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "MeshRenderer.h"
 #include "Shader.h"
+#include "GlobalConstantBuffer.h"
 #include "Mesh.h"
 
 MeshRenderer::MeshRenderer() : Renderer(eComponentType::Renderer)
@@ -57,9 +58,7 @@ void MeshRenderer::Render()
 
 	// Global 버퍼 전달
 	// Push 이후에 GetAddress 호출
-	D3D12_GPU_VIRTUAL_ADDRESS globalBufferAddress;
-	PushGlobalBuffer(Camera::S_MatView, Camera::S_MatProjection, globalBufferAddress);
-	COMMAND_LIST->SetGraphicsRootConstantBufferView(0, globalBufferAddress);
+	COMMAND_LIST->SetGraphicsRootConstantBufferView(0, GlobalConstantBuffer::GetInstance()->GetCameraBufferAddress());
 
 	// World Matrix 버퍼 전달
 	// Push 이후에 GetAddress 호출
