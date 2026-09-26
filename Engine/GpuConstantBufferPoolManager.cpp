@@ -4,7 +4,7 @@
 
 void GpuConstantBufferPoolManager::Init(UINT8 pageCount, UINT64 pageSize)
 {
-    _constantBufferPool = new GpuConstantBufferPool(pageSize);
+    _constantBufferPool = new GpuConstantBufferPool(pageSize, pageCount);
 }
 
 void GpuConstantBufferPoolManager::Release()
