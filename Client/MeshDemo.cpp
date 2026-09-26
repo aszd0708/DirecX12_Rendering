@@ -49,7 +49,7 @@ void MeshDemo::Update()
 	UINT64 totalUsage = _endUsage - _curUsage;
 	ImGui::LabelText("Total Usage  ", "%llu byte", totalUsage);
 
-	//ImGui::LabelText("Total Time  ", "%llu ms", _totalTime);
+	ImGui::LabelText("Total Time  ", "%llu ms", _totalTime);
 
 	ImGui::LabelText("Current Count  ", "%d", _objCreatedCount);
 	
@@ -168,7 +168,7 @@ void MeshDemo::CreateTextureMesh(int index)
 
 	MeshInfo meshInfo = {};
 	meshInfo.filePath = L"CubeVertexTextureData";
-	meshInfo.geometry = GeometryHelper::CreateCubeVertexTextureData();
+	meshInfo.geometry = GeometryHelper::CreateSphereVertexTextureData();
 	MemoryBlock meshMemoryBlock = {};
 	RESOURCES->GetMesh(meshInfo, GpuBufferPoolManager::eBufferPoolID::VERTEX_BUMP, GpuBufferPoolManager::eBufferPoolID::INDEX_BUMP, meshMemoryBlock);
 

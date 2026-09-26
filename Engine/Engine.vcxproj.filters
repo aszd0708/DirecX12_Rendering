@@ -286,6 +286,12 @@
     <ClInclude Include="GpuCommandPool.h">
       <Filter>02. Managers</Filter>
     </ClInclude>
+    <ClInclude Include="GpuConstantBufferPool.h">
+      <Filter>01. Graphics\GpuMemoryPool\Buffer</Filter>
+    </ClInclude>
+    <ClInclude Include="GpuConstantBufferPoolManager.h">
+      <Filter>02. Managers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -457,6 +463,12 @@
       <Filter>00. Engine\Pool\GpuResourcePool</Filter>
     </ClCompile>
     <ClCompile Include="GpuCommandPool.cpp">
+      <Filter>02. Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="GpuConstantBufferPool.cpp">
+      <Filter>01. Graphics\GpuMemoryPool\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="GpuConstantBufferPoolManager.cpp">
       <Filter>02. Managers</Filter>
     </ClCompile>
   </ItemGroup>

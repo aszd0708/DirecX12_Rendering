@@ -2,6 +2,7 @@
 #include "GpuBufferInfo.h"
 #include "GpuBumpBufferPool.h"
 #include "GpuDynamicBufferPool.h"
+#include "GpuConstantBufferPool.h"
 
 class GpuBufferPoolManager
 {
@@ -29,6 +30,8 @@ public:
 
 		UINT64 dynamicIndexMaxSize;
 		UINT64 dynamicVertexMaxSize;
+
+		UINT64 constantBufferMaxSize;
 	};
 
 public:

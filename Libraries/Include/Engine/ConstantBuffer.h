@@ -1,31 +1,34 @@
 #pragma once
 
+struct GpuConstantBufferHandle;
+
 class ConstantBuffer
 {
 public:
-	ConstantBuffer(uint32 dataSize);
+	ConstantBuffer(UINT32 dataSize);
 	~ConstantBuffer();
 
-	static uint32 GetSize(uint32 dataSize);
+	static UINT32 GetSize(UINT32 dataSize);
 
 private:
-	void CreateBuffer(uint32 dataSize);
+	void CreateBuffer(UINT32 dataSize);
 
 public:
-	D3D12_GPU_VIRTUAL_ADDRESS GetAddress() { return _buffer->GetGPUVirtualAddress(); }
-	void PushData(const void* sendData, uint32 dataSize);
+	D3D12_GPU_VIRTUAL_ADDRESS GetAddress();
+	void PushData(const void* sendData, UINT32 dataSize, OUT D3D12_GPU_VIRTUAL_ADDRESS& address);
 
 	template<typename T>
-	void PushDataSafe(const T& sendData);
+	void PushDataSafe(const T& sendData, OUT D3D12_GPU_VIRTUAL_ADDRESS& address);
 
 private:
-	ComPtr<ID3D12Resource> _buffer;
 	void* _mappedData;
-	uint32 _dataSize;
+	UINT32 _dataSize;
+
+	GpuConstantBufferHandle _handle;
 };
 
 template<typename T>
-inline void ConstantBuffer::PushDataSafe(const T& sendData)
+inline void ConstantBuffer::PushDataSafe(const T& sendData, OUT D3D12_GPU_VIRTUAL_ADDRESS& address)
 {
-	PushData((void*)&sendData, sizeof(T));
+	PushData((void*)&sendData, sizeof(T), address);
 }

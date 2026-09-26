@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Graphics.h"
+#include "GpuConstantBufferPoolManager.h"
 
 Graphics::~Graphics()
 {
@@ -164,13 +165,17 @@ void Graphics::RenderEnd()
 	_commandQueue->ExecuteCommandLists(1, cmdLists);
 
 	_swapChain->Present(0,0);
+
+	_fenceValue++;
 	
 	WaitForGPU();
+
+	// Constant Pool Wait
+	GPU_CONSTNAT_POOL->MoveNextPage(_fence.Get(), _fenceValue);
 }
 
 void Graphics::WaitForGPU()
 {
-	_fenceValue++;
 	_commandQueue->Signal(_fence.Get(), _fenceValue);
 
 	if (_fence->GetCompletedValue() < _fenceValue)

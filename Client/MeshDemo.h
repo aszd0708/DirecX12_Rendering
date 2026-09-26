@@ -5,7 +5,7 @@
 class MeshDemo : public SceneBuilder
 {
 private:
-	static const UINT MAX_COUNT = 10;
+	static const UINT MAX_COUNT = 1024;
 
 public:
 	MeshDemo(string sceneName);
@@ -26,7 +26,7 @@ private:
 	void CreateCallBack();
 	void DeleteCallBack();
 
-private:
+private: 
 	GameObject* _cameraObj;
 	GameObject* _meshObj;
 

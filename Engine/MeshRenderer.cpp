@@ -42,9 +42,6 @@ void MeshRenderer::Render()
 {
 	Renderer::Render();
 
-	PushGlobalBuffer(Camera::S_MatView, Camera::S_MatProjection);
-	PushWorldMatrixBuffer();
-
 	COMMAND_LIST->SetGraphicsRootSignature(_shader->GetRootSignature().Get());
 	COMMAND_LIST->SetPipelineState(_shader->GetPSO().Get());
 	COMMAND_LIST->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -57,11 +54,18 @@ void MeshRenderer::Render()
 	D3D12_INDEX_BUFFER_VIEW indexView = _mesh->GetIndexView();
 	COMMAND_LIST->IASetIndexBuffer(&indexView);
 
+
 	// Global 버퍼 전달
-	COMMAND_LIST->SetGraphicsRootConstantBufferView(0, GetGlobalBuffer()->GetAddress());
+	// Push 이후에 GetAddress 호출
+	D3D12_GPU_VIRTUAL_ADDRESS globalBufferAddress;
+	PushGlobalBuffer(Camera::S_MatView, Camera::S_MatProjection, globalBufferAddress);
+	COMMAND_LIST->SetGraphicsRootConstantBufferView(0, globalBufferAddress);
 
 	// World Matrix 버퍼 전달
-	COMMAND_LIST->SetGraphicsRootConstantBufferView(1, GetWorldMatrixBuffer()->GetAddress());
+	// Push 이후에 GetAddress 호출
+	D3D12_GPU_VIRTUAL_ADDRESS worldMaterialBufferAddress;
+	PushWorldMatrixBuffer(worldMaterialBufferAddress);
+	COMMAND_LIST->SetGraphicsRootConstantBufferView(1, worldMaterialBufferAddress);
 
 	// Texture 전달
 	if (_texture != nullptr)

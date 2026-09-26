@@ -4,6 +4,9 @@ enum class eGpuBufferKind : UINT8
 {
 	Vertex = 0,
 	Index,
+	Constant,
+
+	MAX
 };
 
 enum class eIndexBufferSize : UINT8
