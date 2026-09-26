@@ -2,6 +2,7 @@
 #include "ShaderInfo.h"
 
 struct ShaderInfo;
+class ShaderCompilerInfo;
 
 class Shader
 {
@@ -15,12 +16,15 @@ public:
 	Shader(ShaderInfo info);
 	~Shader();
 
+private:
+	void CreateShader(const wchar_t* str, const wchar_t* entryPoint, const wchar_t* targetProfile, ComPtr<IDxcBlob>& blob, ShaderCompilerInfo* info);
+
 public:
 	void CreateRootSignature();
 	void CreatePSO();
 
-	ComPtr<ID3DBlob> GetVsBlob() { return _vsBlob; }
-	ComPtr<ID3DBlob> GetPsBlob() { return _psBlob; }
+	ComPtr<IDxcBlob> GetVsBlob() { return _vsBlob; }
+	ComPtr<IDxcBlob> GetPsBlob() { return _psBlob; }
 	ComPtr<ID3D12RootSignature> GetRootSignature() { return _signature; }
 	ComPtr<ID3D12PipelineState> GetPSO() { return _pso; }
 
@@ -28,11 +32,8 @@ private:
 	ShaderInfo _info;
 	wstring _fullPath;
 
-	ComPtr<ID3DBlob> _vsBlob;
-	ComPtr<ID3DBlob> _psBlob;
-
-	ComPtr<ID3DBlob> _vsError;
-	ComPtr<ID3DBlob> _psError;
+	ComPtr<IDxcBlob> _vsBlob;
+	ComPtr<IDxcBlob> _psBlob;
 
 	ComPtr<ID3DBlob> _signatureBlob;
 	ComPtr<ID3DBlob> _signatureError;

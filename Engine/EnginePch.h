@@ -33,6 +33,8 @@ using namespace std;
 #include <comdef.h>
 #include <dxgi1_6.h>
 #include <d3dcompiler.h>
+#include <dxcapi.h>         
+#include <d3d12shader.h>    
 #include <wrl.h>
 #include <DirectXMath.h>
 #include <DirectXTex/DirectXTex.h>

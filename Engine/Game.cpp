@@ -7,6 +7,7 @@
 #include "GpuBufferPoolManager.h"
 #include "GpuConstantBufferPoolManager.h"
 #include "GpuCommandPool.h"
+#include "ShaderCompiler.h"
 
 WPARAM Game::Run(GameDesc& desc)
 {
@@ -47,6 +48,7 @@ WPARAM Game::Run(GameDesc& desc)
 
 	// 일단 커맨드 풀 세개
 	GPU_COMMAND_POOL->Init(3);
+	ShaderCompiler::GetInstance()->Init(1);
 
 	ImGuiManager::GetInstance()->Init();
 

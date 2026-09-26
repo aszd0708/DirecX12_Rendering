@@ -10,11 +10,17 @@ public:
 	UINT8 _poolID;
 	UINT8 _index;
 	UINT8 _gen;
+	UINT8 _padding;
 
 	UINT _pageIndex;
 
 	bool operator==(const MemoryBlock& other) const;
 	bool IsValid(const MemoryBlock& other) const;
+
+	inline UINT64 GetKey()
+	{
+
+	}
 };
 
 class MemoryPage

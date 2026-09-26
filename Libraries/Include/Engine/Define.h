@@ -36,6 +36,7 @@ public:										\
 #define GPU_BUFFER_POOL		GET_SINGLE(GpuBufferPoolManager)
 #define GPU_COMMAND_POOL	GET_SINGLE(GpuCommandPoolManager)
 #define GPU_CONSTNAT_POOL	GET_SINGLE(GpuConstantBufferPoolManager)
+#define SHADER_COMPILER		GET_SINGLE(ShaderCompiler)
 //#define SCENE		GET_SINGLE(SceneManager)
 //#define CUR_SCENE	SCENE->GetCurrentScene()
 

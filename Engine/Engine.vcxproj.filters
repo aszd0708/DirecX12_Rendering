@@ -295,6 +295,9 @@
     <ClInclude Include="GlobalConstantBuffer.h">
       <Filter>01. Graphics\Buffer</Filter>
     </ClInclude>
+    <ClInclude Include="ShaderCompiler.h">
+      <Filter>01. Graphics\Shader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -476,6 +479,9 @@
     </ClCompile>
     <ClCompile Include="GlobalConstantBuffer.cpp">
       <Filter>01. Graphics\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderCompiler.cpp">
+      <Filter>01. Graphics\Shader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

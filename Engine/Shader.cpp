@@ -1,14 +1,21 @@
 #include "pch.h"
 #include "Shader.h"
 #include "ShaderInfo.h"
+#include "ShaderCompiler.h"
 
 Shader::Shader(ShaderInfo info) : _info(info)
 {
 	_fullPath = SHADER_PATH(info._path);
 
 	const wchar_t* str = _fullPath.c_str();
-	ThrowIfFailed(D3DCompileFromFile(str, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VS", "vs_5_0", D3DCOMPILE_SKIP_OPTIMIZATION, 0, _vsBlob.GetAddressOf(), _vsError.GetAddressOf()));
-	ThrowIfFailed(D3DCompileFromFile(str, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PS", "ps_5_0", D3DCOMPILE_SKIP_OPTIMIZATION, 0, _psBlob.GetAddressOf(), _psError.GetAddressOf()));
+
+	ShaderCompilerInfo* compilerInfo = SHADER_COMPILER->GetShaderComplierInfo(0);
+
+	// Vertex Shader
+	CreateShader(str, L"VS", L"vs_6_6", _vsBlob, compilerInfo);
+
+	// Pixel Shader
+	CreateShader(str, L"PS", L"ps_6_6", _psBlob, compilerInfo);
 
 	CreateRootSignature();
 	CreatePSO();
@@ -17,6 +24,49 @@ Shader::Shader(ShaderInfo info) : _info(info)
 Shader::~Shader()
 {
 
+}
+
+void Shader::CreateShader(const wchar_t* str, const wchar_t* entryPoint, const wchar_t* targetProfile, ComPtr<IDxcBlob>& blob, ShaderCompilerInfo* info)
+{	
+	UINT32 codePage = DXC_CP_UTF8;
+	ComPtr<IDxcBlobEncoding> blobEncoding;
+	ThrowIfFailed(info->GetUtils()->LoadFile(str, &codePage, blobEncoding.GetAddressOf()));
+
+	DxcBuffer source = {};
+	source.Ptr = blobEncoding->GetBufferPointer();
+	source.Size = blobEncoding->GetBufferSize();
+	source.Encoding = codePage;
+
+	LPCWSTR args[] =
+	{
+		str,
+		L"-E", entryPoint,
+		L"-T", targetProfile,
+#ifdef _DEBUG
+		L"-Zi",
+		L"-Od",
+		L"-Qembed_debug",
+#else
+		L"-Qstrip_reflect",
+#endif // _DEBUG
+	};
+
+	ComPtr<IDxcCompiler3> compiler = info->GetCompiler();
+	ComPtr<IDxcResult> results;
+	ThrowIfFailed(compiler->Compile(&source, args, _countof(args), info->GetHanlder().Get(), IID_PPV_ARGS(results.GetAddressOf())));
+
+	ComPtr<IDxcBlobUtf8> error = nullptr;
+	results->GetOutput(DXC_OUT_ERRORS, IID_PPV_ARGS(&error), nullptr);
+	if (error != nullptr && error->GetStringLength() > 0)
+	{
+		OutputDebugStringA(error->GetStringPointer());
+	}
+
+	HRESULT hrStatus;
+	ThrowIfFailed(results->GetStatus(&hrStatus));
+	ThrowIfFailed(hrStatus);
+
+	ThrowIfFailed(results->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&blob), nullptr));
 }
 
 void Shader::CreateRootSignature()

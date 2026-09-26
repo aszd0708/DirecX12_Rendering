@@ -220,7 +220,7 @@ void MeshDemo::CreateCallBack()
 	
 	_curUsage = _vInfo->CurrentUsage;
 
-	for (int i = 0; i < MAX_COUNT; ++i)
+	for (int i = 0; i < 1; ++i)
 	{
 		if (_objCreatedCount >= MAX_COUNT) break;
 

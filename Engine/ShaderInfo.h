@@ -9,4 +9,3 @@ struct ShaderInfo
 
 	D3D12_STATIC_SAMPLER_DESC _sampler = {};
 };
-
