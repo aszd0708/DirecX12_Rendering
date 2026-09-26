@@ -13,7 +13,7 @@ public:
 
 public:
 	bool GetMemory(UINT64 size, OUT GpuConstantBufferHandle& handle);
-	ComPtr<ID3D12Resource>& GetMemoryResource();
+	const ComPtr<ID3D12Resource>& GetMemoryResource();
 	void* GetMappedBase();
 	
 	// ConstantPool에서 _currentPageIndex의 페이지를 Reset시킴

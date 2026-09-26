@@ -4,10 +4,7 @@
 
 void GpuConstantBufferPoolManager::Init(UINT8 pageCount, UINT64 pageSize)
 {
-    for (int i = 0; i < pageCount; ++i)
-    {
-        _constantBufferPool = new GpuConstantBufferPool(i, pageSize);
-    }
+    _constantBufferPool = new GpuConstantBufferPool(pageSize);
 }
 
 void GpuConstantBufferPoolManager::Release()
@@ -20,7 +17,7 @@ bool GpuConstantBufferPoolManager::GetMemory(UINT64 size, OUT GpuConstantBufferH
     return _constantBufferPool->GetBufferHandle(size, handle);
 }
 
-ComPtr<ID3D12Resource>& GpuConstantBufferPoolManager::GetMemoryResource()
+const ComPtr<ID3D12Resource>& GpuConstantBufferPoolManager::GetMemoryResource()
 {
     return _constantBufferPool->GetResource();
 }

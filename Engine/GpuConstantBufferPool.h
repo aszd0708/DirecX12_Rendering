@@ -11,7 +11,7 @@ struct GpuConstantBufferHandle
 class GpuConstantBufferPage
 {
 public:
-	GpuConstantBufferPage(UINT8 pageIndex, UINT64 size);
+	GpuConstantBufferPage(UINT64 size);
 	~GpuConstantBufferPage();
 
 public:
@@ -22,7 +22,6 @@ public:
 	UINT64 GetFenceValue() { return _fenceValue; }
 	
 private:
-	UINT8 _pageIndex;
 	UINT64 _offset;
 	UINT64 _totalSize;
 	UINT64 _fenceValue;
@@ -34,16 +33,16 @@ private:
 	static const UINT64 DEFAULT_PAGE_SIZE = 262144l;
 
 public:
-	GpuConstantBufferPool(UINT8 poolID);
-	GpuConstantBufferPool(UINT8 poolID, UINT64 pageSize);
-	GpuConstantBufferPool(UINT8 poolID, UINT64 pageSize, UINT8 pageCount);
+	GpuConstantBufferPool();
+	GpuConstantBufferPool(UINT64 pageSize);
+	GpuConstantBufferPool(UINT64 pageSize, UINT8 pageCount);
 	~GpuConstantBufferPool();
 
 private:
 	void CreateResource(UINT8 pageCount);
 
 public:
-	ComPtr<ID3D12Resource>& GetResource() { return _resource; }
+	const ComPtr<ID3D12Resource>& GetResource() { return _resource; }
 
 	bool GetBufferHandle(UINT64 size, OUT GpuConstantBufferHandle& handle);
 	void* GetMapedBase() { return _mappedBase; }
@@ -60,7 +59,6 @@ public:
 	void ResetAllPage();
 
 private:
-	UINT8 _poolID;
 	UINT8 _currentPageIndex;
 	UINT64 _pageSize;
 	Array<GpuConstantBufferPage> _pages;

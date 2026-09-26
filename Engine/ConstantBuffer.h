@@ -8,8 +8,6 @@ public:
 	ConstantBuffer(UINT32 dataSize);
 	~ConstantBuffer();
 
-	static UINT32 GetSize(UINT32 dataSize);
-
 private:
 	void CreateBuffer(UINT32 dataSize);
 
@@ -24,7 +22,6 @@ public:
 	void PushDataSafe(const T& sendData);
 
 private:
-	void* _mappedData;
 	UINT32 _dataSize;
 
 	GpuConstantBufferHandle _handle;

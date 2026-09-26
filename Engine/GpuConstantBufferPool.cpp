@@ -5,7 +5,7 @@
 /// GpuConstantBufferPage ///
 /////////////////////////////
 
-GpuConstantBufferPage::GpuConstantBufferPage(UINT8 pageIndex, UINT64 size) : _pageIndex(pageIndex), _offset(0), _totalSize(size), _fenceValue(0)
+GpuConstantBufferPage::GpuConstantBufferPage(UINT64 size) :_offset(0), _totalSize(size), _fenceValue(0)
 {
 }
 
@@ -40,21 +40,21 @@ void GpuConstantBufferPage::Reset()
 /// GpuConstantBufferPool ///
 /////////////////////////////
 
-GpuConstantBufferPool::GpuConstantBufferPool(UINT8 poolID) : GpuConstantBufferPool(poolID, DEFAULT_PAGE_SIZE)
+GpuConstantBufferPool::GpuConstantBufferPool() : GpuConstantBufferPool(DEFAULT_PAGE_SIZE)
 {
 
 }
 
-GpuConstantBufferPool::GpuConstantBufferPool(UINT8 poolID, UINT64 pageSize) : GpuConstantBufferPool(poolID, pageSize, SWAP_CHAIN_BUFFER_COUNT)
+GpuConstantBufferPool::GpuConstantBufferPool(UINT64 pageSize) : GpuConstantBufferPool(pageSize, SWAP_CHAIN_BUFFER_COUNT)
 {
 }
 
-GpuConstantBufferPool::GpuConstantBufferPool(UINT8 poolID, UINT64 pageSize, UINT8 pageCount) :
-_poolID(poolID), _currentPageIndex(0), _pageSize(pageSize), _pages(pageCount), _mappedBase(nullptr), _fenceEvent(nullptr)
+GpuConstantBufferPool::GpuConstantBufferPool(UINT64 pageSize, UINT8 pageCount) :
+_currentPageIndex(0), _pageSize(pageSize), _pages(pageCount), _mappedBase(nullptr), _fenceEvent(nullptr)
 {
 	for (int i = 0; i < pageCount; ++i)
 	{
-		GpuConstantBufferPage page = GpuConstantBufferPage(i, _pageSize);
+		GpuConstantBufferPage page = GpuConstantBufferPage(_pageSize);
 		_pages[i] = page;
 	}
 	CreateResource(pageCount);
