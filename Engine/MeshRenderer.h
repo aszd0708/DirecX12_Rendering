@@ -17,8 +17,8 @@ public:
 	virtual ~MeshRenderer() override;
 
 public:
-	void Init(MemoryBlock meshHandler, shared_ptr<Shader> shader);
-	void Init(MemoryBlock meshHandler, shared_ptr<Shader> shader, MemoryBlock& texture);
+	void Init(MemoryBlock meshHandler, MemoryBlock shaderHandler);
+	void Init(MemoryBlock meshHandler, MemoryBlock shaderHandler, MemoryBlock texture);
 	virtual void Render() override;
 
 public:
@@ -27,6 +27,6 @@ public:
 private:
 	Mesh* _mesh;
 
-	shared_ptr<Shader> _shader;
+	Shader* _shader;
 	Texture* _texture;
 };

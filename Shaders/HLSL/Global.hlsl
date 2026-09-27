@@ -1,3 +1,8 @@
+#include "ShaderShared.h"
+
+#define CONCAT_IMPL(a, b)   a ## b
+#define CONCAT(a, b)        CONCAT_IMPL(a, b)
+
 ////////////////////
 /// GlobalDesces ///
 ////////////////////
@@ -15,12 +20,12 @@ struct TransformMatrixDesc
     matrix W;
 };
 
-cbuffer GlobamMatrixBuffer : register(b0)
+cbuffer GlobamMatrixBuffer : register(CONCAT(b, GLOBAL_REGISTER))
 {
     GlobalMatrixDesc GlobalMatrix;
 };
 
-cbuffer TransformMatrixBuffer : register(b1)
+cbuffer TransformMatrixBuffer : register(CONCAT(b, TRANSFORM_REGISTER))
 {
     TransformMatrixDesc TransformMatrix;
 }

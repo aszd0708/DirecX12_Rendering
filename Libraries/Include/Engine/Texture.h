@@ -27,6 +27,7 @@ private:
 public:
 	D3D12_GPU_DESCRIPTOR_HANDLE GetHandle() { return _descHandle.gpuDesc; }
 	const TextureInfo& GetTextureInfo() { return _textureInfo; }
+	const DescriptorHandle& GetDescHandle() { return _descHandle; }
 
 private:
 	TextureInfo _textureInfo;

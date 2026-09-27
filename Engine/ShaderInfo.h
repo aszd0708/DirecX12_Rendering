@@ -1,11 +1,27 @@
 #pragma once
+#include "Hash.h"
+
 struct ShaderInfo
 {
 	wstring _path;
 	Array<D3D12_INPUT_ELEMENT_DESC> _inputLayoutDesc;
+};
 
-	D3D12_ROOT_PARAMETER* _signatureRootParam;
-	uint32 _signatureRootParamCount;
+template<>
+struct Hash<ShaderInfo>
+{
+	static UINT64 GetHash(const ShaderInfo& key)
+	{
+		UINT64 hash = Hash<wstring>::GetHash(key._path);
+		return hash;
+	}
+};
 
-	D3D12_STATIC_SAMPLER_DESC _sampler = {};
+enum class eShaderIndex
+{
+	GLOBAL = 0,
+	TRANSFORM = 1,
+	TEXTURE_INDEX = 2,
+
+	MAX
 };

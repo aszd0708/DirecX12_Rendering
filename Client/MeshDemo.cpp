@@ -8,6 +8,7 @@
 #include "Shader.h"
 #include "ShaderInfo.h"
 #include "GpuCommandPool.h"
+#include "ShaderInfo.h"
 #include <chrono>
 
 MeshDemo::MeshDemo(string sceneName) : SceneBuilder(sceneName)
@@ -175,21 +176,9 @@ void MeshDemo::CreateTextureMesh(int index)
 	ShaderInfo shaderInfo = {};
 	shaderInfo._path = L"TextureMesh";
 	shaderInfo._inputLayoutDesc = meshInfo.geometry.desces;
-	CD3DX12_ROOT_PARAMETER rootParams[3] = { {} };
-	for (int i = 0; i < 2; ++i)
-	{
-		rootParams[i].InitAsConstantBufferView(i);
-	}
 
-	CD3DX12_DESCRIPTOR_RANGE srvRange;
-	srvRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);   // SRV 1개, register t0
-	rootParams[2].InitAsDescriptorTable(1, &srvRange, D3D12_SHADER_VISIBILITY_PIXEL);
-
-	shaderInfo._signatureRootParam = rootParams;
-	shaderInfo._signatureRootParamCount = 3;
-	shaderInfo._sampler = CD3DX12_STATIC_SAMPLER_DESC(0);
-
-	shared_ptr<Shader> shader = make_shared<Shader>(move(shaderInfo));
+	MemoryBlock shaderMemoryBlock = {};
+	RESOURCES->GetShader(shaderInfo, shaderMemoryBlock);
 
 	MeshRenderer* meshRednerer = obj->AddComponent<MeshRenderer>();
 
@@ -201,7 +190,7 @@ void MeshDemo::CreateTextureMesh(int index)
 	MemoryBlock textureMemoryBlock = {};
 	RESOURCES->GetTexture(textureInfo, textureMemoryBlock);
 
-	meshRednerer->Init(meshMemoryBlock, shader, textureMemoryBlock);
+	meshRednerer->Init(meshMemoryBlock, shaderMemoryBlock, textureMemoryBlock);
 	RESOURCES->EndBatch();
 
 	AddGameObject(obj->GetMemoryEntry());
@@ -220,7 +209,7 @@ void MeshDemo::CreateCallBack()
 	
 	_curUsage = _vInfo->CurrentUsage;
 
-	for (int i = 0; i < 1; ++i)
+	for (int i = 0; i < MAX_COUNT; ++i)
 	{
 		if (_objCreatedCount >= MAX_COUNT) break;
 

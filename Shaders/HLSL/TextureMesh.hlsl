@@ -1,7 +1,11 @@
 #include "Global.hlsl"
 
-Texture2D ColorMap : register(t0);
-SamplerState LinearSampler : register(s0);
+SamplerState LinearSampler : register(CONCAT(s, LINEAR_SAMPLER_REGISTER));
+
+cbuffer TextureIndexBuffer : register(CONCAT(b, TEXTURE_INDEX_REGISTER))
+{
+    uint textureIndex;
+};
 
 TextureMeshOutput VS(VertexTexture input)
 {
@@ -17,7 +21,7 @@ TextureMeshOutput VS(VertexTexture input)
 
 float4 PS(TextureMeshOutput output) : SV_Target
 {
-    float4 color = ColorMap.Sample(LinearSampler, output.uv);
-    //float4 color = float4(output.uv.x, output.uv.y, 0.0f, 1.0f);
+    Texture2D<float4> colorMap = ResourceDescriptorHeap[textureIndex];
+    float4 color = colorMap.Sample(LinearSampler, output.uv);
     return color;
 }

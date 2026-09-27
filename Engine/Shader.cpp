@@ -2,10 +2,21 @@
 #include "Shader.h"
 #include "ShaderInfo.h"
 #include "ShaderCompiler.h"
+#include "../Shaders/HLSL/ShaderShared.h"
 
 Shader::Shader(ShaderInfo info) : _info(info)
 {
-	_fullPath = SHADER_PATH(info._path);
+	SetShader();
+}
+
+Shader::~Shader()
+{
+
+}
+
+void Shader::SetShader()
+{
+	_fullPath = SHADER_PATH(_info._path);
 
 	const wchar_t* str = _fullPath.c_str();
 
@@ -17,13 +28,7 @@ Shader::Shader(ShaderInfo info) : _info(info)
 	// Pixel Shader
 	CreateShader(str, L"PS", L"ps_6_6", _psBlob, compilerInfo);
 
-	CreateRootSignature();
 	CreatePSO();
-}
-
-Shader::~Shader()
-{
-
 }
 
 void Shader::CreateShader(const wchar_t* str, const wchar_t* entryPoint, const wchar_t* targetProfile, ComPtr<IDxcBlob>& blob, ShaderCompilerInfo* info)
@@ -69,21 +74,10 @@ void Shader::CreateShader(const wchar_t* str, const wchar_t* entryPoint, const w
 	ThrowIfFailed(results->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&blob), nullptr));
 }
 
-void Shader::CreateRootSignature()
-{
-	CD3DX12_ROOT_SIGNATURE_DESC desc = CD3DX12_ROOT_SIGNATURE_DESC(	
-	_info._signatureRootParamCount, _info._signatureRootParam, 
-	1, &_info._sampler,
-	D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
-
-	ThrowIfFailed(D3D12SerializeRootSignature(&desc, D3D_ROOT_SIGNATURE_VERSION_1, _signatureBlob.GetAddressOf(), _signatureError.GetAddressOf()));
-	ThrowIfFailed(DEVICE->CreateRootSignature(0, _signatureBlob->GetBufferPointer(), _signatureBlob->GetBufferSize(), IID_PPV_ARGS(&_signature)));
-}
-
 void Shader::CreatePSO()
 {
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = {};
-	desc.pRootSignature = _signature.Get();
+	desc.pRootSignature = GRAPHICS->GetRootSignature().Get();
 
 	// VS
 	{

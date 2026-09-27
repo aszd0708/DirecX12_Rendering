@@ -14,26 +14,34 @@ MeshRenderer::~MeshRenderer()
 	{
 		RESOURCES->ReleaseMesh(_mesh->GetMeshInfo());
 	}
+	if (_shader)
+	{
+		RESOURCES->ReleaseShader(_shader->GetShaderInfo());
+	}
 	if (_texture)
 	{
 		RESOURCES->ReleaseTexture(_texture->GetTextureInfo());
 	}
 }
 
-void MeshRenderer::Init(MemoryBlock meshHandler, shared_ptr<Shader> shader)
+void MeshRenderer::Init(MemoryBlock meshHandler, MemoryBlock shaderHandler)
 {
 	bool isSuccess = CPU_MEM_POOL->GetMemoryPool(meshHandler._poolID)->GetObjectByMemoryBlock(meshHandler, &_mesh);
 	assert(isSuccess);
 
-	_shader = shader;
+	isSuccess = CPU_MEM_POOL->GetMemoryPool(shaderHandler._poolID)->GetObjectByMemoryBlock(shaderHandler, &_shader);
+	assert(isSuccess);
+
 	_texture = nullptr;
 }
 
-void MeshRenderer::Init(MemoryBlock meshHandler, shared_ptr<Shader> shader, MemoryBlock & texture)
+void MeshRenderer::Init(MemoryBlock meshHandler, MemoryBlock shaderHandler, MemoryBlock texture)
 {
 	bool isSuccess = CPU_MEM_POOL->GetMemoryPool(meshHandler._poolID)->GetObjectByMemoryBlock(meshHandler, &_mesh);
 	assert(isSuccess);
-	_shader = shader;
+
+	isSuccess = CPU_MEM_POOL->GetMemoryPool(shaderHandler._poolID)->GetObjectByMemoryBlock(shaderHandler, &_shader);
+	assert(isSuccess);
 
 	isSuccess = CPU_MEM_POOL->GetMemoryPool(texture._poolID)->GetObjectByMemoryBlock(texture, &_texture);
 	assert(isSuccess);
@@ -43,7 +51,7 @@ void MeshRenderer::Render()
 {
 	Renderer::Render();
 
-	COMMAND_LIST->SetGraphicsRootSignature(_shader->GetRootSignature().Get());
+	COMMAND_LIST->SetGraphicsRootSignature(GRAPHICS->GetRootSignature().Get());
 	COMMAND_LIST->SetPipelineState(_shader->GetPSO().Get());
 	COMMAND_LIST->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -58,18 +66,18 @@ void MeshRenderer::Render()
 
 	// Global 버퍼 전달
 	// Push 이후에 GetAddress 호출
-	COMMAND_LIST->SetGraphicsRootConstantBufferView(0, GlobalConstantBuffer::GetInstance()->GetCameraBufferAddress());
+	COMMAND_LIST->SetGraphicsRootConstantBufferView((int)eShaderIndex::GLOBAL, GlobalConstantBuffer::GetInstance()->GetCameraBufferAddress());
 
 	// World Matrix 버퍼 전달
 	// Push 이후에 GetAddress 호출
 	D3D12_GPU_VIRTUAL_ADDRESS worldMaterialBufferAddress;
 	PushWorldMatrixBuffer(worldMaterialBufferAddress);
-	COMMAND_LIST->SetGraphicsRootConstantBufferView(1, worldMaterialBufferAddress);
+	COMMAND_LIST->SetGraphicsRootConstantBufferView((int)eShaderIndex::TRANSFORM, worldMaterialBufferAddress);
 
 	// Texture 전달
 	if (_texture != nullptr)
 	{
-		COMMAND_LIST->SetGraphicsRootDescriptorTable(2, _texture->GetHandle());
+		COMMAND_LIST->SetGraphicsRoot32BitConstant((int)eShaderIndex::TEXTURE_INDEX, _texture->GetDescHandle().index, 0);
 	}
 
 	COMMAND_LIST->DrawIndexedInstanced(_mesh->GetIndexCount(), 1, 0, 0, 0);

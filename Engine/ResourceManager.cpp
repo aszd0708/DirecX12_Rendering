@@ -1,20 +1,23 @@
 #include "pch.h"
 #include "ResourceManager.h"
+#include "MeshInfo.h"
 #include "MeshPool.h"
 #include "TexturePool.h"
-#include "MeshInfo.h"
+#include "ShaderPool.h"
 #include "GpuCommandPool.h"
 
 void ResourceManager::Init()
 {
 	_meshPool = new MeshPool();
 	_texturePool = new TexturePool();
+	_shaderPool = new ShaderPool();
 }
 
 void ResourceManager::Release()
 {
 	delete(_meshPool);
 	delete(_texturePool);
+	delete(_shaderPool);
 }
 
 void ResourceManager::BeginBatch()
@@ -61,4 +64,14 @@ bool ResourceManager::GetTexture(const TextureInfo& info, OUT MemoryBlock& memor
 bool ResourceManager::ReleaseTexture(const TextureInfo& info)
 {
 	return _texturePool->PoolInTexture(info);
+}
+
+bool ResourceManager::GetShader(const ShaderInfo& info, OUT MemoryBlock& memoryBlock)
+{
+	return _shaderPool->PoolOutShader(info, memoryBlock);
+}
+
+bool ResourceManager::ReleaseShader(const ShaderInfo& info)
+{
+	return _shaderPool->PoolInShader(info);
 }

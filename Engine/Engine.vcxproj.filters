@@ -298,6 +298,12 @@
     <ClInclude Include="ShaderCompiler.h">
       <Filter>01. Graphics\Shader</Filter>
     </ClInclude>
+    <ClInclude Include="..\Shaders\HLSL\ShaderShared.h">
+      <Filter>99. Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderPool.h">
+      <Filter>00. Engine\Pool\GpuResourcePool</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -482,6 +488,9 @@
     </ClCompile>
     <ClCompile Include="ShaderCompiler.cpp">
       <Filter>01. Graphics\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderPool.cpp">
+      <Filter>00. Engine\Pool\GpuResourcePool</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

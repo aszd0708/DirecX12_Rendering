@@ -18,6 +18,8 @@ private:
 	void CreateBackBufferRTV();
 	void CreateFence();
 
+	void CreateRootSignature();
+
 public:
 	void RenderBegin();
 	void RenderEnd();
@@ -36,6 +38,8 @@ public:
 
 	ComPtr<ID3D12CommandAllocator> GetSubAllocator() { return _commandAllocatorSub; }
 	ComPtr<ID3D12GraphicsCommandList> GetSubList() { return _commandListSub; }
+
+	ComPtr<ID3D12RootSignature> GetRootSignature() { return _signature; }
 
 private:
 	HWND _hwnd = {};
@@ -58,6 +62,9 @@ private:
 	ComPtr<ID3D12Fence> _fence;
 	uint64 _fenceValue = 0;
 	HANDLE _fenceEvent = nullptr;
+
+	// Root Signature
+	ComPtr<ID3D12RootSignature> _signature;
 
 private:
 	D3D12_VIEWPORT _viewport;

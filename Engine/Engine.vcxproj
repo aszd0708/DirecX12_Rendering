@@ -173,6 +173,7 @@ xcopy /Y "$(SolutionDir)Engine\*.inl" "$(SolutionDir)Libraries\Include\Engine"</
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Shaders\HLSL\ShaderShared.h" />
     <ClInclude Include="Array.h" />
     <ClInclude Include="DynamicArray.h" />
     <ClInclude Include="Camera.h" />
@@ -227,6 +228,7 @@ xcopy /Y "$(SolutionDir)Engine\*.inl" "$(SolutionDir)Libraries\Include\Engine"</
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderCompiler.h" />
     <ClInclude Include="ShaderInfo.h" />
+    <ClInclude Include="ShaderPool.h" />
     <ClInclude Include="SimpleMath.h" />
     <ClInclude Include="Stack.h" />
     <ClInclude Include="stb_image.h" />
@@ -314,6 +316,7 @@ xcopy /Y "$(SolutionDir)Engine\*.inl" "$(SolutionDir)Libraries\Include\Engine"</
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderCompiler.cpp" />
     <ClCompile Include="ShaderInfo.cpp" />
+    <ClCompile Include="ShaderPool.cpp" />
     <ClCompile Include="SimpleMath.cpp" />
     <ClCompile Include="Stack.cpp" />
     <ClCompile Include="stb_image.cpp" />

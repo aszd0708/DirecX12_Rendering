@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "Graphics.h"
 #include "GpuConstantBufferPoolManager.h"
+#include "ShaderInfo.h"
+#include "../Shaders/HLSL/ShaderShared.h"
 
 Graphics::~Graphics()
 {
@@ -34,6 +36,8 @@ void Graphics::Init(HWND hwnd)
 	CreateSwapChain();
 	CreateBackBufferRTV();
 	CreateFence();
+
+	CreateRootSignature();
 }
 
 void Graphics::CreateCommandQueue()
@@ -125,6 +129,28 @@ void Graphics::CreateFence()
 {
 	ThrowIfFailed(_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&_fence)));
 	_fenceEvent = ::CreateEvent(nullptr, FALSE, FALSE, nullptr);
+}
+
+void Graphics::CreateRootSignature()
+{
+	ComPtr<ID3DBlob> signatureBlob;
+	ComPtr<ID3DBlob> signatureError;
+
+	UINT32 paramCount = (int)eShaderIndex::MAX;
+	CD3DX12_ROOT_PARAMETER rootParams[(int)eShaderIndex::MAX] = { {} };
+	rootParams[(int)eShaderIndex::GLOBAL].InitAsConstantBufferView(GLOBAL_REGISTER);
+	rootParams[(int)eShaderIndex::TRANSFORM].InitAsConstantBufferView(TRANSFORM_REGISTER);
+
+	rootParams[(UINT)eShaderIndex::TEXTURE_INDEX].InitAsConstants(1, TEXTURE_INDEX_REGISTER, 0, D3D12_SHADER_VISIBILITY_PIXEL);
+	CD3DX12_STATIC_SAMPLER_DESC sampler = CD3DX12_STATIC_SAMPLER_DESC(LINEAR_SAMPLER_REGISTER);
+
+	CD3DX12_ROOT_SIGNATURE_DESC desc = CD3DX12_ROOT_SIGNATURE_DESC(
+		paramCount, rootParams,
+		1, &sampler,
+		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT | D3D12_ROOT_SIGNATURE_FLAG_CBV_SRV_UAV_HEAP_DIRECTLY_INDEXED);
+
+	ThrowIfFailed(D3D12SerializeRootSignature(&desc, D3D_ROOT_SIGNATURE_VERSION_1, signatureBlob.GetAddressOf(), signatureError.GetAddressOf()));
+	ThrowIfFailed(DEVICE->CreateRootSignature(0, signatureBlob->GetBufferPointer(), signatureBlob->GetBufferSize(), IID_PPV_ARGS(&_signature)));
 }
 
 void Graphics::RenderBegin()

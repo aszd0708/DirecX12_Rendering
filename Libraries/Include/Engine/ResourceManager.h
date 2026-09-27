@@ -3,10 +3,13 @@
 #include "GpuBufferPoolManager.h"
 
 class MeshPool;
-class MeshInfo;
+struct MeshInfo;
 
 class TexturePool;
-class TextureInfo;
+struct TextureInfo;
+
+class ShaderPool;
+struct ShaderInfo;
 
 class GpuCommandInfo;
 
@@ -27,9 +30,13 @@ public:
 	bool GetTexture(const TextureInfo& info, OUT MemoryBlock& memoryBlock);
 	bool ReleaseTexture(const TextureInfo& info);
 
+	bool GetShader(const ShaderInfo& info, OUT MemoryBlock& memoryBlock);
+	bool ReleaseShader(const ShaderInfo& info);
+
 private:
 	MeshPool* _meshPool;
 	TexturePool* _texturePool;
+	ShaderPool* _shaderPool;
 
 	GpuCommandInfo* _commandInfo = nullptr;
 };
