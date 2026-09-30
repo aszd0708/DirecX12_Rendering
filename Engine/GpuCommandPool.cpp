@@ -4,7 +4,7 @@
 GpuCommandInfo::GpuCommandInfo(UINT8 id, ComPtr<ID3D12GraphicsCommandList> commandList, ComPtr<ID3D12CommandAllocator> commandAllocator) :
 	_poolID(id), _commandAddedCount(0), _commandList(commandList), _allocator(commandAllocator)
 {
-
+	Reset();
 }
 
 GpuCommandInfo::~GpuCommandInfo()
@@ -104,6 +104,7 @@ bool GpuCommandPoolManager::GetCommandPool(OUT GpuCommandInfo** pool)
 	bool isSuccess = _poolIndexStack.Pop(index);
 	assert(isSuccess);
 
+	_pool[index]->Reset();
 	*pool = _pool[index];
 	return isSuccess;
 }
@@ -111,6 +112,7 @@ bool GpuCommandPoolManager::GetCommandPool(OUT GpuCommandInfo** pool)
 bool GpuCommandPoolManager::ReleaseCommandPool(GpuCommandInfo* pool)
 {
 	UINT8 index = pool->GetPoolID();
+	pool->Reset();
 	_poolIndexStack.Push(index);
 	
 	return true;

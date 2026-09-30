@@ -19,6 +19,7 @@ public:
 public:
 	void CreateCamera();
 	void CreateTextureMesh(int index);
+	void CreateCubeMesh(int index);
 	void DelectTextureMesh(int index);
 
 private:

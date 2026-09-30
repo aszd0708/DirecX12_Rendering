@@ -94,8 +94,51 @@ void InstancingDemo::CreateTextureMesh(int index)
 	RESOURCES->BeginBatch();
 
 	MeshInfo meshInfo = {};
-	meshInfo.filePath = L"CubeVertexTextureData";
+	meshInfo.filePath = L"SphereVertexTextureData";
 	meshInfo.geometry = GeometryHelper::CreateSphereVertexTextureData();
+	MemoryBlock meshMemoryBlock = {};
+	RESOURCES->GetMesh(meshInfo, GpuBufferPoolManager::eBufferPoolID::VERTEX_BUMP, GpuBufferPoolManager::eBufferPoolID::INDEX_BUMP, meshMemoryBlock);
+
+	ShaderInfo shaderInfo = {};
+	shaderInfo._path = L"TextureMesh";
+	shaderInfo._inputLayoutDesc = meshInfo.geometry.desces;
+
+	MemoryBlock shaderMemoryBlock = {};
+	RESOURCES->GetShader(shaderInfo, shaderMemoryBlock);
+
+	MeshRenderer* meshRednerer = obj->AddComponent<MeshRenderer>();
+
+	TextureInfo textureInfo = {};
+	textureInfo.filePath = L"../Resources/Leather.jpg";
+	textureInfo.format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	textureInfo.mipLevels = 1;
+
+	MemoryBlock textureMemoryBlock = {};
+	RESOURCES->GetTexture(textureInfo, textureMemoryBlock);
+
+	meshRednerer->Init(meshMemoryBlock, shaderMemoryBlock, textureMemoryBlock);
+	RESOURCES->EndBatch();
+
+	AddGameObject(obj->GetMemoryEntry());
+}
+
+void InstancingDemo::CreateCubeMesh(int index)
+{
+	GameObject* obj;
+	bool isSuccess = GetScene()->CreateGameObject(&obj);
+	assert(isSuccess);
+	_objs[index] = obj;
+
+	Transform* t = obj->AddComponent<Transform>();
+	Vec3 pos = Vec3(rand() % 100, rand() % 100, rand() % 100);
+	t->SetPosition(pos);
+
+
+	RESOURCES->BeginBatch();
+
+	MeshInfo meshInfo = {};
+	meshInfo.filePath = L"CubeVertexTextureData";
+	meshInfo.geometry = GeometryHelper::CreateCubeVertexTextureData();
 	MemoryBlock meshMemoryBlock = {};
 	RESOURCES->GetMesh(meshInfo, GpuBufferPoolManager::eBufferPoolID::VERTEX_BUMP, GpuBufferPoolManager::eBufferPoolID::INDEX_BUMP, meshMemoryBlock);
 
@@ -135,11 +178,18 @@ void InstancingDemo::CreateCallBack()
 
 	_curUsage = _vInfo->CurrentUsage;
 
-	for (int i = 0; i < 1; ++i)
+	for (int i = 0; i < MAX_COUNT/2; ++i)
 	{
 		if (_objCreatedCount >= MAX_COUNT) break;
 
 		CreateTextureMesh(_objCreatedCount);
+		_objCreatedCount++;
+	}
+	for (int i = MAX_COUNT/2; i < MAX_COUNT; ++i)
+	{
+		if (_objCreatedCount >= MAX_COUNT) break;
+
+		CreateCubeMesh(_objCreatedCount);
 		_objCreatedCount++;
 	}
 

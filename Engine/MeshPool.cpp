@@ -29,6 +29,7 @@ bool MeshPool::PoolInMesh(const MeshInfo& key)
 			Mesh* mesh = nullptr;
 			isSuccess = pool->GetObjectByMemoryBlock(poolBlock.block, &mesh);
 			assert(isSuccess);
+			_usableInstancingIDs.Push(mesh->GetInstancingID());
 			pool->ReleaseMemory(mesh);
 			_table.RemoveKey(hashValue);
 		}
@@ -62,10 +63,26 @@ bool MeshPool::PoolOutMesh(MeshInfo& key, const GpuBufferPoolManager::eBufferPoo
 		isSuccess = CPU_MEM_POOL->GetMemoryPool(cpuPoolID)->GetMemory(&mesh, key, vertexPoolID, indexPoolID);
 		assert(isSuccess && "CPU 메모리 풀 메모리 부족");
 
+		UINT32 instancingID = _curInstancingID;
+		bool usingCurInstancingID = true;
+		if (_usableInstancingIDs.GetCount() > 0)
+		{
+			isSuccess = _usableInstancingIDs.Pop(instancingID);
+			usingCurInstancingID = isSuccess == false;
+			if (isSuccess == false)
+			{
+				instancingID = _curInstancingID;
+			}
+		}
+		if (usingCurInstancingID)
+		{
+			_curInstancingID++;
+		}
+
 		// 매시 생성
 		GpuMemoryHandle vertexUploadHandler;
 		GpuMemoryHandle indexUploadHandler;
-		mesh->CreateMesh(commandInfo->GetCommandList(), vertexUploadHandler, indexUploadHandler);
+		mesh->CreateMesh(commandInfo->GetCommandList(), instancingID, vertexUploadHandler, indexUploadHandler);
 		commandInfo->AddUploadHandle(vertexUploadHandler);
 		commandInfo->AddUploadHandle(indexUploadHandler);
 		commandInfo->AddCommandCount();

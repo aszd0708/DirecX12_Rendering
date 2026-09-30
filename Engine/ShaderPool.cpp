@@ -31,6 +31,7 @@ bool ShaderPool::PoolInShader(const ShaderInfo & key)
 			Shader* shader = nullptr;
 			isSuccess = pool->GetObjectByMemoryBlock(poolBlock.block, &shader);
 			assert(isSuccess);
+			_usableInstancingIDs.Push(shader->GetInstancingID());
 			pool->ReleaseMemory(shader);
 			_table.RemoveKey(hashValue);
 		}
@@ -63,6 +64,24 @@ bool ShaderPool::PoolOutShader(const ShaderInfo& key, OUT MemoryBlock& memoryBlo
 
 		isSuccess = CPU_MEM_POOL->GetMemoryPool(poolID)->GetMemory(&shader, key);
 		assert(isSuccess && "CPU 메모리 풀 메모리 부족");
+
+		UINT32 instancingID = _curInstancingID;
+		bool usingCurInstancingID = true;
+		if (_usableInstancingIDs.GetCount() > 0)
+		{
+			isSuccess = _usableInstancingIDs.Pop(instancingID);
+			usingCurInstancingID = isSuccess == false;
+			if (isSuccess == false)
+			{
+				instancingID = _curInstancingID;
+			}
+		}
+		if (usingCurInstancingID)
+		{
+			_curInstancingID++;
+		}
+
+		shader->SetInstancingID(instancingID);
 
 		memoryBlock = shader->GetMemoryHandler();
 

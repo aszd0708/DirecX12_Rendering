@@ -14,7 +14,8 @@ ConstantBuffer::~ConstantBuffer()
 
 void ConstantBuffer::CreateBuffer(UINT32 dataSize)
 {
-	GPU_CONSTNAT_POOL->GetMemory(dataSize, _handle);
+	bool isSuccess = GPU_CONSTNAT_POOL->GetMemory(dataSize, _handle);
+	assert(isSuccess);
 }
 
 D3D12_GPU_VIRTUAL_ADDRESS ConstantBuffer::GetAddress()

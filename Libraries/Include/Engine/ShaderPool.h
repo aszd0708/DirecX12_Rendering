@@ -24,5 +24,8 @@ private:
 	/// Key : Hash<ShaderInfo>::GetHash() Value : ShaderPoolBlock
 	/// </summary>
 	HashTable<UINT64, ShaderPoolBlock> _table;
+
+	Stack<UINT32> _usableInstancingIDs;
+	UINT32 _curInstancingID = 0;
 };
 

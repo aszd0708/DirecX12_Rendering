@@ -9,7 +9,7 @@ public:
 	virtual ~Mesh();
 
 public:
-	void CreateMesh(const ComPtr<ID3D12GraphicsCommandList>& commandList, OUT GpuMemoryHandle& vertexUploadHandle, OUT GpuMemoryHandle& indexUploadHandle);
+	void CreateMesh(const ComPtr<ID3D12GraphicsCommandList>& commandList, UINT32 instancingID, OUT GpuMemoryHandle& vertexUploadHandle, OUT GpuMemoryHandle& indexUploadHandle);
 
 private:
 	void CreateVertexResource(const ComPtr<ID3D12GraphicsCommandList>& commandList, OUT GpuMemoryHandle& handle);

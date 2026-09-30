@@ -5,7 +5,7 @@
 /// GpuConstantBufferPage ///
 /////////////////////////////
 
-GpuConstantBufferPage::GpuConstantBufferPage(UINT64 size) :_offset(0), _totalSize(size), _fenceValue(0)
+GpuConstantBufferPage::GpuConstantBufferPage(UINT8 pageIndex, UINT64 size) :_pageIndex(pageIndex), _offset(0), _totalSize(size), _fenceValue(0)
 {
 }
 
@@ -23,7 +23,7 @@ bool GpuConstantBufferPage::Alloc(UINT64 size, OUT GpuConstantBufferHandle & han
 		return false;
 	}
 
-	handle.offset = alignedOffset;
+	handle.offset = alignedOffset + (_pageIndex * _totalSize);
 	handle.size = size;
 
 	_offset = alignedOffset + size;
@@ -54,7 +54,7 @@ _currentPageIndex(0), _pageSize(pageSize), _pages(pageCount), _mappedBase(nullpt
 {
 	for (int i = 0; i < pageCount; ++i)
 	{
-		GpuConstantBufferPage page = GpuConstantBufferPage(_pageSize);
+		GpuConstantBufferPage page = GpuConstantBufferPage(i, _pageSize);
 		_pages[i] = page;
 	}
 	CreateResource(pageCount);

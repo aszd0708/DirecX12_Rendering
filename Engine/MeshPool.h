@@ -24,5 +24,8 @@ private:
 	/// Key : Hash<TextureInfo>::GetHash() Value : TexturePoolBlock
 	/// </summary>
 	HashTable<UINT64, MeshPoolBlock> _table;
+
+	Stack<UINT32> _usableInstancingIDs;
+	UINT32 _curInstancingID = 0;
 };
 

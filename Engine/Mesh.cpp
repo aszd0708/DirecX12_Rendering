@@ -25,8 +25,9 @@ Mesh::~Mesh()
 		break;
 	}
 }
-void Mesh::CreateMesh(const ComPtr<ID3D12GraphicsCommandList>& commandList, OUT GpuMemoryHandle& vertexUploadHandle, OUT GpuMemoryHandle& indexUploadHandle)
+void Mesh::CreateMesh(const ComPtr<ID3D12GraphicsCommandList>& commandList, UINT32 instancingID, OUT GpuMemoryHandle& vertexUploadHandle, OUT GpuMemoryHandle& indexUploadHandle)
 {
+	_instancingID = instancingID;
 	CreateVertexResource(commandList, vertexUploadHandle);
 	CreateIndexResource(commandList, indexUploadHandle);
 }
