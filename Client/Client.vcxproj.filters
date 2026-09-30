@@ -33,6 +33,9 @@
     <ClCompile Include="CameraController.cpp">
       <Filter>Camera</Filter>
     </ClCompile>
+    <ClCompile Include="InstancingDemo.cpp">
+      <Filter>Game\Demo</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Main.h">
@@ -46,6 +49,9 @@
     </ClInclude>
     <ClInclude Include="CameraController.h">
       <Filter>Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="InstancingDemo.h">
+      <Filter>Game\Demo</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -62,6 +68,9 @@
       <Filter>Shaders\GlobalData</Filter>
     </FxCompile>
     <FxCompile Include="..\Shaders\HLSL\TextureMesh.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Shaders\HLSL\TextureMesh_Instancing.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>

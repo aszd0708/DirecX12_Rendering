@@ -39,5 +39,9 @@ private:
 	ShaderPool* _shaderPool;
 
 	GpuCommandInfo* _commandInfo = nullptr;
+
+	// Instancing을 위한 ID
+	Stack<UINT32> _usableMeshID;
+	Stack<UINT32> _usableShaderID;
 };
 

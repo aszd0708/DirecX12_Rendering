@@ -44,6 +44,7 @@ struct VertexTexture
 {
     float3 position : POSITION;
     float2 uv : TEXCOORD;
+    uint instanceID : SV_InstanceID; 
 };
 
 struct MeshOutput
@@ -58,4 +59,16 @@ struct TextureMeshOutput
     float4 position : SV_POSITION;
     float4 worldPosition : POSITION;
     float2 uv : TEXCOORD;
+    nointerpolation uint textureIndexID : TEXINDEX;
 };
+
+// GlobalBuffer.h InstanceDesc 와 같은 구조여야 함
+struct InstanceDesc
+{
+    matrix W;
+    uint texIndex;
+    
+    uint padding[3];
+};
+
+StructuredBuffer<InstanceDesc> InstancingBuffer : register(CONCAT(t, INSTANCE_REGISTER));

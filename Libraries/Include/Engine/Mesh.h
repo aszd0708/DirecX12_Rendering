@@ -25,6 +25,9 @@ public:
 
 	const MeshInfo& GetMeshInfo() { return _meshInfo; }
 
+	const UINT32 GetInstancingID() { return _instancingID; }
+	void SetInstancingID(UINT32 instancingID) { _instancingID = instancingID; }
+
 	// Mesh Data
 private:
 	const Array<D3D12_INPUT_ELEMENT_DESC>& GetVertexDesc() { return _meshInfo.geometry.desces; }
@@ -44,4 +47,6 @@ private:
 
 	GpuBufferHandle _vertexBufferHandle;
 	GpuBufferHandle _indexBufferHandle;
+
+	UINT32 _instancingID = UINT32_MAX;
 };

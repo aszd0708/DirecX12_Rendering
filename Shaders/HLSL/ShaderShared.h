@@ -9,4 +9,7 @@
 // Sampler (s)
 #define LINEAR_SAMPLER_REGISTER			0
 
+// Instancing 
+#define INSTANCE_REGISTER 0	
+
 #endif

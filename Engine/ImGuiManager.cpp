@@ -47,6 +47,9 @@ void ImGuiManager::Render()
 {
     // Rendering
     ImGui::Render();
+
+    ID3D12DescriptorHeap* descHeap = DESC_POOL->GetDescriptorHeapAllocator(D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+    COMMAND_LIST->SetDescriptorHeaps(1, &descHeap);
     ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), COMMAND_LIST.Get());
 }
 

@@ -1,5 +1,7 @@
 #pragma once
 
+class InstancingController;
+
 class Scene
 {
 public:
@@ -34,7 +36,8 @@ private:
 	// 한 프레임 이후에 지우는 로직을 위한 오브젝트들
 	MemoryList* _deletedObjs;
 
-
 	MemoryList* _renderList;
+
+	InstancingController* _instancingController = nullptr;
 };
 

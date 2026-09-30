@@ -97,6 +97,9 @@
     <Filter Include="00. Engine\Pool\GpuResourcePool">
       <UniqueIdentifier>{d30ec5e3-c858-49ce-96d3-2cd2d617b6ce}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Graphics\Instancing">
+      <UniqueIdentifier>{609dab68-3b34-45e5-993d-8f45a4ee5b4a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -304,6 +307,9 @@
     <ClInclude Include="ShaderPool.h">
       <Filter>00. Engine\Pool\GpuResourcePool</Filter>
     </ClInclude>
+    <ClInclude Include="InstancingController.h">
+      <Filter>01. Graphics\Instancing</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -491,6 +497,9 @@
     </ClCompile>
     <ClCompile Include="ShaderPool.cpp">
       <Filter>00. Engine\Pool\GpuResourcePool</Filter>
+    </ClCompile>
+    <ClCompile Include="InstancingController.cpp">
+      <Filter>01. Graphics\Instancing</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

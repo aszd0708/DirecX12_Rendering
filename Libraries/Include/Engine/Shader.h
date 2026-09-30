@@ -30,6 +30,9 @@ public:
 
 	ComPtr<ID3D12PipelineState> GetPSO() { return _pso; }
 
+	const UINT32 GetInstancingID() { return _instancingID; }
+	void SetInstancingID(UINT32 instancingID) { _instancingID = instancingID; }
+
 private:
 	ShaderInfo _info;
 	wstring _fullPath;
@@ -38,8 +41,9 @@ private:
 	ComPtr<IDxcBlob> _psBlob;
 
 	ComPtr<ID3D12PipelineState> _pso;
-public:
 
+	UINT32 _instancingID = UINT32_MAX;
+public:
 	Shader() = default;
 };
 

@@ -23,5 +23,7 @@ enum class eShaderIndex
 	TRANSFORM = 1,
 	TEXTURE_INDEX = 2,
 
+	INSTANCE = 3,
+
 	MAX
 };

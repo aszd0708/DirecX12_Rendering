@@ -33,6 +33,11 @@ public:
 	bool RemoveKey(const K& key);
 	bool FindValue(const K& key);
 
+	/// <summary>
+	/// 메모리 해제 기능이 없습니다.
+	/// </summary>
+	void Clear();
+
 	UINT32 GetCapacity();
 	bool IsOccupiedAt(UINT32 index, OUT K& key, OUT V& value);
 
@@ -230,6 +235,12 @@ inline bool HashTable<K, V>::FindValue(const K& key)
 {
 	UINT32 index = 0;
 	return FindIndex(key, index);
+}
+
+template<typename K, typename V>
+inline void HashTable<K, V>::Clear()
+{
+	_count = 0;
 }
 
 template<typename K, typename V>

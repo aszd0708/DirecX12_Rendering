@@ -3,6 +3,7 @@
 #include "GlobalBuffer.h"
 #include "CpuMemoryPoolManager.h"
 
+struct InstancingInfo;
 class ConstantBuffer;
 
 class Renderer : public Component
@@ -22,7 +23,9 @@ public:
 
 public:
 	virtual void Init();
-	virtual void Render();
+	virtual void Render(ID3D12GraphicsCommandList* commandList);
+	virtual void RenderInstancing(ID3D12GraphicsCommandList* commandList, D3D12_GPU_VIRTUAL_ADDRESS address, UINT32 count);
+	virtual bool SetInstancingInfo(InstancingInfo& info) = 0;
 
 public:
 	void SetWorldMatrixBuffer(ConstantBuffer* worldMatrixBuffer) { _worldTransformBuffer = worldMatrixBuffer; };
@@ -31,6 +34,8 @@ public:
 protected:
 	void PushWorldMatrixBuffer(OUT D3D12_GPU_VIRTUAL_ADDRESS& address);
 
+protected:
+	InstanceDesc _instancingDesc;
 private:
 	TransformDesc _worldTransformDesc;
 	ConstantBuffer* _worldTransformBuffer;

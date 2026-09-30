@@ -28,7 +28,6 @@ public:										\
 #define TIME				GET_SINGLE(TimeManager)
 #define DT					TIME->GetDeltaTime()
 #define RESOURCES			GET_SINGLE(ResourceManager)
-#define INSTANCING			GET_SINGLE(InstancingManager)
 #define GUI					GET_SINGLE(ImGuiManager)
 #define DESC_POOL			GET_SINGLE(DescHeapAllocatorManager)
 #define CPU_MEM_POOL		GET_SINGLE(CpuMemoryPoolManager)

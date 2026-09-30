@@ -2,6 +2,7 @@
 #include "Renderer.h"
 #include "ConstantBuffer.h"
 #include "GlobalBuffer.h"
+#include "InstancingController.h"
 
 CpuMemoryPoolManager::ePoolID Renderer::s_PoolID = CpuMemoryPoolManager::ePoolID::RENDERER;
 
@@ -28,7 +29,12 @@ void Renderer::Init()
 
 }
 
-void Renderer::Render()
+void Renderer::Render(ID3D12GraphicsCommandList* commandList)
+{
+
+}
+
+void Renderer::RenderInstancing(ID3D12GraphicsCommandList* commandList, D3D12_GPU_VIRTUAL_ADDRESS address, UINT32 count)
 {
 
 }

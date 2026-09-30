@@ -142,6 +142,9 @@ void Graphics::CreateRootSignature()
 	rootParams[(int)eShaderIndex::TRANSFORM].InitAsConstantBufferView(TRANSFORM_REGISTER);
 
 	rootParams[(UINT)eShaderIndex::TEXTURE_INDEX].InitAsConstants(1, TEXTURE_INDEX_REGISTER, 0, D3D12_SHADER_VISIBILITY_PIXEL);
+
+	rootParams[(UINT)eShaderIndex::INSTANCE].InitAsShaderResourceView(INSTANCE_REGISTER, 0, D3D12_SHADER_VISIBILITY_VERTEX);
+
 	CD3DX12_STATIC_SAMPLER_DESC sampler = CD3DX12_STATIC_SAMPLER_DESC(LINEAR_SAMPLER_REGISTER);
 
 	CD3DX12_ROOT_SIGNATURE_DESC desc = CD3DX12_ROOT_SIGNATURE_DESC(
@@ -150,7 +153,7 @@ void Graphics::CreateRootSignature()
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT | D3D12_ROOT_SIGNATURE_FLAG_CBV_SRV_UAV_HEAP_DIRECTLY_INDEXED);
 
 	ThrowIfFailed(D3D12SerializeRootSignature(&desc, D3D_ROOT_SIGNATURE_VERSION_1, signatureBlob.GetAddressOf(), signatureError.GetAddressOf()));
-	ThrowIfFailed(DEVICE->CreateRootSignature(0, signatureBlob->GetBufferPointer(), signatureBlob->GetBufferSize(), IID_PPV_ARGS(&_signature)));
+	ThrowIfFailed(DEVICE->CreateRootSignature(0, signatureBlob->GetBufferPointer(), signatureBlob->GetBufferSize(), IID_PPV_ARGS(_signature.GetAddressOf())));
 }
 
 void Graphics::RenderBegin()

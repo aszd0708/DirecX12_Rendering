@@ -1,15 +1,20 @@
 #include "pch.h"
 #include "Scene.h"
 #include "Renderer.h"
+#include "MeshRenderer.h"
 #include "GameObject.h"
 #include "GlobalConstantBuffer.h"
 #include "Camera.h"
+#include "InstancingController.h"
+#include "GpuCommandPool.h"
 
 Scene::Scene(string _sceneName) : _sceneName(_sceneName), _id(0)
 {
 	_objList = new MemoryList();
 	_deletedObjs = new MemoryList();
 	_renderList = new MemoryList();
+
+	_instancingController = new InstancingController();
 
 	GlobalConstantBuffer::GetInstance()->Init();
 }
@@ -19,6 +24,7 @@ Scene::~Scene()
 	delete _objList;
 	delete _deletedObjs;
 	delete _renderList;
+	delete _instancingController;
 
 	GlobalConstantBuffer::GetInstance()->Release();
 }
@@ -147,26 +153,48 @@ void Scene::Render()
 	// 카메라 버퍼 세팅
 	GlobalConstantBuffer::GetInstance()->PushCameraBuffer(Camera::S_MatView, Camera::S_MatProjection);
 
+	//GpuCommandInfo* commandInfo = nullptr;
+	//bool isSuccess = GPU_COMMAND_POOL->GetCommandPool(&commandInfo);
+	//assert(isSuccess);
+	bool isSuccess = false;
 	ID3D12DescriptorHeap* descHeap = DESC_POOL->GetDescriptorHeapAllocator(D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	if (descHeap != nullptr)
 	{
 		COMMAND_LIST->SetDescriptorHeaps(1, &descHeap);
 	}
+	COMMAND_LIST->SetGraphicsRootSignature(GRAPHICS->GetRootSignature().Get());
+	COMMAND_LIST->SetGraphicsRootConstantBufferView((int)eShaderIndex::GLOBAL, GlobalConstantBuffer::GetInstance()->GetCameraBufferAddress());
 
+	_instancingController->Clear();
+	bool isExistRendering = false;
+	// 일단 MeshRenderer
 	for (int i = 0; i < _renderList->GetCount(); ++i)
 	{
 		MemoryEntry entity;
-		bool isSuccess = _renderList->GetMemoryBlock(i, entity);
+		isSuccess = _renderList->GetMemoryBlock(i, entity);
 		if (isSuccess)
 		{
 			Renderer* render = nullptr;
-			bool isSuccess = CpuMemoryPoolManager::GetInstance()->Resolve(entity, &render);
+			isSuccess = CpuMemoryPoolManager::GetInstance()->Resolve(entity, &render);
 			if (isSuccess)
 			{
-				render->Render();
+				InstancingInfo info = {};
+				isSuccess = render->SetInstancingInfo(info);
+				if(isSuccess == false) continue;
+
+				_instancingController->Add(info);
+				isExistRendering = true;
 			}
 		}
 	}
+	_instancingController->Render(nullptr);
+
+	//if (isExistRendering)
+	//{
+	//	GPU_COMMAND_POOL->AddSendingQueueIndex(commandInfo->GetPoolID());
+	//	GPU_COMMAND_POOL->SendQueue();
+	//}
+	//GPU_COMMAND_POOL->ReleaseCommandPool(commandInfo);
 }
 
 void Scene::RegisterGameObject(MemoryEntry& objMemory)

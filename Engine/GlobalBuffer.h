@@ -20,3 +20,12 @@ struct TransformDesc
 {
 	Matrix W = Matrix::Identity;
 };
+
+// Global.hlsl InstanceDesc 와 같은 구조여야 함
+struct InstanceDesc
+{
+	Matrix W;
+	UINT32 texIndex;
+	
+	UINT32 padding[3];
+};

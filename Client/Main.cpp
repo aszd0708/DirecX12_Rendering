@@ -3,11 +3,12 @@
 #include "Engine/Game.h"
 #include "TriagleDemo.h"
 #include "MeshDemo.h"
+#include "InstancingDemo.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
 	GameDesc desc;
-	desc._scene = make_shared<MeshDemo>("MeshDemo");
+	desc._scene = make_shared<InstancingDemo>("InstancingDemo");
 	desc.appName = L"DX12_Study";
 	desc.hInstance = hInstance;
 	desc.vsync = false;
