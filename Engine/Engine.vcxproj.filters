@@ -100,6 +100,9 @@
     <Filter Include="01. Graphics\Instancing">
       <UniqueIdentifier>{609dab68-3b34-45e5-993d-8f45a4ee5b4a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01. Graphics\Material">
+      <UniqueIdentifier>{056709e4-4852-45bd-acd3-6b28078bc905}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -310,6 +313,18 @@
     <ClInclude Include="InstancingController.h">
       <Filter>01. Graphics\Instancing</Filter>
     </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>01. Graphics\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialInfo.h">
+      <Filter>01. Graphics\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialInfoEnum.h">
+      <Filter>01. Graphics\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="GpuMaterialBufferPool.h">
+      <Filter>01. Graphics\GpuMemoryPool\Buffer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -501,6 +516,18 @@
     <ClCompile Include="InstancingController.cpp">
       <Filter>01. Graphics\Instancing</Filter>
     </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>01. Graphics\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialInfo.cpp">
+      <Filter>01. Graphics\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialInfoEnum.cpp">
+      <Filter>01. Graphics\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="GpuMaterialBufferPool.cpp">
+      <Filter>01. Graphics\GpuMemoryPool\Buffer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="SimpleMath.inl">
@@ -546,5 +573,10 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Engine.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Shaders\HLSL\ERROR_COLOR.hlsl">
+      <Filter>99. Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

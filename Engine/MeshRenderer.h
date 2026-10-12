@@ -1,8 +1,7 @@
 #pragma once
 #include "Renderer.h"
 #include "Mesh.h"
-#include "Shader.h"
-#include "Texture.h"
+#include "Material.h"
 #include "ConstantBuffer.h"
 #include "Camera.h"
 
@@ -17,8 +16,7 @@ public:
 	virtual ~MeshRenderer() override;
 
 public:
-	void Init(MemoryBlock meshHandler, MemoryBlock shaderHandler);
-	void Init(MemoryBlock meshHandler, MemoryBlock shaderHandler, MemoryBlock texture);
+	void Init(MemoryBlock meshHandler, MemoryBlock materialHandler);
 	virtual void Render(ID3D12GraphicsCommandList* commandList) override;
 	virtual void RenderInstancing(ID3D12GraphicsCommandList* commandList, D3D12_GPU_VIRTUAL_ADDRESS address, UINT32 count) override;
 	virtual bool SetInstancingInfo(InstancingInfo& info) override;
@@ -28,7 +26,7 @@ public:
 
 private:
 	Mesh* _mesh;
-
-	Shader* _shader;
-	Texture* _texture;
+	Material* _material;
+	const UINT32* _textureIndexes;
+	UINT8 _textureCount;
 };

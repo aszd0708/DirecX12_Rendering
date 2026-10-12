@@ -7,8 +7,14 @@
 struct TextureInfo
 {
 	wstring filePath;
-	DXGI_FORMAT format;
-	UINT16 mipLevels;
+	DXGI_FORMAT format = DXGI_FORMAT::DXGI_FORMAT_UNKNOWN;
+	UINT16 mipLevels = 0;
+
+public:
+	bool IsValidFilePath() const 
+	{
+		return filePath.empty() == false;
+	}
 };
 
 template<> 

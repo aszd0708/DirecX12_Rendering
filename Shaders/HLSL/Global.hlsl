@@ -34,6 +34,12 @@ cbuffer TransformMatrixBuffer : register(CONCAT(b, TRANSFORM_REGISTER))
 // MeshBuffer//
 ///////////////
 
+struct VertexError
+{
+    float3 position : POSITION;
+    uint instanceID : SV_InstanceID;
+};
+
 struct VertexColor
 {
     float4 position : POSITION;
@@ -72,3 +78,15 @@ struct InstanceDesc
 };
 
 StructuredBuffer<InstanceDesc> InstancingBuffer : register(CONCAT(t, INSTANCE_REGISTER));
+
+// For Default Shader Material Index
+// MaterialInfo.h DefaultMaterialTextureDesc 와 같은 구조여야 함
+struct DefaultMaterialTextureDesc
+{
+    uint normalTextureIndex;
+    uint diffuseTextureIndex;
+    
+    uint padding[2];
+};
+
+StructuredBuffer<DefaultMaterialTextureDesc> DefaultMaterialTextureBuffer : register(CONCAT(t, MATERIAL_REGISTER));

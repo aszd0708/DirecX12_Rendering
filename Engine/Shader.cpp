@@ -6,7 +6,6 @@
 
 Shader::Shader(ShaderInfo info) : _info(info)
 {
-	SetShader();
 }
 
 Shader::~Shader()
@@ -14,28 +13,47 @@ Shader::~Shader()
 
 }
 
-void Shader::SetShader()
+bool Shader::SetShader()
 {
-	_fullPath = SHADER_PATH(_info._path);
+	_fullPath = SHADER_PATH(_info.path);
 
 	const wchar_t* str = _fullPath.c_str();
 
 	ShaderCompilerInfo* compilerInfo = SHADER_COMPILER->GetShaderComplierInfo(0);
 
+	bool isSuccess = false;
 	// Vertex Shader
-	CreateShader(str, L"VS", L"vs_6_6", _vsBlob, compilerInfo);
+	isSuccess = CreateShader(str, L"VS", L"vs_6_6", _vsBlob, compilerInfo);
+	if(isSuccess == false) 
+	{
+		return false;
+	}
 
 	// Pixel Shader
-	CreateShader(str, L"PS", L"ps_6_6", _psBlob, compilerInfo);
+	isSuccess = CreateShader(str, L"PS", L"ps_6_6", _psBlob, compilerInfo);
+	if (isSuccess == false)
+	{
+		return false;
+	}
 
-	CreatePSO();
+	isSuccess = CreatePSO();
+	if (isSuccess == false)
+	{
+		return false;
+	}
+
+	return true;
 }
 
-void Shader::CreateShader(const wchar_t* str, const wchar_t* entryPoint, const wchar_t* targetProfile, ComPtr<IDxcBlob>& blob, ShaderCompilerInfo* info)
+bool Shader::CreateShader(const wchar_t* str, const wchar_t* entryPoint, const wchar_t* targetProfile, ComPtr<IDxcBlob>& blob, ShaderCompilerInfo* info)
 {	
 	UINT32 codePage = DXC_CP_UTF8;
 	ComPtr<IDxcBlobEncoding> blobEncoding;
-	ThrowIfFailed(info->GetUtils()->LoadFile(str, &codePage, blobEncoding.GetAddressOf()));
+	HRESULT hr = info->GetUtils()->LoadFile(str, &codePage, blobEncoding.GetAddressOf());
+	if (FAILED(hr))
+	{
+		return false;
+	}
 
 	DxcBuffer source = {};
 	source.Ptr = blobEncoding->GetBufferPointer();
@@ -58,7 +76,11 @@ void Shader::CreateShader(const wchar_t* str, const wchar_t* entryPoint, const w
 
 	ComPtr<IDxcCompiler3> compiler = info->GetCompiler();
 	ComPtr<IDxcResult> results;
-	ThrowIfFailed(compiler->Compile(&source, args, _countof(args), info->GetHanlder().Get(), IID_PPV_ARGS(results.GetAddressOf())));
+	hr = compiler->Compile(&source, args, _countof(args), info->GetHanlder().Get(), IID_PPV_ARGS(results.GetAddressOf()));
+	if (FAILED(hr))
+	{
+		return false;
+	}
 
 	ComPtr<IDxcBlobUtf8> error = nullptr;
 	results->GetOutput(DXC_OUT_ERRORS, IID_PPV_ARGS(&error), nullptr);
@@ -69,12 +91,16 @@ void Shader::CreateShader(const wchar_t* str, const wchar_t* entryPoint, const w
 
 	HRESULT hrStatus;
 	ThrowIfFailed(results->GetStatus(&hrStatus));
-	ThrowIfFailed(hrStatus);
+	if (FAILED(hrStatus))
+	{
+		return false;
+	}
 
 	ThrowIfFailed(results->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&blob), nullptr));
+	return true;
 }
 
-void Shader::CreatePSO()
+bool Shader::CreatePSO()
 {
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = {};
 	desc.pRootSignature = GRAPHICS->GetRootSignature().Get();
@@ -95,8 +121,8 @@ void Shader::CreatePSO()
 		desc.PS = psByte;
 	}
 
-	desc.InputLayout.NumElements = _info._inputLayoutDesc.GetCount();
-	desc.InputLayout.pInputElementDescs = &_info._inputLayoutDesc[0];
+	desc.InputLayout.NumElements = _info.inputLayoutDesc.GetCount();
+	desc.InputLayout.pInputElementDescs = &_info.inputLayoutDesc[0];
 
 	desc.SampleMask = UINT_MAX;
 	desc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
@@ -109,5 +135,10 @@ void Shader::CreatePSO()
 	desc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM; //스왑체인과 동일
 	desc.SampleDesc.Count = 1;
 
-	ThrowIfFailed(DEVICE->CreateGraphicsPipelineState(&desc, IID_PPV_ARGS(&_pso)));
+	HRESULT hr = (DEVICE->CreateGraphicsPipelineState(&desc, IID_PPV_ARGS(&_pso)));
+	if (FAILED(hr))
+	{
+		return false;
+	}
+	return true;
 }

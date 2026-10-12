@@ -199,6 +199,7 @@ xcopy /Y "$(SolutionDir)Engine\*.inl" "$(SolutionDir)Libraries\Include\Engine"</
     <ClInclude Include="GpuBufferPoolManager.h" />
     <ClInclude Include="GpuBumpMemoryPool.h" />
     <ClInclude Include="GpuDynamicMemoryPool.h" />
+    <ClInclude Include="GpuMaterialBufferPool.h" />
     <ClInclude Include="GpuMemoryInfo.h" />
     <ClInclude Include="GpuMemoryPoolManager.h" />
     <ClInclude Include="Graphics.h" />
@@ -215,6 +216,9 @@ xcopy /Y "$(SolutionDir)Engine\*.inl" "$(SolutionDir)Libraries\Include\Engine"</
     <ClInclude Include="imstb_truetype.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="InstancingController.h" />
+    <ClInclude Include="Material.h" />
+    <ClInclude Include="MaterialInfo.h" />
+    <ClInclude Include="MaterialInfoEnum.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MeshInfo.h" />
     <ClInclude Include="MeshPool.h" />
@@ -268,6 +272,7 @@ xcopy /Y "$(SolutionDir)Engine\*.inl" "$(SolutionDir)Libraries\Include\Engine"</
     <ClCompile Include="GpuBufferPoolManager.cpp" />
     <ClCompile Include="GpuBumpMemoryPool.cpp" />
     <ClCompile Include="GpuDynamicMemoryPool.cpp" />
+    <ClCompile Include="GpuMaterialBufferPool.cpp" />
     <ClCompile Include="GpuMemoryInfo.cpp" />
     <ClCompile Include="GpuMemoryPoolManager.cpp" />
     <ClCompile Include="Graphics.cpp" />
@@ -300,6 +305,9 @@ xcopy /Y "$(SolutionDir)Engine\*.inl" "$(SolutionDir)Libraries\Include\Engine"</
     </ClCompile>
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="InstancingController.cpp" />
+    <ClCompile Include="Material.cpp" />
+    <ClCompile Include="MaterialInfo.cpp" />
+    <ClCompile Include="MaterialInfoEnum.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MeshInfo.cpp" />
     <ClCompile Include="MeshPool.cpp" />
@@ -390,6 +398,9 @@ xcopy /Y "$(SolutionDir)Engine\*.inl" "$(SolutionDir)Libraries\Include\Engine"</
     <ProjectReference Include="..\CpuMemoryPool\CpuMemoryPool.vcxproj">
       <Project>{1797e56b-ea2a-4120-a986-a05ea2d1265a}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Shaders\HLSL\ERROR_COLOR.hlsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -26,27 +26,15 @@ MeshRenderer::~MeshRenderer()
 	}
 }
 
-void MeshRenderer::Init(MemoryBlock meshHandler, MemoryBlock shaderHandler)
+void MeshRenderer::Init(MemoryBlock meshHandler, MemoryBlock materialHandler)
 {
 	bool isSuccess = CPU_MEM_POOL->GetMemoryPool(meshHandler._poolID)->GetObjectByMemoryBlock(meshHandler, &_mesh);
 	assert(isSuccess);
 
-	isSuccess = CPU_MEM_POOL->GetMemoryPool(shaderHandler._poolID)->GetObjectByMemoryBlock(shaderHandler, &_shader);
+	bool isSuccess = CPU_MEM_POOL->GetMemoryPool(materialHandler._poolID)->GetObjectByMemoryBlock(materialHandler, &_material);
 	assert(isSuccess);
 
-	_texture = nullptr;
-}
-
-void MeshRenderer::Init(MemoryBlock meshHandler, MemoryBlock shaderHandler, MemoryBlock texture)
-{
-	bool isSuccess = CPU_MEM_POOL->GetMemoryPool(meshHandler._poolID)->GetObjectByMemoryBlock(meshHandler, &_mesh);
-	assert(isSuccess);
-
-	isSuccess = CPU_MEM_POOL->GetMemoryPool(shaderHandler._poolID)->GetObjectByMemoryBlock(shaderHandler, &_shader);
-	assert(isSuccess);
-
-	isSuccess = CPU_MEM_POOL->GetMemoryPool(texture._poolID)->GetObjectByMemoryBlock(texture, &_texture);
-	assert(isSuccess);
+	_textureIndexes = _material->GetTextureIndexes(_textureCount);
 }
 
 void MeshRenderer::Render(ID3D12GraphicsCommandList* commandList)
@@ -54,7 +42,7 @@ void MeshRenderer::Render(ID3D12GraphicsCommandList* commandList)
 	Renderer::Render(commandList);
 
 	commandList->SetGraphicsRootSignature(GRAPHICS->GetRootSignature().Get());
-	commandList->SetPipelineState(_shader->GetPSO().Get());
+	commandList->SetPipelineState(_material->GetShader()->GetPSO().Get());
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	// Vertex 버퍼 전달
@@ -77,9 +65,16 @@ void MeshRenderer::Render(ID3D12GraphicsCommandList* commandList)
 	commandList->SetGraphicsRootConstantBufferView((int)eShaderIndex::TRANSFORM, worldMaterialBufferAddress);
 
 	// Texture 전달
-	if (_texture != nullptr)
+	if (_textureIndexes != nullptr)
 	{
-		commandList->SetGraphicsRoot32BitConstant((int)eShaderIndex::TEXTURE_INDEX, _texture->GetDescHandle().index, 0);
+		for (int i = 0; i < _textureCount; ++i)
+		{
+			if (_textureIndexes[i] == UINT32_MAX)
+			{
+				continue;
+			}
+			commandList->SetGraphicsRoot32BitConstant((int)eShaderIndex::TEXTURE_INDEX, _textureIndexes[i], 0);
+		}
 	}
 
 	commandList->DrawIndexedInstanced(_mesh->GetIndexCount(), 1, 0, 0, 0);
@@ -89,7 +84,7 @@ void MeshRenderer::RenderInstancing(ID3D12GraphicsCommandList* commandList, D3D1
 {
 	Renderer::RenderInstancing(commandList, address, count);
 
-	commandList->SetPipelineState(_shader->GetPSO().Get());
+	commandList->SetPipelineState(_material->GetShader()->GetPSO().Get());
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	// Vertex 버퍼 전달
@@ -109,7 +104,7 @@ void MeshRenderer::RenderInstancing(ID3D12GraphicsCommandList* commandList, D3D1
 bool MeshRenderer::SetInstancingInfo(InstancingInfo& info)
 {
 	info.meshID = _mesh->GetInstancingID();
-	info.shaderID = _shader->GetInstancingID();
+	info.shaderID = _material->GetShader()->GetInstancingID();
 	info.renderMemBlock = _memoryHandler;
 
 	Transform* transform;

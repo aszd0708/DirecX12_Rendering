@@ -34,5 +34,7 @@ public:
 	static Geometry CreateCubeVertexTextureNormalTangentData();
 	static Geometry CreateSphereVertexTextureNormalTangentData();
 	static Geometry CreateGridVertexTextureNormalTangentData(INT32 sizeX, INT32 sizeZ);
+
+	static Geometry CreateErrorCube();
 };
 

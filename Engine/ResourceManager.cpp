@@ -11,6 +11,8 @@ void ResourceManager::Init()
 	_meshPool = new MeshPool();
 	_texturePool = new TexturePool();
 	_shaderPool = new ShaderPool();
+
+	CreateErrorResources();
 }
 
 void ResourceManager::Release()
@@ -18,6 +20,8 @@ void ResourceManager::Release()
 	delete(_meshPool);
 	delete(_texturePool);
 	delete(_shaderPool);
+
+	CPU_MEM_POOL->GetMemoryPool(_meshErrorMemoryBlock._poolID)->ReleaseMemory(_meshErrorMemoryBlock);
 }
 
 void ResourceManager::BeginBatch()
@@ -74,4 +78,19 @@ bool ResourceManager::GetShader(const ShaderInfo& info, OUT MemoryBlock& memoryB
 bool ResourceManager::ReleaseShader(const ShaderInfo& info)
 {
 	return _shaderPool->PoolInShader(info);
+}
+
+const MemoryBlock& ResourceManager::GetErrorShader()
+{	
+	return _meshErrorMemoryBlock;
+}
+
+void ResourceManager::CreateErrorResources()
+{
+	ShaderInfo _meshErrorShader = {};
+	_meshErrorShader.path = L"ERROR_COLOR";
+	_meshErrorShader.inputLayoutDesc = ErrorVertexData::GetDesc();
+
+	_meshErrorMemoryBlock = {};
+	assert(GetShader(_meshErrorShader, _meshErrorMemoryBlock));
 }

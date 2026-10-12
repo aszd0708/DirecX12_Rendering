@@ -3,8 +3,8 @@
 
 struct ShaderInfo
 {
-	wstring _path;
-	Array<D3D12_INPUT_ELEMENT_DESC> _inputLayoutDesc;
+	wstring path;
+	Array<D3D12_INPUT_ELEMENT_DESC> inputLayoutDesc;
 };
 
 template<>
@@ -12,7 +12,7 @@ struct Hash<ShaderInfo>
 {
 	static UINT64 GetHash(const ShaderInfo& key)
 	{
-		UINT64 hash = Hash<wstring>::GetHash(key._path);
+		UINT64 hash = Hash<wstring>::GetHash(key.path);
 		return hash;
 	}
 };

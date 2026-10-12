@@ -16,12 +16,14 @@ public:
 	Shader(ShaderInfo info);
 	~Shader();
 
+public:
+	bool SetShader();
+
 private:
-	void SetShader();
-	void CreateShader(const wchar_t* str, const wchar_t* entryPoint, const wchar_t* targetProfile, ComPtr<IDxcBlob>& blob, ShaderCompilerInfo* info);
+	bool CreateShader(const wchar_t* str, const wchar_t* entryPoint, const wchar_t* targetProfile, ComPtr<IDxcBlob>& blob, ShaderCompilerInfo* info);
+	bool CreatePSO();
 
 public:
-	void CreatePSO();
 
 	const ShaderInfo& GetShaderInfo() { return _info; }
 

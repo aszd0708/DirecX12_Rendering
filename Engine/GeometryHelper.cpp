@@ -1213,3 +1213,82 @@ Geometry GeometryHelper::CreateSphereVertexTextureNormalTangentData()
 
 	return geometry;
 }
+
+Geometry GeometryHelper::CreateErrorCube()
+{
+	Geometry geometry = {};
+
+	geometry.desces = ErrorVertexData::GetDesc();
+
+	float w2 = 0.5f;
+	float h2 = 0.5f;
+	float d2 = 0.5f;
+
+	UINT32 vertexTotalSize = sizeof(ErrorVertexData) * 24;
+	geometry.vertices = Array<BYTE>(vertexTotalSize);
+	ErrorVertexData* vtx = (ErrorVertexData*)malloc(vertexTotalSize);
+
+	// 앞면
+	vtx[0] = ErrorVertexData(Vec3(-w2, -h2, -d2));
+	vtx[1] = ErrorVertexData(Vec3(-w2, +h2, -d2));
+	vtx[2] = ErrorVertexData(Vec3(+w2, +h2, -d2));
+	vtx[3] = ErrorVertexData(Vec3(+w2, -h2, -d2));
+	// 뒷면
+	vtx[4] = ErrorVertexData(Vec3(-w2, -h2, +d2));
+	vtx[5] = ErrorVertexData(Vec3(+w2, -h2, +d2));
+	vtx[6] = ErrorVertexData(Vec3(+w2, +h2, +d2));
+	vtx[7] = ErrorVertexData(Vec3(-w2, +h2, +d2));
+	// 윗면
+	vtx[8] = ErrorVertexData(Vec3(-w2, +h2, -d2));
+	vtx[9] = ErrorVertexData(Vec3(-w2, +h2, +d2));
+	vtx[10] = ErrorVertexData(Vec3(+w2, +h2, +d2));
+	vtx[11] = ErrorVertexData(Vec3(+w2, +h2, -d2));
+	// 아랫면
+	vtx[12] = ErrorVertexData(Vec3(-w2, -h2, -d2));
+	vtx[13] = ErrorVertexData(Vec3(+w2, -h2, -d2));
+	vtx[14] = ErrorVertexData(Vec3(+w2, -h2, +d2));
+	vtx[15] = ErrorVertexData(Vec3(-w2, -h2, +d2));
+	// 왼쪽면
+	vtx[16] = ErrorVertexData(Vec3(-w2, -h2, +d2));
+	vtx[17] = ErrorVertexData(Vec3(-w2, +h2, +d2));
+	vtx[18] = ErrorVertexData(Vec3(-w2, +h2, -d2));
+	vtx[19] = ErrorVertexData(Vec3(-w2, -h2, -d2));
+	// 오른쪽면
+	vtx[20] = ErrorVertexData(Vec3(+w2, -h2, -d2));
+	vtx[21] = ErrorVertexData(Vec3(+w2, +h2, -d2));
+	vtx[22] = ErrorVertexData(Vec3(+w2, +h2, +d2));
+	vtx[23] = ErrorVertexData(Vec3(+w2, -h2, +d2));
+
+	memcpy(geometry.vertices.GetData(), vtx, vertexTotalSize);
+	geometry.vertexSize = sizeof(ErrorVertexData);
+	free(vtx);
+
+	UINT32 indexTotalSize = sizeof(UINT16) * 36;
+	geometry.indices = Array<BYTE>(indexTotalSize);
+	UINT16* idx = (UINT16*)malloc(indexTotalSize);
+
+	// 앞면
+	idx[0] = 0; idx[1] = 1; idx[2] = 2;
+	idx[3] = 0; idx[4] = 2; idx[5] = 3;
+	// 뒷면
+	idx[6] = 4; idx[7] = 5; idx[8] = 6;
+	idx[9] = 4; idx[10] = 6; idx[11] = 7;
+	// 윗면
+	idx[12] = 8; idx[13] = 9; idx[14] = 10;
+	idx[15] = 8; idx[16] = 10; idx[17] = 11;
+	// 아랫면
+	idx[18] = 12; idx[19] = 13; idx[20] = 14;
+	idx[21] = 12; idx[22] = 14; idx[23] = 15;
+	// 왼쪽면
+	idx[24] = 16; idx[25] = 17; idx[26] = 18;
+	idx[27] = 16; idx[28] = 18; idx[29] = 19;
+	// 오른쪽면
+	idx[30] = 20; idx[31] = 21; idx[32] = 22;
+	idx[33] = 20; idx[34] = 22; idx[35] = 23;
+
+	memcpy(geometry.indices.GetData(), idx, indexTotalSize);
+	geometry.indexSize = eIndexBufferSize::UINT_16;
+	free(idx);
+
+	return geometry;
+}

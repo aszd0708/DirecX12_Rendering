@@ -40,7 +40,10 @@ InstancingController::InstancingController() : _instanceTable(), _instanceArray(
 
 InstancingController::~InstancingController()
 {
-
+	for (int i = 0; i < _instanceArray.GetCount(); ++i)
+	{
+		delete _instanceArray[i];
+	}
 }
 
 void InstancingController::Add(const InstancingInfo& info)

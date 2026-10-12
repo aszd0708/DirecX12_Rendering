@@ -10,6 +10,12 @@
 #define LINEAR_SAMPLER_REGISTER			0
 
 // Instancing 
-#define INSTANCE_REGISTER 0	
+#define INSTANCE_REGISTER				0	
+#define MATERIAL_REGISTER       		1	
+
+// For Default MATERIAL Texture Type
+#define DEFAULT_MATERIAL_TEX_NORMAL	0
+#define DEFAULT_MATERIAL_TEX_DIFFUSE	1
+#define DEFAULT_MATERIAL_TEX_COUNT  2
 
 #endif

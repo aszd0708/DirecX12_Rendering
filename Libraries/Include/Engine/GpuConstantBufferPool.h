@@ -11,7 +11,7 @@ struct GpuConstantBufferHandle
 class GpuConstantBufferPage
 {
 public:
-	GpuConstantBufferPage(UINT64 size);
+	GpuConstantBufferPage(UINT8 pageIndex, UINT64 size);
 	~GpuConstantBufferPage();
 
 public:
@@ -22,6 +22,7 @@ public:
 	UINT64 GetFenceValue() { return _fenceValue; }
 	
 private:
+	UINT8 _pageIndex;
 	UINT64 _offset;
 	UINT64 _totalSize;
 	UINT64 _fenceValue;

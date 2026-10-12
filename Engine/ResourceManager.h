@@ -1,6 +1,7 @@
 #pragma once
 #include "CpuMemoryPool.h"
 #include "GpuBufferPoolManager.h"
+#include "ShaderInfo.h"
 
 class MeshPool;
 struct MeshInfo;
@@ -9,7 +10,6 @@ class TexturePool;
 struct TextureInfo;
 
 class ShaderPool;
-struct ShaderInfo;
 
 class GpuCommandInfo;
 
@@ -33,6 +33,11 @@ public:
 	bool GetShader(const ShaderInfo& info, OUT MemoryBlock& memoryBlock);
 	bool ReleaseShader(const ShaderInfo& info);
 
+	const MemoryBlock& GetErrorShader();
+
+private:
+	void CreateErrorResources();
+
 private:
 	MeshPool* _meshPool;
 	TexturePool* _texturePool;
@@ -43,5 +48,7 @@ private:
 	// Instancing을 위한 ID
 	Stack<UINT32> _usableMeshID;
 	Stack<UINT32> _usableShaderID;
+
+	MemoryBlock _meshErrorMemoryBlock;
 };
 

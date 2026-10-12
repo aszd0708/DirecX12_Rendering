@@ -174,8 +174,8 @@ void MeshDemo::CreateTextureMesh(int index)
 	RESOURCES->GetMesh(meshInfo, GpuBufferPoolManager::eBufferPoolID::VERTEX_BUMP, GpuBufferPoolManager::eBufferPoolID::INDEX_BUMP, meshMemoryBlock);
 
 	ShaderInfo shaderInfo = {};
-	shaderInfo._path = L"TextureMesh";
-	shaderInfo._inputLayoutDesc = meshInfo.geometry.desces;
+	shaderInfo.path = L"TextureMesh";
+	shaderInfo.inputLayoutDesc = meshInfo.geometry.desces;
 
 	MemoryBlock shaderMemoryBlock = {};
 	RESOURCES->GetShader(shaderInfo, shaderMemoryBlock);
