@@ -5,6 +5,9 @@
 
 struct MaterialInfo
 {
+public:
+	static UINT64 GetDescSize(eMaterialType type);
+
 protected:
 	MaterialInfo(eMaterialType type) : materialType(type) { }
 	~MaterialInfo() {}
