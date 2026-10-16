@@ -1,5 +1,30 @@
 #pragma once
 
+struct ErrorVertexData
+{
+	Vec3 position = {0, 0, 0};
+
+	static inline Array<D3D12_INPUT_ELEMENT_DESC> GetDesc()
+	{
+		int index = 0;
+		Array<D3D12_INPUT_ELEMENT_DESC> desc(1);
+		// Position
+		{
+			D3D12_INPUT_ELEMENT_DESC inputElementDesc = {};
+			inputElementDesc.SemanticName = "POSITION";
+			inputElementDesc.SemanticIndex = 0;
+			inputElementDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+			inputElementDesc.InputSlot = 0;
+			inputElementDesc.AlignedByteOffset = 0;
+			inputElementDesc.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
+			inputElementDesc.InstanceDataStepRate = 0;
+			desc[index] = inputElementDesc;
+			index++;
+		}
+		return desc;
+	}
+};
+
 struct VertexTextureData
 {
 	Vec3 position = { 0, 0, 0 };

@@ -52,6 +52,16 @@ void GpuMaterialBufferPage::Free(const GpuMaterialBufferHandle& handle)
 	_allocableCheckingArray[handle.index] = true;
 }
 
+void GpuMaterialBufferPage::Reset()
+{
+	_usableIndex.Clear();
+	for (int i = _totalCount - 1; i >= 0; --i)
+	{
+		_allocableCheckingArray[i] = true;
+		_usableIndex.Push(i);
+	}
+}
+
 bool GpuMaterialBufferPage::IsValied(UINT32 index, UINT64 size)
 {
 	bool isValied = _stride == size && index < _totalCount && _allocableCheckingArray[index] == false;
@@ -64,12 +74,12 @@ bool GpuMaterialBufferPage::IsValied(UINT32 index, UINT64 size)
 	return offset;
 }
 
-GpuMaterialBufferPool::GpuMaterialBufferPool(UINT32 poolID, const Array<UINT32>& materialCountArray)
+GpuMaterialBufferPool::GpuMaterialBufferPool(UINT32 poolID, const UINT32* materialCountArray)
 : _poolID(poolID), _pages((UINT32)eMaterialType::MAX)
 {
 	UINT64 resourceSize = 0;
 
-	for (int i = 0; i < materialCountArray.GetCount(); ++i)
+	for (int i = 0; i < (UINT32)eMaterialType::MAX; ++i)
 	{
 		eMaterialType type = (eMaterialType)i;
 		UINT32 totalCount = materialCountArray[i];
@@ -204,6 +214,17 @@ void GpuMaterialBufferPool::Free(const GpuMaterialBufferHandle& handle)
 	assert(handle.poolID == _poolID);
 
 	_pages[(UINT8)handle.materialType]->Free(handle);
+}
+
+void GpuMaterialBufferPool::ResetAllPage()
+{
+	for (int i = 0; i < _pages.GetCount(); ++i)
+	{
+		if (_pages[i] != nullptr)
+		{
+			_pages[i]->Reset();
+		}
+	}
 }
 
 D3D12_GPU_VIRTUAL_ADDRESS GpuMaterialBufferPool::GetGpuAddress(eMaterialType type)

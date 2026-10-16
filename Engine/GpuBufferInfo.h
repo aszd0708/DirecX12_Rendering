@@ -5,6 +5,7 @@ enum class eGpuBufferKind : UINT8
 	Vertex = 0,
 	Index,
 	Constant,
+	Material,
 
 	MAX
 };

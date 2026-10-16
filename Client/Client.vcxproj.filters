@@ -55,9 +55,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <FxCompile Include="..\Shaders\HLSL\Triangle.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
@@ -73,5 +70,8 @@
     <FxCompile Include="..\Shaders\HLSL\TextureMesh_Instancing.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

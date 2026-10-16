@@ -25,7 +25,7 @@ struct TransformDesc
 struct InstanceDesc
 {
 	Matrix W;
-	UINT32 texIndex;
+	UINT32 materialIndex;
 	
 	UINT32 padding[3];
 };

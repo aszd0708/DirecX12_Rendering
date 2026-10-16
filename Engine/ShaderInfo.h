@@ -25,5 +25,7 @@ enum class eShaderIndex
 
 	INSTANCE = 3,
 
+	MATERIAL = 4,
+
 	MAX
 };

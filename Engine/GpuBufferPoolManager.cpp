@@ -20,6 +20,10 @@ void GpuBufferPoolManager::Init(sBufferPoolManagerInfo info)
 	{
 		_dynamicVertexPool = new GpuDynamicBufferPool((int)eBufferPoolID::VERTEX_DYNAMIC, info.dynamicVertexMaxSize);
 	}
+	if ((info.initPoolFlag & eBufferPoolID::MATERIAL) == eBufferPoolID::MATERIAL)
+	{
+		_materialBufferPool = new GpuMaterialBufferPool((int)eBufferPoolID::MATERIAL, info.materialBufferSizes);
+	}
 }
 
 void GpuBufferPoolManager::Release()
@@ -28,6 +32,7 @@ void GpuBufferPoolManager::Release()
 	delete _bumpVertexPool;
 	delete _dynamicIndexPool;
 	delete _dynamicVertexPool;
+	delete _materialBufferPool;
 }
 
 bool GpuBufferPoolManager::GetMemory(eBufferPoolID poolID, eGpuBufferKind type, UINT64 size, UINT8 alignment, OUT GpuBufferHandle & handle)
@@ -73,6 +78,30 @@ bool GpuBufferPoolManager::ReleaseMemory(const GpuBufferHandle& handle)
 	return isSuccess;
 }
 
+bool GpuBufferPoolManager::GetMaterialMemory(eBufferPoolID poolID, eMaterialType materialType, OUT GpuMaterialBufferHandle& handle)
+{
+	if (HasFlag(_usingBufferPoolIDs, poolID) == false) return false;
+
+	bool isSuccess = false;
+	switch (poolID)
+	{
+	case eBufferPoolID::MATERIAL:
+		isSuccess = _materialBufferPool->Alloc(materialType, handle);
+		break;
+	}
+	return isSuccess;
+}
+
+void GpuBufferPoolManager::ReleaseMaterialMemory(const GpuMaterialBufferHandle& handle)
+{
+	switch ((eBufferPoolID)handle.poolID)
+	{
+	case eBufferPoolID::MATERIAL:
+		_materialBufferPool->Free(handle);
+		break;
+	}
+}
+
 void GpuBufferPoolManager::ResetAllMemporyPool()
 {
 	if (_bumpIndexPool != nullptr)
@@ -90,6 +119,10 @@ void GpuBufferPoolManager::ResetAllMemporyPool()
 	if (_dynamicVertexPool != nullptr)
 	{
 		_dynamicVertexPool->ResetAllPage();
+	}
+	if (_materialBufferPool != nullptr)
+	{
+		_materialBufferPool->ResetAllPage();
 	}
 }
 

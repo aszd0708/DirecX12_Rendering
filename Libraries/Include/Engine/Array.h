@@ -16,7 +16,7 @@ public:
 public:
 	void SetCount(UINT32 count);
 	bool Find(const T& value);
-	const UINT32& GetCount() { return _count; }
+	UINT32 GetCount() const  { return _count; }
 	void* GetData();
 
 	T& operator[](int index);

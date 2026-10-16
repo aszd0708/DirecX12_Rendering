@@ -4,6 +4,7 @@
 #include "MeshPool.h"
 #include "TexturePool.h"
 #include "ShaderPool.h"
+#include "MaterialPool.h"
 #include "GpuCommandPool.h"
 
 void ResourceManager::Init()
@@ -11,6 +12,7 @@ void ResourceManager::Init()
 	_meshPool = new MeshPool();
 	_texturePool = new TexturePool();
 	_shaderPool = new ShaderPool();
+	_materialPool = new MaterialPool();
 
 	CreateErrorResources();
 }
@@ -20,6 +22,7 @@ void ResourceManager::Release()
 	delete(_meshPool);
 	delete(_texturePool);
 	delete(_shaderPool);
+	delete(_materialPool);
 
 	CPU_MEM_POOL->GetMemoryPool(_meshErrorMemoryBlock._poolID)->ReleaseMemory(_meshErrorMemoryBlock);
 }
@@ -78,6 +81,16 @@ bool ResourceManager::GetShader(const ShaderInfo& info, OUT MemoryBlock& memoryB
 bool ResourceManager::ReleaseShader(const ShaderInfo& info)
 {
 	return _shaderPool->PoolInShader(info);
+}
+
+bool ResourceManager::GetMaterial(const MaterialInfo& info, OUT MemoryBlock& memoryBlock)
+{
+	return _materialPool->PoolOutMaterial(info, _commandInfo, memoryBlock);
+}
+
+void ResourceManager::ReleaseMaterial(const UINT64 key)
+{
+	_materialPool->PoolInMaterial(key);
 }
 
 const MemoryBlock& ResourceManager::GetErrorShader()

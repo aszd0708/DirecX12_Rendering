@@ -9,6 +9,8 @@
 #include "ShaderInfo.h"
 #include "GpuCommandPool.h"
 #include "ShaderInfo.h"
+#include "MaterialInfo.h"
+#include "MaterialInfoEnum.h"
 #include <chrono>
 
 InstancingDemo::InstancingDemo(string sceneName) : SceneBuilder(sceneName)
@@ -103,9 +105,6 @@ void InstancingDemo::CreateTextureMesh(int index)
 	shaderInfo.path = L"TextureMesh";
 	shaderInfo.inputLayoutDesc = meshInfo.geometry.desces;
 
-	MemoryBlock shaderMemoryBlock = {};
-	RESOURCES->GetShader(shaderInfo, shaderMemoryBlock);
-
 	MeshRenderer* meshRednerer = obj->AddComponent<MeshRenderer>();
 
 	TextureInfo textureInfo = {};
@@ -113,10 +112,14 @@ void InstancingDemo::CreateTextureMesh(int index)
 	textureInfo.format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	textureInfo.mipLevels = 1;
 
-	MemoryBlock textureMemoryBlock = {};
-	RESOURCES->GetTexture(textureInfo, textureMemoryBlock);
+	DefaultMaterialInfo materialInfo = {};
+	materialInfo.shaderInfo = shaderInfo;
+	materialInfo.textureInfos[(UINT8)eDefaultTextureType::DIFFUSE] = textureInfo;
+	materialInfo.textureInfos[(UINT8)eDefaultTextureType::NORMAL] = textureInfo;
+	MemoryBlock materialMemBlock = {};
+	RESOURCES->GetMaterial(materialInfo, materialMemBlock);
 
-	meshRednerer->Init(meshMemoryBlock, shaderMemoryBlock, textureMemoryBlock);
+	meshRednerer->Init(meshMemoryBlock, materialMemBlock);
 	RESOURCES->EndBatch();
 
 	AddGameObject(obj->GetMemoryEntry());
@@ -146,9 +149,6 @@ void InstancingDemo::CreateCubeMesh(int index)
 	shaderInfo.path = L"TextureMesh";
 	shaderInfo.inputLayoutDesc = meshInfo.geometry.desces;
 
-	MemoryBlock shaderMemoryBlock = {};
-	RESOURCES->GetShader(shaderInfo, shaderMemoryBlock);
-
 	MeshRenderer* meshRednerer = obj->AddComponent<MeshRenderer>();
 
 	TextureInfo textureInfo = {};
@@ -156,10 +156,14 @@ void InstancingDemo::CreateCubeMesh(int index)
 	textureInfo.format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	textureInfo.mipLevels = 1;
 
-	MemoryBlock textureMemoryBlock = {};
-	RESOURCES->GetTexture(textureInfo, textureMemoryBlock);
+	DefaultMaterialInfo materialInfo = {};
+	materialInfo.shaderInfo = shaderInfo;
+	materialInfo.textureInfos[(UINT8)eDefaultTextureType::DIFFUSE] = textureInfo;
+	materialInfo.textureInfos[(UINT8)eDefaultTextureType::NORMAL] = textureInfo;
+	MemoryBlock materialMemBlock = {};
+	RESOURCES->GetMaterial(materialInfo, materialMemBlock);
 
-	meshRednerer->Init(meshMemoryBlock, shaderMemoryBlock, textureMemoryBlock);
+	meshRednerer->Init(meshMemoryBlock, materialMemBlock);
 	RESOURCES->EndBatch();
 
 	AddGameObject(obj->GetMemoryEntry());

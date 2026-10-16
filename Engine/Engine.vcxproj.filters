@@ -325,6 +325,9 @@
     <ClInclude Include="GpuMaterialBufferPool.h">
       <Filter>01. Graphics\GpuMemoryPool\Buffer</Filter>
     </ClInclude>
+    <ClInclude Include="MaterialPool.h">
+      <Filter>00. Engine\Pool\GpuResourcePool</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -527,6 +530,9 @@
     </ClCompile>
     <ClCompile Include="GpuMaterialBufferPool.cpp">
       <Filter>01. Graphics\GpuMemoryPool\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialPool.cpp">
+      <Filter>00. Engine\Pool\GpuResourcePool</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

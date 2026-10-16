@@ -11,6 +11,8 @@
 
 // Instancing 
 #define INSTANCE_REGISTER				0	
+
+// Material
 #define MATERIAL_REGISTER       		1	
 
 // For Default MATERIAL Texture Type

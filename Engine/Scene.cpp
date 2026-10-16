@@ -164,6 +164,7 @@ void Scene::Render()
 	}
 	COMMAND_LIST->SetGraphicsRootSignature(GRAPHICS->GetRootSignature().Get());
 	COMMAND_LIST->SetGraphicsRootConstantBufferView((int)eShaderIndex::GLOBAL, GlobalConstantBuffer::GetInstance()->GetCameraBufferAddress());
+	COMMAND_LIST->SetGraphicsRootShaderResourceView((int)eShaderIndex::MATERIAL, GPU_BUFFER_POOL->GetMaterialPool()->GetGpuAddress(eMaterialType::DEFAULT));
 
 	_instancingController->Clear();
 	bool isExistRendering = false;

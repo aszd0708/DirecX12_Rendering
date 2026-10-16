@@ -25,8 +25,9 @@ WPARAM Game::Run(GameDesc& desc)
 	// Manager 초기화
 	TIME->Init();
 	INPUT->Init(_desc.hWnd);
-	RESOURCES->Init();
 	CPU_MEM_POOL->Init();
+	SHADER_COMPILER->Init(1);
+	RESOURCES->Init();
 
 	GpuMemoryPoolManager::sMemoryPoolManagerInfo info = {};
 	info.initPoolFlag = GpuMemoryPoolManager::eMemoryPoolID::BUMP_ONLY_64KB  | GpuMemoryPoolManager::eMemoryPoolID::DYNAMIC_UPLOAD;
@@ -36,11 +37,17 @@ WPARAM Game::Run(GameDesc& desc)
 	GPU_MEM_POOL->Init(info);
 
 	GpuBufferPoolManager::sBufferPoolManagerInfo bufferInfo = {};
-	bufferInfo.initPoolFlag = GpuBufferPoolManager::eBufferPoolID::INDEX_BUMP | GpuBufferPoolManager::eBufferPoolID::VERTEX_BUMP;
+	bufferInfo.initPoolFlag = GpuBufferPoolManager::eBufferPoolID::INDEX_BUMP | GpuBufferPoolManager::eBufferPoolID::VERTEX_BUMP | GpuBufferPoolManager::eBufferPoolID::MATERIAL;
 	//info.bumbOnly64KBMaxSize = 256 * 1024 * 1024; //(UINT64)4096 * (UINT64)1024 * (UINT64)1024;
 	bufferInfo.bumpIndexMaxSize = 256 * (UINT64)1024;
 	bufferInfo.bumpVertexMaxSize = 256 * (UINT64)1024;
 	bufferInfo.constantBufferMaxSize = 256 * (UINT64)1024;
+	for (int i = 0; i < (UINT8)eMaterialType::MAX; ++i)
+	{
+		bufferInfo.materialBufferSizes[i] = 0;
+	}
+	bufferInfo.materialBufferSizes[(UINT8)eMaterialType::DEFAULT] = 128;
+
 	GPU_BUFFER_POOL->Init(bufferInfo);
 
 	UINT64 constantPoolBufferSize = 256 * 1024;
@@ -48,7 +55,6 @@ WPARAM Game::Run(GameDesc& desc)
 
 	// 일단 커맨드 풀 세개
 	GPU_COMMAND_POOL->Init(3);
-	ShaderCompiler::GetInstance()->Init(1);
 
 	ImGuiManager::GetInstance()->Init();
 

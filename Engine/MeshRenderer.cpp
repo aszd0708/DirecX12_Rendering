@@ -5,6 +5,8 @@
 #include "Mesh.h"
 #include "ShaderInfo.h"
 #include "InstancingController.h"
+#include "Material.h"
+#include "MaterialInfo.h"
 
 MeshRenderer::MeshRenderer() : Renderer(eComponentType::Renderer)
 {
@@ -16,13 +18,9 @@ MeshRenderer::~MeshRenderer()
 	{
 		RESOURCES->ReleaseMesh(_mesh->GetMeshInfo());
 	}
-	if (_shader)
+	if (_material)
 	{
-		RESOURCES->ReleaseShader(_shader->GetShaderInfo());
-	}
-	if (_texture)
-	{
-		RESOURCES->ReleaseTexture(_texture->GetTextureInfo());
+		RESOURCES->ReleaseMaterial(_material->GetMaterialInfoHash());
 	}
 }
 
@@ -31,7 +29,7 @@ void MeshRenderer::Init(MemoryBlock meshHandler, MemoryBlock materialHandler)
 	bool isSuccess = CPU_MEM_POOL->GetMemoryPool(meshHandler._poolID)->GetObjectByMemoryBlock(meshHandler, &_mesh);
 	assert(isSuccess);
 
-	bool isSuccess = CPU_MEM_POOL->GetMemoryPool(materialHandler._poolID)->GetObjectByMemoryBlock(materialHandler, &_material);
+	isSuccess = CPU_MEM_POOL->GetMemoryPool(materialHandler._poolID)->GetObjectByMemoryBlock(materialHandler, &_material);
 	assert(isSuccess);
 
 	_textureIndexes = _material->GetTextureIndexes(_textureCount);
@@ -113,7 +111,7 @@ bool MeshRenderer::SetInstancingInfo(InstancingInfo& info)
 
 	Matrix world = transform->GetWorldMatrix();
 	_instancingDesc.W = world.Transpose();
-	_instancingDesc.texIndex = _texture->GetDescHandle().index;
+	_instancingDesc.materialIndex = _material->GetSlotIndex();
 	info.instanceDesc = _instancingDesc;
 
 	return true;

@@ -1,5 +1,6 @@
 #pragma once
 #include "MaterialInfoEnum.h"
+#include "GpuMemoryInfo.h"
 
 struct GpuMaterialBufferHandle
 {
@@ -17,6 +18,8 @@ public:
 public:
 	bool Alloc(OUT GpuMaterialBufferHandle& handle);
 	void Free(const GpuMaterialBufferHandle& handle);
+
+	void Reset();
 
 	bool IsValied(UINT32 index, UINT64 size);
 
@@ -40,7 +43,7 @@ public:
 	/// </summary>
 	/// <param name="poolID"></param>
 	/// <param name="memoryInfos">갯수는 eMaterialType::MAX 사용하지 않는다면 0개</param>
-	GpuMaterialBufferPool(UINT32 poolID, const Array<UINT32>& materialCountArray);
+	GpuMaterialBufferPool(UINT32 poolID, const UINT32* materialCountArray);
 	~GpuMaterialBufferPool();
 
 private:
@@ -53,6 +56,8 @@ public:
 public:
 	bool Alloc(const eMaterialType materialType, OUT GpuMaterialBufferHandle& handle);
 	void Free(const GpuMaterialBufferHandle& handle);
+
+	void ResetAllPage();
 
 	D3D12_GPU_VIRTUAL_ADDRESS GetGpuAddress(eMaterialType type);
 

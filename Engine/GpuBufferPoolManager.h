@@ -3,6 +3,7 @@
 #include "GpuBumpBufferPool.h"
 #include "GpuDynamicBufferPool.h"
 #include "GpuConstantBufferPool.h"
+#include "GpuMaterialBufferPool.h"
 
 class GpuBufferPoolManager
 {
@@ -19,6 +20,8 @@ public:
 		INDEX_DYNAMIC = 1 << 2,
 		VERTEX_DYNAMIC = 1 << 3,
 
+		MATERIAL = 1 << 4,
+
 		MAX
 	};
 	struct sBufferPoolManagerInfo
@@ -32,6 +35,8 @@ public:
 		UINT64 dynamicVertexMaxSize;
 
 		UINT64 constantBufferMaxSize;
+
+		UINT32 materialBufferSizes[(UINT32)eMaterialType::MAX];
 	};
 
 public:
@@ -41,9 +46,17 @@ public:
 	bool GetMemory(eBufferPoolID poolID, eGpuBufferKind type, UINT64 size, UINT8 alignment, OUT GpuBufferHandle& handle);
 	bool ReleaseMemory(const GpuBufferHandle& handle);
 
+	bool GetMaterialMemory(eBufferPoolID poolID, eMaterialType materialType, OUT GpuMaterialBufferHandle& handle);
+	void ReleaseMaterialMemory(const GpuMaterialBufferHandle& handle);
+
+
+
 	void ResetAllMemporyPool();
 
 	const ComPtr<ID3D12Resource>& GetMemoryHeap(eBufferPoolID poolID, UINT8 pageIndex);
+
+public:
+	GpuMaterialBufferPool* GetMaterialPool() { return _materialBufferPool; }
 	
 private:
 	eBufferPoolID _usingBufferPoolIDs;
@@ -53,6 +66,8 @@ private:
 	
 	GpuDynamicBufferPool* _dynamicIndexPool = nullptr;
 	GpuDynamicBufferPool* _dynamicVertexPool = nullptr;
+
+	GpuMaterialBufferPool* _materialBufferPool = nullptr;
 };
 
 inline GpuBufferPoolManager::eBufferPoolID operator&(GpuBufferPoolManager::eBufferPoolID lhs, GpuBufferPoolManager::eBufferPoolID rhs)

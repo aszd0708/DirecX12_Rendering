@@ -65,14 +65,14 @@ struct TextureMeshOutput
     float4 position : SV_POSITION;
     float4 worldPosition : POSITION;
     float2 uv : TEXCOORD;
-    nointerpolation uint textureIndexID : TEXINDEX;
+    nointerpolation uint materialIndexID : TEXINDEX;
 };
 
 // GlobalBuffer.h InstanceDesc 와 같은 구조여야 함
 struct InstanceDesc
 {
     matrix W;
-    uint texIndex;
+    uint materialIndex;
     
     uint padding[3];
 };

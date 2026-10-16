@@ -10,6 +10,8 @@ public:
 
 protected:
 	MaterialInfo(eMaterialType type) : materialType(type) { }
+
+public:
 	~MaterialInfo() {}
 
 public:
@@ -61,5 +63,25 @@ struct Hash<DefaultMaterialInfo>
 		Hash<UINT64>::HashCombine(result, textureHash);
 		
 		return result;
+	}
+};
+
+template<>
+struct Hash<MaterialInfo>
+{
+	static UINT64 GetHash(const MaterialInfo& key)
+	{
+		UINT64 hash = 0;
+		switch (key.materialType)
+		{
+		case eMaterialType::DEFAULT:
+			hash = Hash<DefaultMaterialInfo>::GetHash(static_cast<const DefaultMaterialInfo&>(key));
+			break;
+		default:
+			assert(false);
+		break;
+		}
+
+		return hash;
 	}
 };

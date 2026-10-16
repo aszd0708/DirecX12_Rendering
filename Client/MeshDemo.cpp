@@ -190,7 +190,7 @@ void MeshDemo::CreateTextureMesh(int index)
 	MemoryBlock textureMemoryBlock = {};
 	RESOURCES->GetTexture(textureInfo, textureMemoryBlock);
 
-	meshRednerer->Init(meshMemoryBlock, shaderMemoryBlock, textureMemoryBlock);
+	//meshRednerer->Init(meshMemoryBlock, shaderMemoryBlock, textureMemoryBlock);
 	RESOURCES->EndBatch();
 
 	AddGameObject(obj->GetMemoryEntry());
