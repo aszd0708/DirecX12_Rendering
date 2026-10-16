@@ -35,6 +35,7 @@ void Graphics::Init(HWND hwnd)
 	CreateFactory();
 	CreateSwapChain();
 	CreateBackBufferRTV();
+	CreateBackBufferDSV();
 	CreateFence();
 
 	CreateRootSignature();
@@ -125,6 +126,40 @@ void Graphics::CreateBackBufferRTV()
 	}
 }
 
+void Graphics::CreateBackBufferDSV()
+{
+	D3D12_DESCRIPTOR_HEAP_DESC desc = {};
+	desc.NumDescriptors = 1;
+	desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+	ThrowIfFailed(_device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&_dsvHeap)));
+
+	_dsvDescriptorSize = _device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+
+	D3D12_CPU_DESCRIPTOR_HANDLE handle = _dsvHeap->GetCPUDescriptorHandleForHeapStart();
+	D3D12_RESOURCE_DESC resDesc = {};
+	resDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+	resDesc.Width = SCREEN_WIDTH;
+	resDesc.Height = SCREEN_HEIGHT;
+	resDesc.DepthOrArraySize = 1;
+	resDesc.MipLevels = 1;
+	resDesc.Format = DEPTH_STENCIL_FORMAT;
+	resDesc.SampleDesc.Count = 1;
+	resDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+	resDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
+	D3D12_HEAP_PROPERTIES properties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+
+	D3D12_CLEAR_VALUE clearValue = CD3DX12_CLEAR_VALUE(DEPTH_STENCIL_FORMAT, DEPTH_CLEAR_VALUE, STENCIL_CLEAR_VALUE);
+	ThrowIfFailed(_device->CreateCommittedResource(&properties, D3D12_HEAP_FLAG_NONE, &resDesc,
+	D3D12_RESOURCE_STATE_DEPTH_WRITE, &clearValue, IID_PPV_ARGS(_dsvTarget.GetAddressOf())));
+
+	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
+	dsvDesc.Format = DEPTH_STENCIL_FORMAT;
+	dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+	dsvDesc.Flags = D3D12_DSV_FLAG_NONE;
+	dsvDesc.Texture2D.MipSlice = 0;
+	_device->CreateDepthStencilView(_dsvTarget.Get(), &dsvDesc, handle);
+}
+
 void Graphics::CreateFence()
 {
 	ThrowIfFailed(_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&_fence)));
@@ -173,9 +208,11 @@ void Graphics::RenderBegin()
 	D3D12_CPU_DESCRIPTOR_HANDLE descHandler = _rtvHeap->GetCPUDescriptorHandleForHeapStart();
 	int offset = backIndex * _rtvDescriptorSize;
 	descHandler.ptr += offset;
-	_commandList->OMSetRenderTargets(1, &descHandler, false, nullptr);
 
+	D3D12_CPU_DESCRIPTOR_HANDLE depthDesc = _dsvHeap->GetCPUDescriptorHandleForHeapStart();
+	_commandList->OMSetRenderTargets(1, &descHandler, false, &depthDesc);
 	_commandList->ClearRenderTargetView(descHandler, CLEAR_COLOR, 0, nullptr);
+	_commandList->ClearDepthStencilView(depthDesc, D3D12_CLEAR_FLAG_DEPTH, DEPTH_CLEAR_VALUE, STENCIL_CLEAR_VALUE, 0, nullptr);
 
 	_commandList->RSSetViewports(1, &_viewport);
 	_commandList->RSSetScissorRects(1, &_rect);

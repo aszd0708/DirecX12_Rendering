@@ -5,6 +5,11 @@ class Graphics
 	DECLARE_SINGLE(Graphics);
 
 public:
+	static const DXGI_FORMAT DEPTH_STENCIL_FORMAT = DXGI_FORMAT::DXGI_FORMAT_D32_FLOAT;
+	static constexpr FLOAT DEPTH_CLEAR_VALUE = 1.0f;
+	static const UINT8 STENCIL_CLEAR_VALUE = 0;
+
+public:
 	~Graphics();
 	void Init(HWND hwnd);
 
@@ -16,6 +21,7 @@ private:
 	void CreateFactory();
 	void CreateSwapChain();
 	void CreateBackBufferRTV();
+	void CreateBackBufferDSV();
 	void CreateFence();
 
 	void CreateRootSignature();
@@ -58,6 +64,9 @@ private:
 
 	ComPtr<ID3D12DescriptorHeap> _rtvHeap;
 	uint32 _rtvDescriptorSize = 0;
+	ComPtr<ID3D12DescriptorHeap> _dsvHeap;
+	uint32 _dsvDescriptorSize = 0;
+	ComPtr<ID3D12Resource> _dsvTarget;
 
 	ComPtr<ID3D12Fence> _fence;
 	uint64 _fenceValue = 0;

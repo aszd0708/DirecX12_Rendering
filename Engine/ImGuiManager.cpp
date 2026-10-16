@@ -27,7 +27,7 @@ void ImGuiManager::Init()
     info->SrvDescriptorHeap = DESC_POOL->GetDescriptorHeapAllocator(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
     info->NumFramesInFlight = SWAP_CHAIN_BUFFER_COUNT;
     info->RTVFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
-    info->DSVFormat = DXGI_FORMAT_UNKNOWN;
+    info->DSVFormat = Graphics::DEPTH_STENCIL_FORMAT;
     info->SrvDescriptorAllocFn = nullptr;
     info->SrvDescriptorFreeFn = nullptr;
     info->LegacySingleSrvCpuDescriptor = _descHandle.cpuDesc;

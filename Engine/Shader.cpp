@@ -128,7 +128,8 @@ bool Shader::CreatePSO()
 	desc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	desc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 	desc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
-	desc.DepthStencilState.DepthEnable = false;
+	desc.DepthStencilState.DepthEnable = true;
+	desc.DSVFormat = Graphics::DEPTH_STENCIL_FORMAT;
 
 	desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 	desc.NumRenderTargets = 1;
