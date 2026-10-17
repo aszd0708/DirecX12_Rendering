@@ -9,11 +9,11 @@ public:
 	virtual ~Mesh();
 
 public:
-	void CreateMesh(const ComPtr<ID3D12GraphicsCommandList>& commandList, UINT32 instancingID, OUT GpuMemoryHandle& vertexUploadHandle, OUT GpuMemoryHandle& indexUploadHandle);
+	void CreateMesh(GpuCommandInfo* commandInfo, UINT32 instancingID, OUT GpuMemoryHandle& vertexUploadHandle, OUT GpuMemoryHandle& indexUploadHandle);
 
 private:
-	void CreateVertexResource(const ComPtr<ID3D12GraphicsCommandList>& commandList, OUT GpuMemoryHandle& handle);
-	void CreateIndexResource(const ComPtr<ID3D12GraphicsCommandList>& commandList, OUT GpuMemoryHandle& handle);
+	void CreateVertexResource(GpuCommandInfo* commandInfo, OUT GpuMemoryHandle& handle);
+	void CreateIndexResource(GpuCommandInfo* commandInfo, OUT GpuMemoryHandle& handle);
 
 	void GetUploadHeap(const D3D12_RESOURCE_DESC& dsec, UINT64 size, OUT ComPtr<ID3D12Resource>& uploadResource, OUT GpuMemoryHandle& uploadHandle);
 

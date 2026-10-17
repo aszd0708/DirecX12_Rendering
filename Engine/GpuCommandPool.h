@@ -1,4 +1,11 @@
 #pragma once
+
+struct UploadResouceInfo
+{
+	GpuMemoryHandle handle;
+	ID3D12Resource* resource = nullptr;
+};
+
 class GpuCommandInfo
 {
 public:
@@ -6,7 +13,6 @@ public:
 	~GpuCommandInfo();
 
 public:
-	void AddUploadHandle(const GpuMemoryHandle& handle);
 	void Reset();
 	void Close();
 
@@ -14,7 +20,11 @@ public:
 	const UINT8& GetPoolID();
 	void SetPoolID(const UINT8 id);
 	void AddCommandCount();
+	void AddUploadInfo(const UploadResouceInfo& uploadInfo);
 	const UINT16& GetCommandAddedCount();
+
+	void ReleaseUploadedResources();
+
 	const ComPtr<ID3D12GraphicsCommandList>& GetCommandList();
 	const ComPtr<ID3D12CommandAllocator>& GetCommandAllocator();
 
@@ -23,8 +33,7 @@ private:
 	UINT16 _commandAddedCount;
 	ComPtr<ID3D12GraphicsCommandList> _commandList;
 	ComPtr<ID3D12CommandAllocator> _allocator;
-
-	DynamicArray<GpuMemoryHandle> _uploadHandles;
+	DynamicArray<UploadResouceInfo> _uploadInfos;
 };
 
 class GpuCommandPoolManager

@@ -45,6 +45,10 @@ void ResourceManager::EndBatch()
 		_commandInfo->Close();
 		GPU_COMMAND_POOL->SendQueue();
 	}
+	else
+	{
+		_commandInfo->Close();
+	}
 	GPU_COMMAND_POOL->ReleaseCommandPool(_commandInfo);
 	_commandInfo = nullptr;
 }

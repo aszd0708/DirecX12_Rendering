@@ -1,6 +1,8 @@
 #pragma once
 #include "TextureInfo.h"
 
+class GpuCommandInfo;
+
 struct TextureFormat
 {
 	wstring filePath;
@@ -18,10 +20,10 @@ public:
 	virtual ~Texture();
 
 public:
-	void CreateTexture(const ComPtr<ID3D12GraphicsCommandList>& commandList, OUT GpuMemoryHandle& uploadHandle);
+	void CreateTexture(GpuCommandInfo* commandInfo, OUT GpuMemoryHandle& uploadHandle);
 
 private:
-	void CreateResource(const ComPtr<ID3D12GraphicsCommandList>& commandList, OUT GpuMemoryHandle& uploadHandle);
+	void CreateResource(GpuCommandInfo* commandInfo, OUT GpuMemoryHandle& uploadHandle);
 	void CreateView();
 
 public:

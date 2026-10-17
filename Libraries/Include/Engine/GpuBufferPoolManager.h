@@ -46,10 +46,10 @@ public:
 	bool GetMemory(eBufferPoolID poolID, eGpuBufferKind type, UINT64 size, UINT8 alignment, OUT GpuBufferHandle& handle);
 	bool ReleaseMemory(const GpuBufferHandle& handle);
 
+	void SwitchResouceState(eBufferPoolID poolID, const UINT8 index, const D3D12_RESOURCE_STATES state, const ComPtr<ID3D12GraphicsCommandList>& commandList);
+
 	bool GetMaterialMemory(eBufferPoolID poolID, eMaterialType materialType, OUT GpuMaterialBufferHandle& handle);
 	void ReleaseMaterialMemory(const GpuMaterialBufferHandle& handle);
-
-
 
 	void ResetAllMemporyPool();
 

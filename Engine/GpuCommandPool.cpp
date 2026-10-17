@@ -1,10 +1,12 @@
 #include "pch.h"
 #include "GpuCommandPool.h"
+#include "GpuMemoryPoolManager.h"
+#include "GpuMemoryInfo.h"
 
 GpuCommandInfo::GpuCommandInfo(UINT8 id, ComPtr<ID3D12GraphicsCommandList> commandList, ComPtr<ID3D12CommandAllocator> commandAllocator) :
 	_poolID(id), _commandAddedCount(0), _commandList(commandList), _allocator(commandAllocator)
 {
-	Reset();
+	Close();
 }
 
 GpuCommandInfo::~GpuCommandInfo()
@@ -13,13 +15,10 @@ GpuCommandInfo::~GpuCommandInfo()
 	_allocator.Reset();
 }
 
-void GpuCommandInfo::AddUploadHandle(const GpuMemoryHandle& handle)
-{
-	_uploadHandles.Add(handle);
-}
-
 void GpuCommandInfo::Reset()
 {
+	assert(_uploadInfos.GetCount() <= 0);
+
 	_allocator->Reset();
 	_commandList->Reset(_allocator.Get(), nullptr);
 	_commandAddedCount = 0;
@@ -46,9 +45,27 @@ void GpuCommandInfo::AddCommandCount()
 	_commandAddedCount++;
 }
 
+void GpuCommandInfo::AddUploadInfo(const UploadResouceInfo& uploadInfo)
+{
+	_uploadInfos.Add(uploadInfo);
+}
+
 const UINT16& GpuCommandInfo::GetCommandAddedCount()
 {
 	return _commandAddedCount;
+}
+
+void GpuCommandInfo::ReleaseUploadedResources()
+{
+	for (int i = 0; i < _uploadInfos.GetCount(); ++i)
+	{
+		_uploadInfos[i].resource->Release();
+
+		GpuMemoryHandle handle = _uploadInfos[i].handle;
+		GPU_MEM_POOL->ReleaseMemory(handle);
+	}
+
+	_uploadInfos.Clear();
 }
 
 const ComPtr<ID3D12GraphicsCommandList>& GpuCommandInfo::GetCommandList()
@@ -60,7 +77,6 @@ const ComPtr<ID3D12CommandAllocator>& GpuCommandInfo::GetCommandAllocator()
 {
 	return _allocator;
 }
-
 
 void GpuCommandPoolManager::Init(UINT8 poolCount)
 {
@@ -112,7 +128,6 @@ bool GpuCommandPoolManager::GetCommandPool(OUT GpuCommandInfo** pool)
 bool GpuCommandPoolManager::ReleaseCommandPool(GpuCommandInfo* pool)
 {
 	UINT8 index = pool->GetPoolID();
-	pool->Reset();
 	_poolIndexStack.Push(index);
 	
 	return true;
@@ -139,6 +154,11 @@ void GpuCommandPoolManager::SendQueue()
 
 	GRAPHICS->WaitForGPU();
 
+	for (int i = 0; i < count; ++i)
+	{
+		UINT8 index = _sendingQueue[i];
+		_pool[index]->ReleaseUploadedResources();
+	}
 	_sendingQueue.Clear();
 
 	free(list);

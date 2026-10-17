@@ -31,8 +31,10 @@ void GpuBumpBufferPage::CreateResource()
 	desc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 
 	ThrowIfFailed(DEVICE->CreateCommittedResource(&properties, D3D12_HEAP_FLAG_NONE,
-		&desc, D3D12_RESOURCE_STATE_COPY_DEST,
+		&desc, D3D12_RESOURCE_STATE_COMMON,
 		nullptr, IID_PPV_ARGS(_resource.GetAddressOf())));
+
+	_currentState = D3D12_RESOURCE_STATE_COMMON;
 }
 
 bool GpuBumpBufferPage::Alloc(UINT64 size, UINT8 aligneSize, OUT GpuBufferHandle& handle)
@@ -65,6 +67,18 @@ void GpuBumpBufferPage::Reset()
 UINT64 GpuBumpBufferPage::GetFreeByte()
 {
 	return _totalSize - _offset;
+}
+
+void GpuBumpBufferPage::SwitchResourceState(const D3D12_RESOURCE_STATES state, const ComPtr<ID3D12GraphicsCommandList>& commandList)
+{
+	if (_currentState != state)
+	{
+		D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(_resource.Get(),
+			_currentState,
+			state);
+		commandList->ResourceBarrier(1, &barrier);
+		_currentState = state;
+	}
 }
 
 ///////////////////////
@@ -132,6 +146,13 @@ bool GpuBumpBufferPool::GetBufferHandle(eGpuBufferKind type, UINT64 size, UINT8 
 		break;
 	}
 	return allocSuccess;
+}
+
+void GpuBumpBufferPool::SwitchResourceState(const UINT8 index, const D3D12_RESOURCE_STATES state, const ComPtr<ID3D12GraphicsCommandList>& commandList)
+{
+	assert(_pages.GetCount() > index);
+
+	_pages[index]->SwitchResourceState(state, commandList);
 }
 
 void GpuBumpBufferPool::ResetAllPage()

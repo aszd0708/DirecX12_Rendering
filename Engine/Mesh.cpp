@@ -2,6 +2,7 @@
 #include "Mesh.h"
 #include "GpuMemoryPoolManager.h"
 #include "GpuBufferPoolManager.h"
+#include "GpuCommandPool.h"
 
 Mesh::Mesh(MeshInfo info, GpuBufferPoolManager::eBufferPoolID vertexPoolID, GpuBufferPoolManager::eBufferPoolID indexPoolID) : 
 _meshInfo(move(info)), _vertexPoolID(vertexPoolID), _indexPoolID(indexPoolID)
@@ -25,14 +26,14 @@ Mesh::~Mesh()
 		break;
 	}
 }
-void Mesh::CreateMesh(const ComPtr<ID3D12GraphicsCommandList>& commandList, UINT32 instancingID, OUT GpuMemoryHandle& vertexUploadHandle, OUT GpuMemoryHandle& indexUploadHandle)
+void Mesh::CreateMesh(GpuCommandInfo* commandInfo, UINT32 instancingID, OUT GpuMemoryHandle& vertexUploadHandle, OUT GpuMemoryHandle& indexUploadHandle)
 {
 	_instancingID = instancingID;
-	CreateVertexResource(commandList, vertexUploadHandle);
-	CreateIndexResource(commandList, indexUploadHandle);
+	CreateVertexResource(commandInfo, vertexUploadHandle);
+	CreateIndexResource(commandInfo, indexUploadHandle);
 }
 
-void Mesh::CreateVertexResource(const ComPtr<ID3D12GraphicsCommandList>& commandList, OUT GpuMemoryHandle& handle)
+void Mesh::CreateVertexResource(GpuCommandInfo* commandInfo, OUT GpuMemoryHandle& handle)
 {
 	UINT64 vertexTotalSize = _meshInfo.geometry.vertices.GetCount();
 
@@ -64,7 +65,14 @@ void Mesh::CreateVertexResource(const ComPtr<ID3D12GraphicsCommandList>& command
 
 	ComPtr<ID3D12Resource> resource = GPU_BUFFER_POOL->GetMemoryHeap((GpuBufferPoolManager::eBufferPoolID)_vertexBufferHandle.poolID, _vertexBufferHandle.pageIndex);
 
-	commandList->CopyBufferRegion(resource.Get(), _vertexBufferHandle.offset, uploadResource.Get(), 0, vertexTotalSize);
+	GPU_BUFFER_POOL->SwitchResouceState((GpuBufferPoolManager::eBufferPoolID)_vertexBufferHandle.poolID, _vertexBufferHandle.pageIndex, D3D12_RESOURCE_STATE_COPY_DEST, commandInfo->GetCommandList());
+
+	commandInfo->GetCommandList()->CopyBufferRegion(resource.Get(), _vertexBufferHandle.offset, uploadResource.Get(), 0, vertexTotalSize);
+
+	UploadResouceInfo uploadInfo = {};
+	uploadInfo.handle = handle;
+	uploadInfo.resource = uploadResource.Detach();
+	commandInfo->AddUploadInfo(uploadInfo);
 
 	assert(resource != nullptr);
 
@@ -73,13 +81,10 @@ void Mesh::CreateVertexResource(const ComPtr<ID3D12GraphicsCommandList>& command
 	_vertexResourceView.SizeInBytes = vertexTotalSize;
 	_vertexResourceView.StrideInBytes = _meshInfo.geometry.vertexSize;
 
-	D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(resource.Get(),
-		D3D12_RESOURCE_STATE_COPY_DEST,
-		D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
-	commandList->ResourceBarrier(1, &barrier);
+	GPU_BUFFER_POOL->SwitchResouceState((GpuBufferPoolManager::eBufferPoolID)_vertexBufferHandle.poolID, _vertexBufferHandle.pageIndex, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, commandInfo->GetCommandList());
 }
 
-void Mesh::CreateIndexResource(const ComPtr<ID3D12GraphicsCommandList>& commandList, OUT GpuMemoryHandle& handle)
+void Mesh::CreateIndexResource(GpuCommandInfo* commandInfo, OUT GpuMemoryHandle& handle)
 {
 	uint32 indexTotalSize = _meshInfo.geometry.indices.GetCount();
 
@@ -106,8 +111,14 @@ void Mesh::CreateIndexResource(const ComPtr<ID3D12GraphicsCommandList>& commandL
 	uploadResource->Unmap(0, nullptr);
 
 	ComPtr<ID3D12Resource> resource = GPU_BUFFER_POOL->GetMemoryHeap((GpuBufferPoolManager::eBufferPoolID)_indexBufferHandle.poolID, _indexBufferHandle.pageIndex);
+	GPU_BUFFER_POOL->SwitchResouceState((GpuBufferPoolManager::eBufferPoolID)_indexBufferHandle.poolID, _indexBufferHandle.pageIndex, D3D12_RESOURCE_STATE_COPY_DEST, commandInfo->GetCommandList());
 
-	commandList->CopyBufferRegion(resource.Get(), _indexBufferHandle.offset, uploadResource.Get(), 0, indexTotalSize);
+	commandInfo->GetCommandList()->CopyBufferRegion(resource.Get(), _indexBufferHandle.offset, uploadResource.Get(), 0, indexTotalSize);
+
+	UploadResouceInfo uploadInfo = {};
+	uploadInfo.handle = handle;
+	uploadInfo.resource = uploadResource.Detach();
+	commandInfo->AddUploadInfo(uploadInfo);
 
 	_indexResourceView = {};
 	_indexResourceView.BufferLocation = resource->GetGPUVirtualAddress() + _indexBufferHandle.offset;
@@ -123,11 +134,8 @@ void Mesh::CreateIndexResource(const ComPtr<ID3D12GraphicsCommandList>& commandL
 			break;
 	}
 
-	D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(resource.Get(),
-		D3D12_RESOURCE_STATE_COPY_DEST,
-		D3D12_RESOURCE_STATE_INDEX_BUFFER);
+	GPU_BUFFER_POOL->SwitchResouceState((GpuBufferPoolManager::eBufferPoolID)_indexBufferHandle.poolID, _indexBufferHandle.pageIndex, D3D12_RESOURCE_STATE_INDEX_BUFFER, commandInfo->GetCommandList());
 
-	commandList->ResourceBarrier(1, &barrier);
 }
 
 void Mesh::GetUploadHeap(const D3D12_RESOURCE_DESC& desc, UINT64 size, OUT ComPtr<ID3D12Resource>& uploadResource, OUT GpuMemoryHandle& uploadHandle)

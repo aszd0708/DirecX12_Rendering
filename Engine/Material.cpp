@@ -50,8 +50,9 @@ void Material::Init(const MaterialInfo& info, GpuCommandInfo* commandInfo)
 	UINT64 dataSize = 0;
 	void* data = malloc(MaterialInfo::GetDescSize(info.materialType));
 	GetMaterialDesc(info, data, dataSize);
-	GPU_BUFFER_POOL->GetMaterialPool()->Upload(commandInfo->GetCommandList(), _slot, data, dataSize, handle);
-	commandInfo->AddUploadHandle(handle);
+	GPU_BUFFER_POOL->GetMaterialPool()->Upload(commandInfo, _slot, data, dataSize, handle);
+	commandInfo->AddCommandCount();
+
 	free(data);
 }
 

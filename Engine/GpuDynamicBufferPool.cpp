@@ -40,8 +40,10 @@ void GpuDynamicBufferPage::CreateResource()
 	desc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 
 	ThrowIfFailed(DEVICE->CreateCommittedResource(&properties, D3D12_HEAP_FLAG_NONE,
-		&desc, D3D12_RESOURCE_STATE_COPY_DEST,
+		&desc, D3D12_RESOURCE_STATE_COMMON,
 		nullptr, IID_PPV_ARGS(_resource.GetAddressOf())));
+
+	_currentState = D3D12_RESOURCE_STATE_COMMON;
 }
 
 bool GpuDynamicBufferPage::Alloc(UINT64 size, UINT8 aligneSize, OUT GpuBufferHandle & handle)
@@ -205,6 +207,18 @@ void GpuDynamicBufferPage::IncreaseHandlerSize(UINT32 size)
 	_handlerCount = size;
 }
 
+void GpuDynamicBufferPage::SwitchResourceState(const D3D12_RESOURCE_STATES state, const ComPtr<ID3D12GraphicsCommandList>& commandList)
+{
+	if (_currentState != state)
+	{
+		D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(_resource.Get(),
+			_currentState,
+			state);
+		commandList->ResourceBarrier(1, &barrier);
+		_currentState = state;
+	}
+}
+
 GpuDynamicBufferPool::GpuDynamicBufferPool(UINT8 poolID) : GpuDynamicBufferPool(poolID, DEFAULT_SIZE)
 {
 
@@ -272,6 +286,13 @@ bool GpuDynamicBufferPool::ReleaseBufferHandle(UINT8 index, const GpuBufferHandl
 {
 	bool isSuccess = _pages[index]->Free(handle);
 	return isSuccess;
+}
+
+void GpuDynamicBufferPool::SwitchResourceState(const UINT8 index, const D3D12_RESOURCE_STATES state, const ComPtr<ID3D12GraphicsCommandList>& commandList)
+{
+	assert(_pages.GetCount() > index);
+
+	_pages[index]->SwitchResourceState(state, commandList);
 }
 
 void GpuDynamicBufferPool::ResetPage(UINT8 pageIndex)

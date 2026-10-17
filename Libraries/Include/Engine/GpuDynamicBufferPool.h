@@ -34,6 +34,7 @@ private:
 
 public:
 	ComPtr<ID3D12Resource>& GetResource() { return _resource; }
+	void SwitchResourceState(const D3D12_RESOURCE_STATES state, const ComPtr<ID3D12GraphicsCommandList>& commandList);
 
 private:
 	UINT8 _pageIndex;
@@ -57,6 +58,7 @@ private:
 	Stack<UINT32> _indexes;
 
 	ComPtr<ID3D12Resource> _resource;
+	D3D12_RESOURCE_STATES _currentState;
 };
 
 class GpuDynamicBufferPool
@@ -78,6 +80,7 @@ public:
 
 	bool GetBufferHandle(eGpuBufferKind type, UINT64 size, UINT8 aligneSize, OUT GpuBufferHandle& handle);
 	bool ReleaseBufferHandle(UINT8 index, const GpuBufferHandle& handle);
+	void SwitchResourceState(const UINT8 index, const D3D12_RESOURCE_STATES state, const ComPtr<ID3D12GraphicsCommandList>& commandList);
 
 	/// <summary>
 	/// 더이상 참조하는 오브젝트가 없을 때 호출.

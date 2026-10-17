@@ -82,9 +82,7 @@ bool MeshPool::PoolOutMesh(MeshInfo& key, const GpuBufferPoolManager::eBufferPoo
 		// 매시 생성
 		GpuMemoryHandle vertexUploadHandler;
 		GpuMemoryHandle indexUploadHandler;
-		mesh->CreateMesh(commandInfo->GetCommandList(), instancingID, vertexUploadHandler, indexUploadHandler);
-		commandInfo->AddUploadHandle(vertexUploadHandler);
-		commandInfo->AddUploadHandle(indexUploadHandler);
+		mesh->CreateMesh(commandInfo, instancingID, vertexUploadHandler, indexUploadHandler);
 		commandInfo->AddCommandCount();
 
 		memoryBlock = mesh->GetMemoryHandler();

@@ -68,8 +68,7 @@ bool TexturePool::PoolOutTexture(const TextureInfo& key, GpuCommandInfo* command
 
 		// 텍스처 생성
 		GpuMemoryHandle uploadHandle;
-		texture->CreateTexture(commandInfo->GetCommandList(), uploadHandle);
-		commandInfo->AddUploadHandle(uploadHandle);
+		texture->CreateTexture(commandInfo, uploadHandle);
 		commandInfo->AddCommandCount();
 
 		memoryBlock = texture->GetMemoryHandler();

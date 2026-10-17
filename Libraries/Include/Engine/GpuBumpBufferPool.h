@@ -28,12 +28,20 @@ private:
 public:
 	ComPtr<ID3D12Resource>& GetResource() { return _resource; }
 
+	/// <summary>
+	/// 현재 배리어 상태가 다를때만 변경
+	/// </summary>
+	/// <param name="state"></param>
+	void SwitchResourceState(const D3D12_RESOURCE_STATES state, const ComPtr<ID3D12GraphicsCommandList>& commandList);
+
+
 private:
 	UINT8 _pageIndex;
 	UINT64 _totalSize;
 	UINT64 _offset = 0;
 
 	ComPtr<ID3D12Resource> _resource;
+	D3D12_RESOURCE_STATES _currentState;
 };
 
 class GpuBumpBufferPool
@@ -54,6 +62,8 @@ public:
 	ComPtr<ID3D12Resource>& GetMemoryHeap(UINT8 index);
 
 	bool GetBufferHandle(eGpuBufferKind type, UINT64 size, UINT8 aligneSize, OUT GpuBufferHandle& handle);
+
+	void SwitchResourceState(const UINT8 index, const D3D12_RESOURCE_STATES state, const ComPtr<ID3D12GraphicsCommandList>& commandList);
 
 	/// <summary>
 	/// 더이상 참조하는 오브젝트가 없을 때 호출.

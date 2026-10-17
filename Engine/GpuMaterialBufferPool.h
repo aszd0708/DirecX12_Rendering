@@ -2,6 +2,8 @@
 #include "MaterialInfoEnum.h"
 #include "GpuMemoryInfo.h"
 
+class GpuCommandInfo;
+
 struct GpuMaterialBufferHandle
 {
 	eMaterialType materialType;
@@ -51,7 +53,7 @@ private:
 	void GetUploadHeap(const D3D12_RESOURCE_DESC& desc, UINT64 size, OUT ComPtr<ID3D12Resource>& uploadResource, OUT GpuMemoryHandle& uploadHandle);
 
 public:
-	void Upload(const ComPtr<ID3D12GraphicsCommandList>& commandList, const GpuMaterialBufferHandle& handle, const void* data, UINT64 dataSize, OUT GpuMemoryHandle& memoryHandle);
+	void Upload(GpuCommandInfo* commandInfo, const GpuMaterialBufferHandle& handle, const void* data, UINT64 dataSize, OUT GpuMemoryHandle& memoryHandle);
 
 public:
 	bool Alloc(const eMaterialType materialType, OUT GpuMaterialBufferHandle& handle);

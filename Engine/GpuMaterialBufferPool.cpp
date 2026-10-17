@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "GpuMaterialBufferPool.h"
 #include "GpuMemoryPoolManager.h"
+#include "GpuCommandPool.h"
 #include "MaterialInfo.h"
 
 GpuMaterialBufferPage::GpuMaterialBufferPage(eMaterialType materialType, UINT32 totalCount, UINT64 stride, UINT64 offset)
@@ -129,10 +130,10 @@ void GpuMaterialBufferPool::CreateResource(UINT64 size)
 	desc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 
 	ThrowIfFailed(DEVICE->CreateCommittedResource(&properties, D3D12_HEAP_FLAG_NONE,
-		&desc, D3D12_RESOURCE_STATE_COPY_DEST,
+		&desc, D3D12_RESOURCE_STATE_COMMON,
 		nullptr, IID_PPV_ARGS(_resource.GetAddressOf())));
 
-	_currentState = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_COPY_DEST;
+	_currentState = D3D12_RESOURCE_STATE_COMMON;
 }
 
 void GpuMaterialBufferPool::GetUploadHeap(const D3D12_RESOURCE_DESC& desc, UINT64 size, OUT ComPtr<ID3D12Resource>& uploadResource, OUT GpuMemoryHandle& uploadHandle)
@@ -152,7 +153,7 @@ void GpuMaterialBufferPool::GetUploadHeap(const D3D12_RESOURCE_DESC& desc, UINT6
 	ThrowIfFailed(DEVICE->CreatePlacedResource(uploadHeap.Get(), uploadHandle.offset, &uploadHeapBuffer, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(uploadResource.GetAddressOf())));
 }
 
-void GpuMaterialBufferPool::Upload(const ComPtr<ID3D12GraphicsCommandList>& commandList, const GpuMaterialBufferHandle& handle, const void* uploadData, UINT64 dataSize, OUT GpuMemoryHandle& memoryHandle)
+void GpuMaterialBufferPool::Upload(GpuCommandInfo* commandInfo, const GpuMaterialBufferHandle& handle, const void* uploadData, UINT64 dataSize, OUT GpuMemoryHandle& memoryHandle)
 {
 	assert(handle.poolID == _poolID);
 	assert(_pages[(UINT8)handle.materialType] != nullptr);
@@ -181,13 +182,18 @@ void GpuMaterialBufferPool::Upload(const ComPtr<ID3D12GraphicsCommandList>& comm
 		D3D12_RESOURCE_BARRIER prevBarrier = CD3DX12_RESOURCE_BARRIER::Transition(_resource.Get(),
 			_currentState,
 			D3D12_RESOURCE_STATE_COPY_DEST);
-		commandList->ResourceBarrier(1, &prevBarrier);
+		commandInfo->GetCommandList()->ResourceBarrier(1, &prevBarrier);
 	}
 
 	GpuMaterialBufferPage* page = _pages[(UINT8)handle.materialType];
 
 	UINT64 offset = page->GetOffset(handle.index);
-	commandList->CopyBufferRegion(_resource.Get(), offset, uploadResource.Get(), 0, dataSize);
+	commandInfo->GetCommandList()->CopyBufferRegion(_resource.Get(), offset, uploadResource.Get(), 0, dataSize);
+
+	UploadResouceInfo uploadInfo = {};
+	uploadInfo.handle = memoryHandle;
+	uploadInfo.resource = uploadResource.Detach();
+	commandInfo->AddUploadInfo(uploadInfo);
 
 	D3D12_RESOURCE_BARRIER nextBarrier = CD3DX12_RESOURCE_BARRIER::Transition(_resource.Get(),
 		D3D12_RESOURCE_STATE_COPY_DEST,
@@ -195,7 +201,7 @@ void GpuMaterialBufferPool::Upload(const ComPtr<ID3D12GraphicsCommandList>& comm
 
 	_currentState = D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE | D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 
-	commandList->ResourceBarrier(1, &nextBarrier);
+	commandInfo->GetCommandList()->ResourceBarrier(1, &nextBarrier);
 }
 
 bool GpuMaterialBufferPool::Alloc(const eMaterialType materialType, OUT GpuMaterialBufferHandle& handle)

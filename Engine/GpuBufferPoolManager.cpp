@@ -78,6 +78,25 @@ bool GpuBufferPoolManager::ReleaseMemory(const GpuBufferHandle& handle)
 	return isSuccess;
 }
 
+void GpuBufferPoolManager::SwitchResouceState(eBufferPoolID poolID, const UINT8 index, const D3D12_RESOURCE_STATES state, const ComPtr<ID3D12GraphicsCommandList>& commandList)
+{
+	switch (poolID)
+	{
+	case eBufferPoolID::INDEX_BUMP:
+		_bumpIndexPool->SwitchResourceState(index, state, commandList);
+		break;
+	case eBufferPoolID::VERTEX_BUMP:
+		_bumpVertexPool->SwitchResourceState(index, state, commandList);
+		break;
+	case eBufferPoolID::INDEX_DYNAMIC:
+		_dynamicIndexPool->SwitchResourceState(index, state, commandList);
+		break;
+	case eBufferPoolID::VERTEX_DYNAMIC:
+		_dynamicVertexPool->SwitchResourceState(index, state, commandList);
+		break;
+	}
+}
+
 bool GpuBufferPoolManager::GetMaterialMemory(eBufferPoolID poolID, eMaterialType materialType, OUT GpuMaterialBufferHandle& handle)
 {
 	if (HasFlag(_usingBufferPoolIDs, poolID) == false) return false;

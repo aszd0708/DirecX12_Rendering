@@ -2,6 +2,7 @@
 #include "Texture.h"
 #include "Utils.h"
 #include "GpuMemoryPoolManager.h"
+#include "GpuCommandPool.h"
 #include "TextureInfo.h"
 
 Texture::Texture(TextureInfo textureInfo) : _textureInfo(textureInfo)
@@ -37,13 +38,13 @@ Texture::~Texture()
 	_resource.Reset();
 }
 
-void Texture::CreateTexture(const ComPtr<ID3D12GraphicsCommandList>& commandList, OUT GpuMemoryHandle& uploadHandle)
+void Texture::CreateTexture(GpuCommandInfo* commandInfo, OUT GpuMemoryHandle& uploadHandle)
 {
-	CreateResource(commandList, uploadHandle);
+	CreateResource(commandInfo, uploadHandle);
 	CreateView();
 }
 
-void Texture::CreateResource(const ComPtr<ID3D12GraphicsCommandList>& commandList, OUT GpuMemoryHandle& uploadHandle)
+void Texture::CreateResource(GpuCommandInfo* commandInfo, OUT GpuMemoryHandle& uploadHandle)
 {
 	TextureFormat textureFormat = {};
 
@@ -104,14 +105,19 @@ void Texture::CreateResource(const ComPtr<ID3D12GraphicsCommandList>& commandLis
 	D3D12_TEXTURE_COPY_LOCATION copyDist = CD3DX12_TEXTURE_COPY_LOCATION(_resource.Get(), 0);
 	D3D12_TEXTURE_COPY_LOCATION copySrc = CD3DX12_TEXTURE_COPY_LOCATION(uploadResource.Get(), rootPrintLayout);
 
-	commandList->CopyTextureRegion(&copyDist, 0, 0, 0, &copySrc, nullptr);
+	commandInfo->GetCommandList()->CopyTextureRegion(&copyDist, 0, 0, 0, &copySrc, nullptr);
+
+	UploadResouceInfo uploadResouceInfo = {};
+	uploadResouceInfo.handle = uploadHandle;
+	uploadResouceInfo.resource = uploadResource.Detach();
+	commandInfo->AddUploadInfo(uploadResouceInfo);
 
 	// Barrier
 	D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(_resource.Get(), 
 	D3D12_RESOURCE_STATE_COPY_DEST, 
 	D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
-	commandList->ResourceBarrier(1, &barrier);
+	commandInfo->GetCommandList()->ResourceBarrier(1, &barrier);
 
 	stbi_image_free(textureInfo);
 }

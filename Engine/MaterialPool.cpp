@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "MaterialPool.h"
 #include "Material.h"
+#include "GpuCommandPool.h"
 
 MaterialPool::MaterialPool() : _table()
 {}
@@ -61,8 +62,6 @@ bool MaterialPool::PoolOutMaterial(const MaterialInfo& key, GpuCommandInfo* comm
 		assert(isSuccess && "CPU 메모리 풀 메모리 부족");
 
 		// Material 생성
-
-
 		memoryBlock = material->GetMemoryHandler();
 
 		MaterialPoolBlock newPoolBlock = {};
