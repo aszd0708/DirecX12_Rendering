@@ -7,9 +7,9 @@
 #include "GpuMaterialBufferPool.h"
 #include "../Shaders/HLSL/ShaderShared.h"
 
-Material::Material(const MaterialInfo& info, GpuCommandInfo* commandInfo) : _infoHash(Hash<MaterialInfo>::GetHash(info)), _shader(nullptr), _textures(), _textureIndexes()
+Material::Material() : _infoHash(0), _shader(nullptr), _textures(), _textureIndexes()
 {
-	Init(info, commandInfo);
+
 }
 
 Material::~Material()
@@ -27,11 +27,17 @@ Material::~Material()
 		RESOURCES->ReleaseShader(_shader->GetShaderInfo());
 	}
 
-	GPU_BUFFER_POOL->ReleaseMaterialMemory(_slot);
+	if (_slot.index != UINT32_MAX)
+	{
+		GPU_BUFFER_POOL->ReleaseMaterialMemory(_slot);
+	}
 }
 
-void Material::Init(const MaterialInfo& info, GpuCommandInfo* commandInfo)
+bool Material::CreateMaterial(const MaterialInfo& info, GpuCommandInfo* commandInfo)
 {
+	assert(_shader == nullptr);
+
+	_infoHash = Hash<MaterialInfo>::GetHash(info);
 	MemoryBlock shaderMemoryBlock = {};
 	bool isSuccess =  RESOURCES->GetShader(info.shaderInfo, shaderMemoryBlock);
 	if (isSuccess == false)
@@ -40,12 +46,19 @@ void Material::Init(const MaterialInfo& info, GpuCommandInfo* commandInfo)
 	}
 
 	isSuccess = CPU_MEM_POOL->GetMemoryPool(shaderMemoryBlock._poolID)->GetObjectByMemoryBlock(shaderMemoryBlock, &_shader);
+	if (isSuccess == false)
+	{
+		return false;
+	}
 
 	SetTextures(info);
 
-	_slot = {};
 	isSuccess = GPU_BUFFER_POOL->GetMaterialMemory(GpuBufferPoolManager::eBufferPoolID::MATERIAL, info.materialType, _slot);
-	assert(isSuccess);
+	if (isSuccess == false)
+	{
+		return false;
+	}
+
 	GpuMemoryHandle handle = {};
 	UINT64 dataSize = 0;
 	void* data = malloc(MaterialInfo::GetDescSize(info.materialType));
@@ -54,6 +67,8 @@ void Material::Init(const MaterialInfo& info, GpuCommandInfo* commandInfo)
 	commandInfo->AddCommandCount();
 
 	free(data);
+
+	return true;
 }
 
 void Material::SetTextures(const MaterialInfo& info)

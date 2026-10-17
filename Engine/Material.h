@@ -9,11 +9,13 @@ class Texture;
 class Material : public IMemoryBlockHanlde
 {
 public:
-	Material(const MaterialInfo& info, GpuCommandInfo* commandInfo);
+	Material();
 	virtual ~Material() override;
 
+public:
+	bool CreateMaterial(const MaterialInfo& info, GpuCommandInfo* commandInfo);
+
 private:
-	void Init(const MaterialInfo& info, GpuCommandInfo* commandInfo);
 	void SetTextures(const MaterialInfo& info);
 
 public:
@@ -33,6 +35,6 @@ private:
 	UINT32 _textureIndexes[MAX_TEXTURE_COUNT];
 	UINT8 _textureCount = 0;
 
-	GpuMaterialBufferHandle _slot;
+	GpuMaterialBufferHandle _slot = {};
 };
 

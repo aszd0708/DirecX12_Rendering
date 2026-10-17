@@ -85,8 +85,9 @@ inline bool CpuMemoryPool::GetMemory(OUT T** memory, Args&&... args)
 template<typename T>
 bool CpuMemoryPool::ReleaseMemory(T* obj)
 {
+	MemoryBlock memBlock = obj->GetMemoryHandler();
 	obj->~T();
-	return ReleaseMemory(obj->GetMemoryHandler());
+	return ReleaseMemory(memBlock);
 }
 
 template<typename T>

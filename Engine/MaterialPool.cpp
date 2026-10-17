@@ -58,10 +58,18 @@ bool MaterialPool::PoolOutMaterial(const MaterialInfo& key, GpuCommandInfo* comm
 		bool isSuccess = CPU_MEM_POOL->GetPoolID(sizeof(Material), cpuPoolID);
 		assert(isSuccess && "CPU 메모리 풀에 맞는 메모리 없음");
 
-		isSuccess = CPU_MEM_POOL->GetMemoryPool(cpuPoolID)->GetMemory(&material, key, commandInfo);
+		isSuccess = CPU_MEM_POOL->GetMemoryPool(cpuPoolID)->GetMemory(&material);
 		assert(isSuccess && "CPU 메모리 풀 메모리 부족");
 
 		// Material 생성
+
+		isSuccess = material->CreateMaterial(key, commandInfo);
+		if (isSuccess == false)
+		{
+			// Material 생성 실패
+			CPU_MEM_POOL->GetMemoryPool(memoryBlock._poolID)->ReleaseMemory(material);
+			return false;
+		}
 		memoryBlock = material->GetMemoryHandler();
 
 		MaterialPoolBlock newPoolBlock = {};

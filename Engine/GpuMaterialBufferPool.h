@@ -8,7 +8,7 @@ struct GpuMaterialBufferHandle
 {
 	eMaterialType materialType;
 	UINT32 poolID;
-	UINT32 index;
+	UINT32 index = UINT32_MAX;
 };
 
 class GpuMaterialBufferPage
