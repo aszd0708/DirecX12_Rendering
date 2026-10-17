@@ -70,7 +70,7 @@ public:
 	bool Alloc(const eMaterialType materialType, OUT GpuMaterialBufferHandle& handle);
 	void Free(const GpuMaterialBufferHandle& handle, const UINT64 fenceValue);
 
-	void ProccessRetired(const UINT64 fenceValue);
+	void ProcessRetired(const UINT64 fenceValue);
 
 	void ResetAllPage();
 
