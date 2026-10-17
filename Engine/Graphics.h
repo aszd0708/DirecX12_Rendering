@@ -47,6 +47,9 @@ public:
 
 	ComPtr<ID3D12RootSignature> GetRootSignature() { return _signature; }
 
+	UINT64 GetNextFenceValue() { return _fenceValue + 1; }
+	UINT64 GetCompletedFenceValue() { return _fence->GetCompletedValue(); }
+
 private:
 	HWND _hwnd = {};
 
@@ -63,13 +66,13 @@ private:
 	ComPtr<ID3D12Resource> _renderTargets[SWAP_CHAIN_BUFFER_COUNT];
 
 	ComPtr<ID3D12DescriptorHeap> _rtvHeap;
-	uint32 _rtvDescriptorSize = 0;
+	UINT64 _rtvDescriptorSize = 0;
 	ComPtr<ID3D12DescriptorHeap> _dsvHeap;
-	uint32 _dsvDescriptorSize = 0;
+	UINT64 _dsvDescriptorSize = 0;
 	ComPtr<ID3D12Resource> _dsvTarget;
 
 	ComPtr<ID3D12Fence> _fence;
-	uint64 _fenceValue = 0;
+	UINT64 _fenceValue = 0;
 	HANDLE _fenceEvent = nullptr;
 
 	// Root Signature

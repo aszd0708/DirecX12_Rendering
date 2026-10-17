@@ -5,7 +5,7 @@
 class InstancingDemo : public SceneBuilder
 {
 private:
-	static const UINT MAX_COUNT = 1024;
+	static const UINT MAX_COUNT = 1;
 
 public:
 	InstancingDemo(string sceneName);

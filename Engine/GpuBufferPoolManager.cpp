@@ -113,12 +113,19 @@ bool GpuBufferPoolManager::GetMaterialMemory(eBufferPoolID poolID, eMaterialType
 
 void GpuBufferPoolManager::ReleaseMaterialMemory(const GpuMaterialBufferHandle& handle)
 {
+	UINT64 nextFenceValue = GRAPHICS->GetNextFenceValue();
+
 	switch ((eBufferPoolID)handle.poolID)
 	{
 	case eBufferPoolID::MATERIAL:
-		_materialBufferPool->Free(handle);
+		_materialBufferPool->Free(handle, nextFenceValue);
 		break;
 	}
+}
+
+void GpuBufferPoolManager::ProcessRetired(UINT64 fenceValue)
+{
+	_materialBufferPool->ProcessRetired(fenceValue);
 }
 
 void GpuBufferPoolManager::ResetAllMemporyPool()

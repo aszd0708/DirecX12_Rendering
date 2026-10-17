@@ -67,7 +67,7 @@ bool MaterialPool::PoolOutMaterial(const MaterialInfo& key, GpuCommandInfo* comm
 		if (isSuccess == false)
 		{
 			// Material 생성 실패
-			CPU_MEM_POOL->GetMemoryPool(memoryBlock._poolID)->ReleaseMemory(material);
+			CPU_MEM_POOL->GetMemoryPool(material->GetMemoryHandler()._poolID)->ReleaseMemory(material);
 			return false;
 		}
 		memoryBlock = material->GetMemoryHandler();

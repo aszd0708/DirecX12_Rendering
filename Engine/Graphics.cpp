@@ -236,6 +236,9 @@ void Graphics::RenderEnd()
 	
 	WaitForGPU();
 
+	// 지연 해제
+	GPU_BUFFER_POOL->ProcessRetired(GetCompletedFenceValue());
+
 	// Constant Pool Wait
 	GPU_CONSTNAT_POOL->MoveNextPage(_fence.Get(), _fenceValue);
 }

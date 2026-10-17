@@ -8,6 +8,13 @@ enum class eGpuMemoryPoolType : UINT8
 	MAX
 };
 
+enum class eGpuSlotCondition : UINT8
+{
+	FREE,		// 스택에 있음, 누구나 사용 가능.
+	USED,		// Material이 사용중
+	PENDING,	// 반납 요청 됨, GPU가 아직 쓰고 있을 수 있음.
+};
+
 struct GpuMemoryHandle
 {
 	// Dynamic
