@@ -11,6 +11,12 @@ struct GpuMaterialBufferHandle
 	UINT32 index = UINT32_MAX;
 };
 
+struct GpuMaterialWaitingInfo
+{
+	UINT32 index = UINT32_MAX;
+	UINT64 fenceValue = UINT64_MAX;
+};
+
 class GpuMaterialBufferPage
 {
 public:
@@ -19,7 +25,9 @@ public:
 
 public:
 	bool Alloc(OUT GpuMaterialBufferHandle& handle);
-	void Free(const GpuMaterialBufferHandle& handle);
+	void Free(const GpuMaterialBufferHandle& handle, const UINT64 fenceValue);
+
+	void ProcessRetired(UINT64 fenceValue);
 
 	void Reset();
 
@@ -33,8 +41,11 @@ private:
 	UINT64 _stride;
 	UINT64 _offset;
 
-	DynamicArray<bool> _allocableCheckingArray;
+	DynamicArray<eGpuSlotCondition> _allocableCheckingArray;
 	Stack<UINT32> _usableIndex;
+
+	DynamicArray<GpuMaterialWaitingInfo> _waitingInfos;
+	UINT32 _waitingInfoHead = 0;
 };
 
 class GpuMaterialBufferPool
@@ -57,7 +68,9 @@ public:
 
 public:
 	bool Alloc(const eMaterialType materialType, OUT GpuMaterialBufferHandle& handle);
-	void Free(const GpuMaterialBufferHandle& handle);
+	void Free(const GpuMaterialBufferHandle& handle, const UINT64 fenceValue);
+
+	void ProcessRetired(const UINT64 fenceValue);
 
 	void ResetAllPage();
 

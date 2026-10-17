@@ -51,6 +51,8 @@ public:
 	bool GetMaterialMemory(eBufferPoolID poolID, eMaterialType materialType, OUT GpuMaterialBufferHandle& handle);
 	void ReleaseMaterialMemory(const GpuMaterialBufferHandle& handle);
 
+	void ProcessRetired(UINT64 fenceValue);
+
 	void ResetAllMemporyPool();
 
 	const ComPtr<ID3D12Resource>& GetMemoryHeap(eBufferPoolID poolID, UINT8 pageIndex);

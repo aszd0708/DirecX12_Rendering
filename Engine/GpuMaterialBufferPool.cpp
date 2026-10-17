@@ -9,7 +9,7 @@ GpuMaterialBufferPage::GpuMaterialBufferPage(eMaterialType materialType, UINT32 
 {
 	for (int i = totalCount - 1; i >= 0; --i)
 	{
-		_allocableCheckingArray.Add(true);
+		_allocableCheckingArray.Add(eGpuSlotCondition::FREE);
 		_usableIndex.Push(i);
 	}
 }
@@ -32,25 +32,46 @@ bool GpuMaterialBufferPage::Alloc(OUT GpuMaterialBufferHandle& handle)
 		return false;
 	}
 
-	assert(_allocableCheckingArray[index]);
+	assert(_allocableCheckingArray[index] == eGpuSlotCondition::FREE);
 
 	handle.materialType = _materialType;
 	handle.index = index;
-	_allocableCheckingArray[index] = false;
+	_allocableCheckingArray[index] = eGpuSlotCondition::USED;
 	return true;
 }
 
-void GpuMaterialBufferPage::Free(const GpuMaterialBufferHandle& handle)
+void GpuMaterialBufferPage::Free(const GpuMaterialBufferHandle& handle, const UINT64 fenceValue)
 {
 	// 범위 밖 반납
 	assert(handle.index < _totalCount);
 	// 두번 반납될 경우
-	assert(_allocableCheckingArray[handle.index] == false);
+	assert(_allocableCheckingArray[handle.index] == eGpuSlotCondition::USED);
 
 	assert(_totalCount > _usableIndex.GetCount());
 
-	_usableIndex.Push(handle.index);
-	_allocableCheckingArray[handle.index] = true;
+	_allocableCheckingArray[handle.index] = eGpuSlotCondition::PENDING;
+
+	GpuMaterialWaitingInfo info = {};
+	info.index = handle.index;
+	info.fenceValue = fenceValue;
+	_waitingInfos.Add(info);
+}
+
+void GpuMaterialBufferPage::ProcessRetired(UINT64 fenceValue)
+{
+	while (_waitingInfoHead < _waitingInfos.GetCount() && _waitingInfos[_waitingInfoHead].fenceValue <= fenceValue)
+	{
+		GpuMaterialWaitingInfo info = _waitingInfos[_waitingInfoHead];
+		_allocableCheckingArray[info.index] = eGpuSlotCondition::FREE;
+		_usableIndex.Push(info.index);
+		_waitingInfoHead++;
+	}
+
+	if (_waitingInfoHead == _waitingInfos.GetCount())
+	{
+		_waitingInfos.Clear();
+		_waitingInfoHead = 0;
+	}
 }
 
 void GpuMaterialBufferPage::Reset()
@@ -58,14 +79,17 @@ void GpuMaterialBufferPage::Reset()
 	_usableIndex.Clear();
 	for (int i = _totalCount - 1; i >= 0; --i)
 	{
-		_allocableCheckingArray[i] = true;
+		_allocableCheckingArray[i] = eGpuSlotCondition::FREE;
 		_usableIndex.Push(i);
 	}
+
+	_waitingInfos.Clear();
+	_waitingInfoHead = 0;
 }
 
 bool GpuMaterialBufferPage::IsValied(UINT32 index, UINT64 size)
 {
-	bool isValied = _stride == size && index < _totalCount && _allocableCheckingArray[index] == false;
+	bool isValied = _stride == size && index < _totalCount && _allocableCheckingArray[index] == eGpuSlotCondition::USED;
 	return isValied;
 }
 
@@ -213,13 +237,24 @@ bool GpuMaterialBufferPool::Alloc(const eMaterialType materialType, OUT GpuMater
 	return isSuccess;
 }
 
-void GpuMaterialBufferPool::Free(const GpuMaterialBufferHandle& handle)
+void GpuMaterialBufferPool::Free(const GpuMaterialBufferHandle& handle, const UINT64 fenceValue)
 {
 	assert(_pages[(UINT8)handle.materialType] != nullptr);
 	// Pool ID가 다를 경우
 	assert(handle.poolID == _poolID);
 
-	_pages[(UINT8)handle.materialType]->Free(handle);
+	_pages[(UINT8)handle.materialType]->Free(handle, fenceValue);
+}
+
+void GpuMaterialBufferPool::ProcessRetired(const UINT64 fenceValue)
+{
+	for (int i = 0; i < (UINT8)eMaterialType::MAX; ++i)
+	{
+		if (_pages[i] != nullptr)
+		{
+			_pages[i]->ProcessRetired(fenceValue);
+		}
+	}
 }
 
 void GpuMaterialBufferPool::ResetAllPage()

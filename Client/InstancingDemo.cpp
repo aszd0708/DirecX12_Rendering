@@ -60,6 +60,11 @@ void InstancingDemo::Update()
 	{
 		CreateCallBack();
 	}
+
+	if (INPUT->GetButtonUp(KEY_TYPE::U))
+	{
+		DeleteCallBack();
+	}
 }
 
 void InstancingDemo::Render()
@@ -182,14 +187,22 @@ void InstancingDemo::CreateCallBack()
 
 	_curUsage = _vInfo->CurrentUsage;
 
-	for (int i = 0; i < MAX_COUNT/2; ++i)
-	{
-		if (_objCreatedCount >= MAX_COUNT) break;
+	//for (int i = 0; i < MAX_COUNT/2; ++i)
+	//{
+	//	if (_objCreatedCount >= MAX_COUNT) break;
+	//
+	//	CreateTextureMesh(_objCreatedCount);
+	//	_objCreatedCount++;
+	//}
+	//for (int i = MAX_COUNT/2; i < MAX_COUNT; ++i)
+	//{
+	//	if (_objCreatedCount >= MAX_COUNT) break;
+	//
+	//	CreateCubeMesh(_objCreatedCount);
+	//	_objCreatedCount++;
+	//}
 
-		CreateTextureMesh(_objCreatedCount);
-		_objCreatedCount++;
-	}
-	for (int i = MAX_COUNT/2; i < MAX_COUNT; ++i)
+	for (int i = 0; i < 1; ++i)
 	{
 		if (_objCreatedCount >= MAX_COUNT) break;
 
@@ -211,7 +224,7 @@ void InstancingDemo::DeleteCallBack()
 
 	_curUsage = _vInfo->CurrentUsage;
 
-	for (int i = 0; i < 2; ++i)
+	for (int i = 0; i < 1; ++i)
 	{
 		if (_objCreatedCount <= 0) break;
 		_objCreatedCount--;
