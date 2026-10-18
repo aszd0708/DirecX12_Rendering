@@ -22,6 +22,7 @@
 #include <assert.h>
 #include <stdexcept>
 #include <concepts>
+#include <variant>
 using namespace std;
 
 // WIN

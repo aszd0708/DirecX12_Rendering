@@ -44,6 +44,8 @@ public:										\
 
 #define GET_DESC(descType)  descType = {}
 
+const INT32 INVALID_INDEX = -1;
+
 const UINT32 SWAP_CHAIN_BUFFER_COUNT = 2;
 
 // 64KB (64 * 1024)

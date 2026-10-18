@@ -9,10 +9,10 @@ public:
 	static UINT64 GetDescSize(eMaterialType type);
 
 protected:
-	MaterialInfo(eMaterialType type) : materialType(type) { }
+	MaterialInfo(eMaterialType type) : materialType(type) {}
 
 public:
-	~MaterialInfo() {}
+	virtual ~MaterialInfo() {}
 
 public:
 	eMaterialType materialType;
@@ -29,6 +29,7 @@ public:
 	{
 		
 	}
+	~DefaultMaterialInfo() override {};
 	
 public:
 	TextureInfo textureInfos[TEX_COUNT];
