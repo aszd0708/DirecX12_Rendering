@@ -103,6 +103,15 @@
     <Filter Include="01. Graphics\Material">
       <UniqueIdentifier>{056709e4-4852-45bd-acd3-6b28078bc905}</UniqueIdentifier>
     </Filter>
+    <Filter Include="04. Component\FixedComponent\Render\Mesh">
+      <UniqueIdentifier>{f43c4538-5779-4952-a352-e88c974c5c55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Component\FixedComponent\Render\Model">
+      <UniqueIdentifier>{88a41d83-1e86-4dd1-a925-b807fdd7229e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="00. Engine\Resource\Mesh">
+      <UniqueIdentifier>{9fad1aa3-36ab-4ab8-b898-02570516d9b4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -178,13 +187,7 @@
     <ClInclude Include="Scene.h">
       <Filter>00. Engine</Filter>
     </ClInclude>
-    <ClInclude Include="MeshRenderer.h">
-      <Filter>04. Component\FixedComponent\Render</Filter>
-    </ClInclude>
     <ClInclude Include="Renderer.h">
-      <Filter>04. Component\FixedComponent\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="Mesh.h">
       <Filter>04. Component\FixedComponent\Render</Filter>
     </ClInclude>
     <ClInclude Include="SceneBuilder.h">
@@ -328,6 +331,21 @@
     <ClInclude Include="MaterialPool.h">
       <Filter>00. Engine\Pool\GpuResourcePool</Filter>
     </ClInclude>
+    <ClInclude Include="MeshRenderer.h">
+      <Filter>04. Component\FixedComponent\Render\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>00. Engine\Resource\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>00. Engine\Resource\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelData.h">
+      <Filter>00. Engine\Resource\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelLoader.h">
+      <Filter>00. Engine\Resource\Model</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -387,13 +405,7 @@
     <ClCompile Include="Scene.cpp">
       <Filter>00. Engine</Filter>
     </ClCompile>
-    <ClCompile Include="MeshRenderer.cpp">
-      <Filter>04. Component\FixedComponent\Render</Filter>
-    </ClCompile>
     <ClCompile Include="Renderer.cpp">
-      <Filter>04. Component\FixedComponent\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="Mesh.cpp">
       <Filter>04. Component\FixedComponent\Render</Filter>
     </ClCompile>
     <ClCompile Include="SceneBuilder.cpp">
@@ -533,6 +545,21 @@
     </ClCompile>
     <ClCompile Include="MaterialPool.cpp">
       <Filter>00. Engine\Pool\GpuResourcePool</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshRenderer.cpp">
+      <Filter>04. Component\FixedComponent\Render\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>00. Engine\Resource\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>00. Engine\Resource\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelData.cpp">
+      <Filter>00. Engine\Resource\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelLoader.cpp">
+      <Filter>00. Engine\Resource\Model</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

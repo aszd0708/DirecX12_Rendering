@@ -202,7 +202,7 @@ void InstancingDemo::CreateCallBack()
 	//	_objCreatedCount++;
 	//}
 
-	for (int i = 0; i < 1; ++i)
+	for (int i = 0; i < MAX_COUNT; ++i)
 	{
 		if (_objCreatedCount >= MAX_COUNT) break;
 

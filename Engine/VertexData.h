@@ -126,6 +126,103 @@ struct VertexTextureNormalTangentBlendData
 	Vec3 tangent = { 0, 0, 0 };
 	Vec4 blendIndices = { 0, 0, 0, 0};
 	Vec4 blendWeights = { 0, 0, 0, 0};
+
+	static inline Array<D3D12_INPUT_ELEMENT_DESC> GetDesc()
+	{
+		UINT32 index = 0;
+		UINT32 offset = 0;
+		Array<D3D12_INPUT_ELEMENT_DESC> desc(6);
+		// Position
+		{
+			D3D12_INPUT_ELEMENT_DESC inputElementDesc = {};
+			inputElementDesc.SemanticName = "POSITION";
+			inputElementDesc.SemanticIndex = 0;
+			inputElementDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+			inputElementDesc.InputSlot = 0;
+			inputElementDesc.AlignedByteOffset = offset;
+			inputElementDesc.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
+			inputElementDesc.InstanceDataStepRate = 0;
+			desc[index] = inputElementDesc;
+			index++;
+			offset += sizeof(Vec3);
+		}
+
+		// UV
+		{
+			D3D12_INPUT_ELEMENT_DESC inputElementDesc = {};
+			inputElementDesc.SemanticName = "TEXCOORD";
+			inputElementDesc.SemanticIndex = 0;
+			inputElementDesc.Format = DXGI_FORMAT_R32G32_FLOAT;
+			inputElementDesc.InputSlot = 0;
+			inputElementDesc.AlignedByteOffset = offset;
+			inputElementDesc.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
+			inputElementDesc.InstanceDataStepRate = 0;
+			desc[index] = inputElementDesc;
+			index++;
+			offset += sizeof(Vec2);
+		}		
+
+		// Normal
+		{
+			D3D12_INPUT_ELEMENT_DESC inputElementDesc = {};
+			inputElementDesc.SemanticName = "NORMAL";
+			inputElementDesc.SemanticIndex = 0;
+			inputElementDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+			inputElementDesc.InputSlot = 0;
+			inputElementDesc.AlignedByteOffset = offset;
+			inputElementDesc.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
+			inputElementDesc.InstanceDataStepRate = 0;
+			desc[index] = inputElementDesc;
+			index++;
+			offset += sizeof(Vec3);
+		}		
+		
+		// Tangent
+		{
+			D3D12_INPUT_ELEMENT_DESC inputElementDesc = {};
+			inputElementDesc.SemanticName = "TANGENT";
+			inputElementDesc.SemanticIndex = 0;
+			inputElementDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+			inputElementDesc.InputSlot = 0;
+			inputElementDesc.AlignedByteOffset = offset;
+			inputElementDesc.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
+			inputElementDesc.InstanceDataStepRate = 0;
+			desc[index] = inputElementDesc;
+			index++;
+			offset += sizeof(Vec3);
+		}		
+		
+		// Blend Indices
+		{
+			D3D12_INPUT_ELEMENT_DESC inputElementDesc = {};
+			inputElementDesc.SemanticName = "BLENDINDICES";
+			inputElementDesc.SemanticIndex = 0;
+			inputElementDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+			inputElementDesc.InputSlot = 0;
+			inputElementDesc.AlignedByteOffset = offset;
+			inputElementDesc.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
+			inputElementDesc.InstanceDataStepRate = 0;
+			desc[index] = inputElementDesc;
+			index++;
+			offset += sizeof(Vec4);
+		}		
+		
+		// Blend Weights
+		{
+			D3D12_INPUT_ELEMENT_DESC inputElementDesc = {};
+			inputElementDesc.SemanticName = "BLENDWEIGHT";
+			inputElementDesc.SemanticIndex = 0;
+			inputElementDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+			inputElementDesc.InputSlot = 0;
+			inputElementDesc.AlignedByteOffset = offset;
+			inputElementDesc.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
+			inputElementDesc.InstanceDataStepRate = 0;
+			desc[index] = inputElementDesc;
+			index++;
+			offset += sizeof(Vec4);
+		}
+		return desc;
+	}
 };
 
 using ModelVertexType = VertexTextureNormalTangentBlendData;
