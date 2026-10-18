@@ -3,7 +3,7 @@
 template<typename T>
 class Array
 {
-	static const UINT32 DEFAULT_SIZE = 32;
+	static const UINT32 DEFAULT_SIZE = 0;
 
 public:
 	Array();
@@ -12,6 +12,9 @@ public:
 	Array(Array<T>&& other);
 	Array(const Array<T>& value);
 	~Array();
+
+private:
+	void DestroyAllValue();
 
 public:
 	void SetCount(UINT32 count);
@@ -39,22 +42,36 @@ inline Array<T>::Array() : Array(DEFAULT_SIZE)
 template<typename T>
 inline Array<T>::Array(UINT32 count) : _count(count)
 {
-	assert(count != 0);
-
 	_array = (T*)malloc(sizeof(T) * count);
+
+	if constexpr (!std::is_trivially_copyable_v<T>)
+	{
+		for (UINT32 i = 0; i < count; ++i)
+		{
+			new (_array + i)T();
+		}
+	}
 }
 
 template<typename T>
 inline Array<T>::Array(std::initializer_list<T> list)
 {
-	int count = list.size();
+	size_t count = list.size();
 	_array = (T*)malloc(sizeof(T) * count);
-	_count = count;
+	_count = (UINT32)count;
 
 	int i = 0;
+	constexpr  bool isTriviallyCopyableValue = std::is_trivially_copyable_v<T>;
 	for (const T& value : list)
 	{
-		_array[i] = value;
+		if (!isTriviallyCopyableValue)
+		{
+			new (_array + i)T(value);
+		}
+		else
+		{
+			_array[i] = value;
+		}
 		++i;
 	}
 }
@@ -63,19 +80,45 @@ template<typename T>
 inline Array<T>::Array(Array<T>&& other) : _count(other._count), _array(other._array)
 {
 	other._array = nullptr;
+	other._count = 0;
 }
 
 template<typename T>
 inline Array<T>::Array(const Array<T>& other) : _count(other._count)
 {
 	_array = (T*)malloc(sizeof(T) * _count);
-	memcpy(_array, other._array, sizeof(T) * _count);
+
+	if constexpr (std::is_trivially_copyable_v<T>)
+	{
+		std::memcpy(_array, other._array, sizeof(T) * _count);
+	}
+	else
+	{
+		for (UINT32 i = 0; i < _count; ++i)
+		{
+			new (_array + i)T(other[i]);
+		}
+	}
 }
 
 template<typename T>
 inline Array<T>::~Array()
 {
+	DestroyAllValue();
+
 	free(_array);
+}
+
+template<typename T>
+inline void Array<T>::DestroyAllValue()
+{
+	if constexpr (!std::is_trivially_destructible_v<T>)
+	{
+		for (UINT32 i = 0; i < _count; ++i)
+		{
+			_array[i].~T();
+		}
+	}
 }
 
 /// <summary>
@@ -89,7 +132,23 @@ inline void Array<T>::SetCount(UINT32 count)
 	assert(_count <= count);
 
 	T* newArray = (T*)malloc(sizeof(T) * count);
-	memmove(newArray, _array, sizeof(T) * _count);
+	if constexpr (std::is_trivially_destructible_v<T>)
+	{
+		std::memmove(newArray, _array, sizeof(T) * _count);
+	}
+	else
+	{
+		for (UINT32 i = 0; i < _count; ++i)
+		{
+			new (newArray + i)T(std::move(_array[i]));
+			_array[i].~T();
+		}
+		for (UINT32 i = _count; i < count; ++i)
+		{
+			new (newArray + i)T();
+		}
+	}
+
 	free(_array);
 
 	_array = newArray;
@@ -99,7 +158,7 @@ inline void Array<T>::SetCount(UINT32 count)
 template<typename T>
 inline bool Array<T>::Find(const T & value)
 {
-	for (int i = 0; i < _count; ++i)
+	for (UINT32 i = 0; i < _count; ++i)
 	{
 		if (_array[i] == value)
 		{
@@ -133,10 +192,18 @@ inline const T& Array<T>::operator[](int index) const
 template<typename T>
 inline Array<T>& Array<T>::operator=(Array<T>&& other)
 {
+	if (this == &other) 
+	{
+		return *this;
+	}
+
+	DestroyAllValue();
+
 	free(_array);
 	_count = other._count;
 	_array = other._array;
 	other._array = nullptr;
+	other._count = 0;
 
 	return *this;
 }
@@ -144,10 +211,28 @@ inline Array<T>& Array<T>::operator=(Array<T>&& other)
 template<typename T>
 inline Array<T>& Array<T>::operator=(const Array<T>& other)
 {
+	if (this == &other)
+	{
+		return *this;
+	}
+
+	DestroyAllValue();
+
 	free(_array);
 	_count = other._count;
-	_array = (T*)malloc(sizeof(T) * _count);
-	memcpy(_array, other._array, sizeof(T) * _count);
+	_array = (T*)std::malloc(sizeof(T) * _count);
+
+	if constexpr (std::is_trivially_destructible_v<T>)
+	{
+		std::memcpy(_array, other._array, sizeof(T) * _count);
+	}
+	else
+	{
+		for (UINT32 i = 0; i < _count; ++i)
+		{
+			new (_array + i)T(other[i]);
+		}
+	}
 
 	return *this;
 }

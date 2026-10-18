@@ -11,6 +11,7 @@ struct GpuConstantBufferHandle
 class GpuConstantBufferPage
 {
 public:
+	GpuConstantBufferPage();
 	GpuConstantBufferPage(UINT8 pageIndex, UINT64 size);
 	~GpuConstantBufferPage();
 
