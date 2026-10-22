@@ -346,6 +346,9 @@
     <ClInclude Include="ModelLoader.h">
       <Filter>00. Engine\Resource\Model</Filter>
     </ClInclude>
+    <ClInclude Include="ModelRenderer.h">
+      <Filter>04. Component\FixedComponent\Render\Model</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -560,6 +563,9 @@
     </ClCompile>
     <ClCompile Include="ModelLoader.cpp">
       <Filter>00. Engine\Resource\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelRenderer.cpp">
+      <Filter>04. Component\FixedComponent\Render\Model</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

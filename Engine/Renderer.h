@@ -22,7 +22,6 @@ public:
 	MemoryEntry& GetMemoryEntry() { return _memoryEntry; }
 
 public:
-	virtual void Init();
 	virtual void Render(ID3D12GraphicsCommandList* commandList);
 	virtual void RenderInstancing(ID3D12GraphicsCommandList* commandList, D3D12_GPU_VIRTUAL_ADDRESS address, UINT32 count);
 	virtual bool SetInstancingInfo(InstancingInfo& info) = 0;
@@ -33,9 +32,8 @@ public:
 
 protected:
 	void PushWorldMatrixBuffer(OUT D3D12_GPU_VIRTUAL_ADDRESS& address);
+	void PushTransformMatrixBuffer(OUT D3D12_GPU_VIRTUAL_ADDRESS& address, const Matrix& matrix);
 
-protected:
-	InstanceDesc _instancingDesc;
 private:
 	TransformDesc _worldTransformDesc;
 	ConstantBuffer* _worldTransformBuffer;

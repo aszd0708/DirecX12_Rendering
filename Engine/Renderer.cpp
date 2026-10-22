@@ -24,11 +24,6 @@ void Renderer::SetMemoryHandler(const MemoryBlock& handler)
 	_memoryEntry.type = typeid(Renderer);
 }
 
-void Renderer::Init()
-{
-
-}
-
 void Renderer::Render(ID3D12GraphicsCommandList* commandList)
 {
 
@@ -48,6 +43,20 @@ void Renderer::PushWorldMatrixBuffer(OUT D3D12_GPU_VIRTUAL_ADDRESS& address)
 	if(isSuccess == false) return;
 
 	Matrix world = transform->GetWorldMatrix();
+	_worldTransformDesc.W = world.Transpose();
+
+	_worldTransformBuffer->PushDataSafe<TransformDesc>(_worldTransformDesc, address);
+}
+
+void Renderer::PushTransformMatrixBuffer(OUT D3D12_GPU_VIRTUAL_ADDRESS& address, const Matrix& matrix)
+{
+	if (_worldTransformBuffer == nullptr) return;
+
+	Transform* transform;
+	bool isSuccess = GetTransform(&transform);
+	if (isSuccess == false) return;
+
+	Matrix world = matrix * transform->GetWorldMatrix();
 	_worldTransformDesc.W = world.Transpose();
 
 	_worldTransformBuffer->PushDataSafe<TransformDesc>(_worldTransformDesc, address);

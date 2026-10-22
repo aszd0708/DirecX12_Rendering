@@ -8,11 +8,11 @@
 
 static_assert(sizeof(ModelVertexType) <= UINT8_MAX, "Geometry::vertexSize가 UINT8");
 
-bool ModelLoader::LoadModel(const wstring& meshPath, const wstring& materialPath, OUT ModelData& modelData)
+bool ModelLoader::LoadModel(const wstring& meshPath, const wstring& materialPath, const ShaderInfo& shaderInfo, OUT ModelData& modelData)
 {
 	// Mesh가 materialName으로 Material을 찾기 때문에 Material 먼저 로드
 	Array<string> materialNames;
-	bool isSuccess = LoadMaterials(materialPath, modelData.materials, materialNames);
+	bool isSuccess = LoadMaterials(materialPath, shaderInfo, modelData.materials, materialNames);
 	if (isSuccess == false) return false;
 
 	isSuccess = LoadMeshes(meshPath, materialNames, modelData);
@@ -23,7 +23,7 @@ bool ModelLoader::LoadModel(const wstring& meshPath, const wstring& materialPath
 	return true;
 }
 
-bool ModelLoader::LoadMaterials(const wstring& materialPath, OUT Array<MaterialInfoVariant>& materials, OUT Array<string>& materialNames)
+bool ModelLoader::LoadMaterials(const wstring& materialPath, const ShaderInfo& shaderInfo, OUT Array<MaterialInfoVariant>& materials, OUT Array<string>& materialNames)
 {
 	if (std::filesystem::exists(materialPath) == false) return false;
 
@@ -58,7 +58,8 @@ bool ModelLoader::LoadMaterials(const wstring& materialPath, OUT Array<MaterialI
 		ReadTextureInfo(node, "BaseColorFile", "DiffuseFile", folderPath, info.textureInfos[(UINT8)eDefaultTextureType::DIFFUSE]);
 		ReadTextureInfo(node, "NormalMapFile", "NormalFile", folderPath, info.textureInfos[(UINT8)eDefaultTextureType::NORMAL]);
 
-		// shaderInfo는 Model 빌드 쪽에서 정함
+		info.shaderInfo = shaderInfo;
+
 		materials[index] = info;
 		index++;
 	}

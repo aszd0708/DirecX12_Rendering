@@ -27,13 +27,3 @@ struct ModelData
 	Array<BoneData> boneData;
 	Array<MaterialInfoVariant> materials;
 };
-
-template<>
-struct Hash<ModelData>
-{
-	static UINT64 GetHash(const ModelData& key)
-	{
-		UINT64 hash = Hash<string>::GetHash(key.name);
-		return hash;
-	}
-};

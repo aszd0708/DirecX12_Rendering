@@ -8,9 +8,9 @@
 #include "Material.h"
 #include "MaterialInfo.h"
 
-MeshRenderer::MeshRenderer() : Renderer(eComponentType::Renderer)
+MeshRenderer::MeshRenderer() : Renderer(eComponentType::Renderer), _instancingDesc(1)
 {
-
+	
 }
 MeshRenderer::~MeshRenderer()
 {
@@ -110,9 +110,9 @@ bool MeshRenderer::SetInstancingInfo(InstancingInfo& info)
 	if (isSuccess == false) return false;
 
 	Matrix world = transform->GetWorldMatrix();
-	_instancingDesc.W = world.Transpose();
-	_instancingDesc.materialIndex = _material->GetSlotIndex();
-	info.instanceDesc = _instancingDesc;
+	_instancingDesc[0].W = world.Transpose();
+	_instancingDesc[0].materialIndex = _material->GetSlotIndex();
+	info.instanceDesc = _instancingDesc[0];
 
 	return true;
 }
