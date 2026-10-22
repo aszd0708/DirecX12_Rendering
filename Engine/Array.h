@@ -44,12 +44,9 @@ inline Array<T>::Array(UINT32 count) : _count(count)
 {
 	_array = (T*)malloc(sizeof(T) * count);
 
-	if constexpr (!std::is_trivially_copyable_v<T>)
+	for (UINT32 i = 0; i < count; ++i)
 	{
-		for (UINT32 i = 0; i < count; ++i)
-		{
-			new (_array + i)T();
-		}
+		new (_array + i)T();
 	}
 }
 
@@ -132,21 +129,14 @@ inline void Array<T>::SetCount(UINT32 count)
 	assert(_count <= count);
 
 	T* newArray = (T*)malloc(sizeof(T) * count);
-	if constexpr (std::is_trivially_destructible_v<T>)
+	for (UINT32 i = 0; i < _count; ++i)
 	{
-		std::memmove(newArray, _array, sizeof(T) * _count);
+		new (newArray + i)T(std::move(_array[i]));
+		_array[i].~T();
 	}
-	else
+	for (UINT32 i = _count; i < count; ++i)
 	{
-		for (UINT32 i = 0; i < _count; ++i)
-		{
-			new (newArray + i)T(std::move(_array[i]));
-			_array[i].~T();
-		}
-		for (UINT32 i = _count; i < count; ++i)
-		{
-			new (newArray + i)T();
-		}
+		new (newArray + i)T();
 	}
 
 	free(_array);
