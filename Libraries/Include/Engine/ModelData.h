@@ -27,4 +27,3 @@ struct ModelData
 	Array<BoneData> boneData;
 	Array<MaterialInfoVariant> materials;
 };
-

@@ -226,7 +226,9 @@ xcopy /Y "$(SolutionDir)Engine\*.inl" "$(SolutionDir)Libraries\Include\Engine"</
     <ClInclude Include="MeshRenderer.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="ModelData.h" />
+    <ClInclude Include="ModelInfo.h" />
     <ClInclude Include="ModelLoader.h" />
+    <ClInclude Include="ModelPool.h" />
     <ClInclude Include="ModelRenderer.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Renderer.h" />
@@ -320,7 +322,9 @@ xcopy /Y "$(SolutionDir)Engine\*.inl" "$(SolutionDir)Libraries\Include\Engine"</
     <ClCompile Include="MeshRenderer.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="ModelData.cpp" />
+    <ClCompile Include="ModelInfo.cpp" />
     <ClCompile Include="ModelLoader.cpp" />
+    <ClCompile Include="ModelPool.cpp" />
     <ClCompile Include="ModelRenderer.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

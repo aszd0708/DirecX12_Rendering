@@ -1,12 +1,5 @@
 #include "Global.hlsl"
 
-SamplerState LinearSampler : register(CONCAT(s, LINEAR_SAMPLER_REGISTER));
-
-cbuffer TextureIndexBuffer : register(CONCAT(b, TEXTURE_INDEX_REGISTER))
-{
-    uint textureIndex;
-};
-
 TextureMeshOutput VS(VertexTexture input)
 {
     TextureMeshOutput output;

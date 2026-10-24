@@ -36,6 +36,9 @@
     <ClCompile Include="InstancingDemo.cpp">
       <Filter>Game\Demo</Filter>
     </ClCompile>
+    <ClCompile Include="ModelDemo.cpp">
+      <Filter>Game\Demo</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Main.h">
@@ -53,6 +56,9 @@
     <ClInclude Include="InstancingDemo.h">
       <Filter>Game\Demo</Filter>
     </ClInclude>
+    <ClInclude Include="ModelDemo.h">
+      <Filter>Game\Demo</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Shaders\HLSL\Triangle.hlsl">
@@ -68,6 +74,9 @@
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="..\Shaders\HLSL\TextureMesh_Instancing.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Shaders\HLSL\Model.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>

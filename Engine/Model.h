@@ -12,7 +12,7 @@ struct SubMesh
 	INT32 boneIndex = INVALID_INDEX;
 };
 
-class Model
+class Model : public IMemoryBlockHanlde
 {
 public:
 	Model();

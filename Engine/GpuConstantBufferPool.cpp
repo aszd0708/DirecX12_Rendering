@@ -5,6 +5,9 @@
 /// GpuConstantBufferPage ///
 /////////////////////////////
 
+GpuConstantBufferPage::GpuConstantBufferPage()
+{}
+
 GpuConstantBufferPage::GpuConstantBufferPage(UINT8 pageIndex, UINT64 size) :_pageIndex(pageIndex), _offset(0), _totalSize(size), _fenceValue(0)
 {
 }

@@ -349,6 +349,12 @@
     <ClInclude Include="ModelRenderer.h">
       <Filter>04. Component\FixedComponent\Render\Model</Filter>
     </ClInclude>
+    <ClInclude Include="ModelInfo.h">
+      <Filter>00. Engine\Pool\GpuResourcePool</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelPool.h">
+      <Filter>00. Engine\Pool\GpuResourcePool</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -566,6 +572,12 @@
     </ClCompile>
     <ClCompile Include="ModelRenderer.cpp">
       <Filter>04. Component\FixedComponent\Render\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelInfo.cpp">
+      <Filter>00. Engine\Pool\GpuResourcePool</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelPool.cpp">
+      <Filter>00. Engine\Pool\GpuResourcePool</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

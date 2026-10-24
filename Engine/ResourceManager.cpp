@@ -5,6 +5,7 @@
 #include "TexturePool.h"
 #include "ShaderPool.h"
 #include "MaterialPool.h"
+#include "ModelPool.h"
 #include "GpuCommandPool.h"
 
 void ResourceManager::Init()
@@ -13,6 +14,7 @@ void ResourceManager::Init()
 	_texturePool = new TexturePool();
 	_shaderPool = new ShaderPool();
 	_materialPool = new MaterialPool();
+	_modelPool = new ModelPool();
 
 	CreateErrorResources();
 }
@@ -95,6 +97,18 @@ bool ResourceManager::GetMaterial(const MaterialInfo& info, OUT MemoryBlock& mem
 void ResourceManager::ReleaseMaterial(const UINT64 key)
 {
 	_materialPool->PoolInMaterial(key);
+}
+
+bool ResourceManager::GetModel(ModelInfo& info, OUT MemoryBlock& memoryBlock)
+{
+	assert(_commandInfo != nullptr);
+
+	return _modelPool->PoolOutModel(info, _commandInfo, memoryBlock);
+}
+
+bool ResourceManager::ReleaseModel(const ModelInfo& key)
+{
+	return _modelPool->PoolInModel(key);
 }
 
 const MemoryBlock& ResourceManager::GetErrorShader()

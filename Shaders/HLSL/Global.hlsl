@@ -7,6 +7,8 @@
 /// GlobalDesces ///
 ////////////////////
 
+SamplerState LinearSampler : register(CONCAT(s, LINEAR_SAMPLER_REGISTER));
+
 struct GlobalMatrixDesc
 {
     matrix V;
@@ -29,6 +31,16 @@ cbuffer TransformMatrixBuffer : register(CONCAT(b, TRANSFORM_REGISTER))
 {
     TransformMatrixDesc TransformMatrix;
 }
+
+struct TextureIndexDesc
+{
+    uint textureIndex;
+};
+
+cbuffer TextureIndexBuffer : register(CONCAT(b, TEXTURE_INDEX_REGISTER))
+{
+    TextureIndexDesc TextureIndex;
+};
 
 ///////////////
 // MeshBuffer//

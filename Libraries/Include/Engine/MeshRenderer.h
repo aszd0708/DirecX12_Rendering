@@ -25,6 +25,7 @@ public:
 	const D3D12_VERTEX_BUFFER_VIEW& GetVertexBuffer() { return _mesh->GetVertexView(); }
 
 private:
+	Array<InstanceDesc> _instancingDesc;
 	Mesh* _mesh;
 	Material* _material;
 	const UINT32* _textureIndexes;

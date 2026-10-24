@@ -40,7 +40,7 @@ public:
 public:
 	void Add(const InstancingInfo& info);
 	void Clear();
-	void Render(GpuCommandInfo* commandInfo);
+	void Render(const ComPtr<ID3D12GraphicsCommandList>& commandInfo);
 
 private:
 	UINT64 GetKey(UINT32 meshID, UINT32 shaderID);

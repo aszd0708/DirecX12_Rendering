@@ -39,8 +39,8 @@ WPARAM Game::Run(GameDesc& desc)
 	GpuBufferPoolManager::sBufferPoolManagerInfo bufferInfo = {};
 	bufferInfo.initPoolFlag = GpuBufferPoolManager::eBufferPoolID::INDEX_BUMP | GpuBufferPoolManager::eBufferPoolID::VERTEX_BUMP | GpuBufferPoolManager::eBufferPoolID::MATERIAL;
 	//info.bumbOnly64KBMaxSize = 256 * 1024 * 1024; //(UINT64)4096 * (UINT64)1024 * (UINT64)1024;
-	bufferInfo.bumpIndexMaxSize = 256 * (UINT64)1024;
-	bufferInfo.bumpVertexMaxSize = 256 * (UINT64)1024;
+	bufferInfo.bumpIndexMaxSize = 10 * 1024 * (UINT64)1024;
+	bufferInfo.bumpVertexMaxSize = 10 * 1024 * (UINT64)1024;
 	bufferInfo.constantBufferMaxSize = 256 * (UINT64)1024;
 	for (int i = 0; i < (UINT8)eMaterialType::MAX; ++i)
 	{

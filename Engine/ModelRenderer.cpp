@@ -29,12 +29,6 @@ void ModelRenderer::Render(ID3D12GraphicsCommandList * commandList)
 {
 	Renderer::Render(commandList);
 
-	commandList->SetGraphicsRootSignature(GRAPHICS->GetRootSignature().Get());
-
-	// Global 버퍼 전달
-	// Push 이후에 GetAddress 호출
-	commandList->SetGraphicsRootConstantBufferView((int)eShaderIndex::GLOBAL, GlobalConstantBuffer::GetInstance()->GetCameraBufferAddress());
-
 	// World Matrix 버퍼 전달
 	// Push 이후에 GetAddress 호출
 
@@ -60,7 +54,7 @@ void ModelRenderer::Render(ID3D12GraphicsCommandList * commandList)
 		commandList->IASetIndexBuffer(&indexView);
 
 		// Bone Root Matrix 전달
-		D3D12_GPU_VIRTUAL_ADDRESS meshTransformAddress;
+		D3D12_GPU_VIRTUAL_ADDRESS meshTransformAddress = 0;
 		const BoneData& boneData = bones[subMesh.boneIndex];
 		PushTransformMatrixBuffer(meshTransformAddress, boneData.rootMatrix);
 		commandList->SetGraphicsRootConstantBufferView((int)eShaderIndex::TRANSFORM, meshTransformAddress);

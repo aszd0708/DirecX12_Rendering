@@ -77,7 +77,7 @@ void InstancingController::Clear()
 	}
 }
 
-void InstancingController::Render(GpuCommandInfo* commandInfo)
+void InstancingController::Render(const ComPtr<ID3D12GraphicsCommandList>& commandInfo)
 {
 	for (int i = 0; i < _instanceArray.GetCount(); ++i)
 	{
@@ -96,7 +96,7 @@ void InstancingController::Render(GpuCommandInfo* commandInfo)
 			D3D12_GPU_VIRTUAL_ADDRESS address = {};
 			buffer.PushDataWithGetAddress(_instanceArray[i]->GetDesces(), bufferSize, address);
 
-			renderer->RenderInstancing(COMMAND_LIST.Get(), address, descCount);
+			renderer->RenderInstancing(commandInfo.Get(), address, descCount);
 		}
 	}
 }

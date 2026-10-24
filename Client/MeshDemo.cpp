@@ -160,7 +160,7 @@ void MeshDemo::CreateTextureMesh(int index)
 	assert(isSuccess);
 	_objs[index] = obj;
 
-	Transform* t =obj->AddComponent<Transform>();
+	Transform* t = obj->AddComponent<Transform>();
 	Vec3 pos = Vec3(rand() % 100, rand() % 100, rand() % 100);
 	t->SetPosition(pos);
 

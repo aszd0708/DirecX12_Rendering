@@ -152,11 +152,12 @@ void Scene::Render()
 {
 	// 카메라 버퍼 세팅
 	GlobalConstantBuffer::GetInstance()->PushCameraBuffer(Camera::S_MatView, Camera::S_MatProjection);
+	bool isSuccess = false;
 
 	//GpuCommandInfo* commandInfo = nullptr;
-	//bool isSuccess = GPU_COMMAND_POOL->GetCommandPool(&commandInfo);
+	//isSuccess = GPU_COMMAND_POOL->GetCommandPool(&commandInfo);
 	//assert(isSuccess);
-	bool isSuccess = false;
+
 	ID3D12DescriptorHeap* descHeap = DESC_POOL->GetDescriptorHeapAllocator(D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	if (descHeap != nullptr)
 	{
@@ -181,14 +182,23 @@ void Scene::Render()
 			{
 				InstancingInfo info = {};
 				isSuccess = render->SetInstancingInfo(info);
-				if(isSuccess == false) continue;
+				if(isSuccess == false) 
+				{
+					render->Render(COMMAND_LIST.Get());
+					isExistRendering = true;
+				}
 
-				_instancingController->Add(info);
-				isExistRendering = true;
+				else
+				{
+					_instancingController->Add(info);
+					isExistRendering = true;
+				}
 			}
 		}
 	}
-	_instancingController->Render(nullptr);
+	_instancingController->Render(COMMAND_LIST);
+
+
 
 	//if (isExistRendering)
 	//{
@@ -298,5 +308,6 @@ bool Scene::CreateGameObject(OUT GameObject** obj)
 	CpuMemoryPool* pool = CpuMemoryPoolManager::GetInstance()->GetMemoryPool(poolID);
 
 	isSuccess = pool->GetMemory(obj);
+	(*obj)->AddComponent<Transform>();
 	return isSuccess;
 }
