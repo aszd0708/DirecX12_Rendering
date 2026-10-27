@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "ResourceManager.h"
 #include "MeshInfo.h"
+#include "MaterialInfo.h"
 #include "MeshPool.h"
 #include "TexturePool.h"
 #include "ShaderPool.h"
@@ -26,6 +27,7 @@ void ResourceManager::Release()
 	delete(_shaderPool);
 	delete(_materialPool);
 
+	CPU_MEM_POOL->GetMemoryPool(_materialErrorMemoryBlock._poolID)->ReleaseMemory(_materialErrorMemoryBlock);
 	CPU_MEM_POOL->GetMemoryPool(_meshErrorMemoryBlock._poolID)->ReleaseMemory(_meshErrorMemoryBlock);
 }
 
@@ -116,6 +118,11 @@ const MemoryBlock& ResourceManager::GetErrorShader()
 	return _meshErrorMemoryBlock;
 }
 
+const MemoryBlock& ResourceManager::GetErrorMaterial()
+{
+	return _materialErrorMemoryBlock;
+}
+
 void ResourceManager::CreateErrorResources()
 {
 	ShaderInfo _meshErrorShader = {};
@@ -124,4 +131,19 @@ void ResourceManager::CreateErrorResources()
 
 	_meshErrorMemoryBlock = {};
 	assert(GetShader(_meshErrorShader, _meshErrorMemoryBlock));
+
+	ShaderInfo materialErrorShader = {};
+	materialErrorShader.path = L"ERROR_TEXTURE";
+	materialErrorShader.inputLayoutDesc = VertexTextureData::GetDesc();
+
+	TextureInfo textureInfo = {};
+	textureInfo.filePath = L"../Resources/Missing_Texture.png";
+	textureInfo.format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	textureInfo.mipLevels = 1;
+
+	DefaultMaterialInfo errorMaterialInfo = {};
+	errorMaterialInfo.shaderInfo = materialErrorShader;
+	errorMaterialInfo.textureInfos[(UINT8)eDefaultTextureType::DIFFUSE] = textureInfo;
+	_materialErrorMemoryBlock = {};
+	assert(GetMaterial(errorMaterialInfo, _materialErrorMemoryBlock));
 }

@@ -1,19 +1,27 @@
 #include "Global.hlsl"
 
-MeshOutput VS(VertexTexture input)
+SamplerState LinearSampler : register(CONCAT(s, LINEAR_SAMPLER_REGISTER));
+
+TextureMeshOutput VS(VertexTexture input)
 {
-    MeshOutput output;
+    TextureMeshOutput output;
     
-    output.position = mul(input.position, TransformMatrix.W);
+    InstanceDesc instasnceData = InstancingBuffer[input.instanceID];
+    
+    output.position = mul(float4(input.position, 1.0f), instasnceData.W);
     output.worldPosition = output.position;
     output.position = mul(output.position, GlobalMatrix.VP);
-    output.color = float4(1.0f, 0.0f, 1.0f, 1.0f);
+    output.uv = input.uv;
+    output.materialIndexID = instasnceData.materialIndex;
     
     return output;
 }
 
-float4 PS(MeshOutput output) : SV_Target
+float4 PS(TextureMeshOutput output) : SV_Target
 {
-    float4 color = output.color;
+    uint textureIndex = DefaultMaterialTextureBuffer[output.materialIndexID].diffuseTextureIndex;
+    Texture2D<float4> colorMap = ResourceDescriptorHeap[textureIndex];
+    
+    float4 color = colorMap.Sample(LinearSampler, output.uv);
     return color;
 }

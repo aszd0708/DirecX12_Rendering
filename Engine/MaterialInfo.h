@@ -29,7 +29,7 @@ public:
 	{
 		
 	}
-	~DefaultMaterialInfo() override {};
+	~DefaultMaterialInfo() override {}; 
 	
 public:
 	TextureInfo textureInfos[TEX_COUNT];

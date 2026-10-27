@@ -107,12 +107,24 @@ GpuBumpBufferPool::~GpuBumpBufferPool()
 	}
 }
 
-void GpuBumpBufferPool::IncreaseGpuResource()
+bool GpuBumpBufferPool::IncreaseGpuResource()
 {
+	if (_pages.GetCount() >= UINT8_MAX)
+	{
+		return false;
+	}
+	UINT64 increaseSize = (_pages.GetCount() + 1) * _totalSize;
+	if (increaseSize > MAX_SIZE)
+	{
+		return false;
+	}
+
 	UINT32 index = _pages.GetCount();
 	_pages.SetCount(_pages.GetCount() + 1);
 	GpuBumpBufferPage* page = new GpuBumpBufferPage(index, _totalSize);
 	_pages[index] = page;
+
+	return true;
 }
 
 ComPtr<ID3D12Resource>& GpuBumpBufferPool::GetMemoryHeap(UINT8 index)
@@ -124,6 +136,11 @@ ComPtr<ID3D12Resource>& GpuBumpBufferPool::GetMemoryHeap(UINT8 index)
 
 bool GpuBumpBufferPool::GetBufferHandle(eGpuBufferKind type, UINT64 size, UINT8 aligneSize, OUT GpuBufferHandle& handle)
 {
+	if (size > _totalSize)
+	{
+		return false;
+	}
+
 	bool allocSuccess = false;
 	int count = _pages.GetCount();
 	for (int i = 0; i < count; ++i)
@@ -135,7 +152,12 @@ bool GpuBumpBufferPool::GetBufferHandle(eGpuBufferKind type, UINT64 size, UINT8 
 		{
 			if (i + 1 >= count)
 			{
-				IncreaseGpuResource();
+				isSuccess = IncreaseGpuResource();
+				if (isSuccess == false)
+				{
+					return false;
+				}
+
 				count++;
 			}
 			continue;

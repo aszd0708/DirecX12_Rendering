@@ -46,6 +46,7 @@ public:
 	bool ReleaseModel(const ModelInfo& key);
 
 	const MemoryBlock& GetErrorShader();
+	const MemoryBlock& GetErrorMaterial();
 
 private:
 	void CreateErrorResources();
@@ -64,5 +65,6 @@ private:
 	Stack<UINT32> _usableShaderID;
 
 	MemoryBlock _meshErrorMemoryBlock;
+	MemoryBlock _materialErrorMemoryBlock;
 };
 

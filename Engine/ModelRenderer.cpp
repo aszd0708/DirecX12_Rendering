@@ -41,7 +41,7 @@ void ModelRenderer::Render(ID3D12GraphicsCommandList * commandList)
 	{
 		SubMesh subMesh = subMeshes[i];
 		Mesh* mesh = subMesh.mesh;
-		// POS 전달
+		// PSO 전달
 		Material* material = materials[subMesh.materialIndex];
 		commandList->SetPipelineState(material->GetShader()->GetPSO().Get());
 

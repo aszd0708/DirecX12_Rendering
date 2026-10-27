@@ -63,6 +63,8 @@ private:
 
 class GpuDynamicBufferPool
 {
+	// 512*1024*1024
+	static const UINT64 MAX_SIZE = 536870912;
 	// 256*1024*1024
 	static const UINT64 DEFAULT_SIZE = 268435456;
 	const UINT8 DEFAULT_RESOURCE_COUNT = 1;
@@ -73,7 +75,7 @@ public:
 	~GpuDynamicBufferPool();
 
 private:
-	void IncreaseGpuResource();
+	bool IncreaseGpuResource();
 
 public:
 	ComPtr<ID3D12Resource>& GetMemoryHeap(UINT8 index);

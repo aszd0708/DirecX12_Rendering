@@ -629,5 +629,8 @@
     <FxCompile Include="..\Shaders\HLSL\ERROR_COLOR.hlsl">
       <Filter>99. Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="..\Shaders\HLSL\ERROR_TEXTURE.hlsl">
+      <Filter>99. Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

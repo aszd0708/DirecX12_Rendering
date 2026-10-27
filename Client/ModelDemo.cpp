@@ -57,6 +57,7 @@ void ModelDemo::CreateModel()
 	Transform* transform = obj->GetComponent<Transform>();
 	Vec3 position = Vec3(0.0f, 0.0f, 0.0f);
 	transform->SetPosition(position);
+	transform->SetScale(Vec3(0.1f, 0.1f, 0.1f));
 
 	RESOURCES->BeginBatch();
 	wstring modelPath = L"../Resources/Models/Kachujin/Kachujin.mesh";
