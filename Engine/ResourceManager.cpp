@@ -26,8 +26,10 @@ void ResourceManager::Release()
 	delete(_texturePool);
 	delete(_shaderPool);
 	delete(_materialPool);
+	delete(_modelPool);
 
 	CPU_MEM_POOL->GetMemoryPool(_materialErrorMemoryBlock._poolID)->ReleaseMemory(_materialErrorMemoryBlock);
+	CPU_MEM_POOL->GetMemoryPool(_textureErrorMemoryBlock._poolID)->ReleaseMemory(_textureErrorMemoryBlock);
 	CPU_MEM_POOL->GetMemoryPool(_meshErrorMemoryBlock._poolID)->ReleaseMemory(_meshErrorMemoryBlock);
 }
 
@@ -118,32 +120,60 @@ const MemoryBlock& ResourceManager::GetErrorShader()
 	return _meshErrorMemoryBlock;
 }
 
+const MemoryBlock& ResourceManager::GetErrorTexture()
+{
+	return _textureErrorMemoryBlock;
+}
+
+
 const MemoryBlock& ResourceManager::GetErrorMaterial()
 {
 	return _materialErrorMemoryBlock;
 }
 
+const TextureInfo& ResourceManager::GetErrorTextureInfo()
+{
+	return _errorTextureInfo;
+}
+
 void ResourceManager::CreateErrorResources()
 {
+	BeginBatch();
+
 	ShaderInfo _meshErrorShader = {};
 	_meshErrorShader.path = L"ERROR_COLOR";
 	_meshErrorShader.inputLayoutDesc = ErrorVertexData::GetDesc();
 
 	_meshErrorMemoryBlock = {};
-	assert(GetShader(_meshErrorShader, _meshErrorMemoryBlock));
+	bool isSuccess = GetShader(_meshErrorShader, _meshErrorMemoryBlock);
+	if (isSuccess == false)
+	{
+		assert(isSuccess);
+	}
 
 	ShaderInfo materialErrorShader = {};
 	materialErrorShader.path = L"ERROR_TEXTURE";
 	materialErrorShader.inputLayoutDesc = VertexTextureData::GetDesc();
 
-	TextureInfo textureInfo = {};
-	textureInfo.filePath = L"../Resources/Missing_Texture.png";
-	textureInfo.format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	textureInfo.mipLevels = 1;
+	_errorTextureInfo = {};
+	_errorTextureInfo.filePath = L"../Resources/Missing_Texture.png";
+	_errorTextureInfo.format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	_errorTextureInfo.mipLevels = 1;
+	isSuccess = GetTexture(_errorTextureInfo, _textureErrorMemoryBlock);
+	if (isSuccess == false)
+	{
+		assert(isSuccess);
+	}
 
 	DefaultMaterialInfo errorMaterialInfo = {};
 	errorMaterialInfo.shaderInfo = materialErrorShader;
-	errorMaterialInfo.textureInfos[(UINT8)eDefaultTextureType::DIFFUSE] = textureInfo;
+	errorMaterialInfo.textureInfos[(UINT8)eDefaultTextureType::DIFFUSE] = _errorTextureInfo;
 	_materialErrorMemoryBlock = {};
-	assert(GetMaterial(errorMaterialInfo, _materialErrorMemoryBlock));
+	isSuccess = GetMaterial(errorMaterialInfo, _materialErrorMemoryBloc;
+
+	if (isSuccess == false)
+	{
+		assert(isSuccess);
+	}
+	EndBatch();
 }

@@ -1,7 +1,5 @@
 #include "Global.hlsl"
 
-SamplerState LinearSampler : register(CONCAT(s, LINEAR_SAMPLER_REGISTER));
-
 TextureMeshOutput VS(VertexTexture input)
 {
     TextureMeshOutput output;

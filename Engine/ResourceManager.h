@@ -3,12 +3,12 @@
 #include "GpuBufferPoolManager.h"
 #include "ShaderInfo.h"
 #include "MaterialPool.h"
+#include "TextureInfo.h"
 
 class MeshPool;
 struct MeshInfo;
 
 class TexturePool;
-struct TextureInfo;
 
 class ShaderPool;
 
@@ -46,7 +46,10 @@ public:
 	bool ReleaseModel(const ModelInfo& key);
 
 	const MemoryBlock& GetErrorShader();
+	const MemoryBlock& GetErrorTexture();
 	const MemoryBlock& GetErrorMaterial();
+
+	const TextureInfo& GetErrorTextureInfo();
 
 private:
 	void CreateErrorResources();
@@ -65,6 +68,11 @@ private:
 	Stack<UINT32> _usableShaderID;
 
 	MemoryBlock _meshErrorMemoryBlock;
+
+	MemoryBlock _textureErrorMemoryBlock;
+	TextureInfo _errorTextureInfo;
+
+
 	MemoryBlock _materialErrorMemoryBlock;
 };
 

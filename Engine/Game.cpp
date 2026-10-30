@@ -27,7 +27,6 @@ WPARAM Game::Run(GameDesc& desc)
 	INPUT->Init(_desc.hWnd);
 	CPU_MEM_POOL->Init();
 	SHADER_COMPILER->Init(1);
-	RESOURCES->Init();
 
 	GpuMemoryPoolManager::sMemoryPoolManagerInfo info = {};
 	info.initPoolFlag = GpuMemoryPoolManager::eMemoryPoolID::BUMP_ONLY_64KB  | GpuMemoryPoolManager::eMemoryPoolID::DYNAMIC_UPLOAD;
@@ -55,6 +54,8 @@ WPARAM Game::Run(GameDesc& desc)
 
 	// 일단 커맨드 풀 세개
 	GPU_COMMAND_POOL->Init(3);
+
+	RESOURCES->Init();
 
 	ImGuiManager::GetInstance()->Init();
 

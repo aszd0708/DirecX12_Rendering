@@ -96,16 +96,17 @@ void Material::SetTextures(const MaterialInfo& info)
 	if(textureInfos == nullptr || textureCount == 0) return;
 
 	// 텍스처 세팅
-	UINT8 index = 0;
 	_textureCount = textureCount;
 	for (int i = 0; i < textureCount; ++i)
 	{
-		_textureIndexes[i] = UINT32_MAX;
-
-		if(textureInfos[i].IsValidFilePath() == false) continue;
+		const TextureInfo* textureInfo = &textureInfos[i];
+		if(textureInfos[i].IsValidFilePath() == false) 
+		{
+			textureInfo = &RESOURCES->GetErrorTextureInfo();
+		}
 
 		MemoryBlock memBlock = {};
-		bool isSuccess = RESOURCES->GetTexture(textureInfos[i], memBlock);
+		bool isSuccess = RESOURCES->GetTexture(*textureInfo, memBlock);
 		assert(isSuccess);
 
 		isSuccess = CPU_MEM_POOL->GetMemoryPool(memBlock._poolID)->GetObjectByMemoryBlock(memBlock, &_textures[i]);

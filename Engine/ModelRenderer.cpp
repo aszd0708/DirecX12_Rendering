@@ -55,8 +55,13 @@ void ModelRenderer::Render(ID3D12GraphicsCommandList * commandList)
 
 		// Bone Root Matrix 전달
 		D3D12_GPU_VIRTUAL_ADDRESS meshTransformAddress = 0;
-		const BoneData& boneData = bones[subMesh.boneIndex];
-		PushTransformMatrixBuffer(meshTransformAddress, boneData.rootMatrix);
+		Matrix matrix = Matrix::Identity;
+		if (subMesh.boneIndex != INVALID_INDEX)
+		{
+			const BoneData& boneData = bones[subMesh.boneIndex];
+			matrix = boneData.rootMatrix;
+		}
+		PushTransformMatrixBuffer(meshTransformAddress, matrix);
 		commandList->SetGraphicsRootConstantBufferView((int)eShaderIndex::TRANSFORM, meshTransformAddress);
 
 		UINT8 count = 0;
