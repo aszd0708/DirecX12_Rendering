@@ -19,6 +19,12 @@ public:
 	/// </summary>
 	static bool LoadModel(const wstring& meshPath, const wstring& materialPath, const ShaderInfo& shaderInfo, OUT ModelData& modelData);
 
+	/// <summary>
+	/// .clip(바이너리)을 읽어서 AnimationData를 채움
+	/// 실패 시 false, 이때 animationData 내용은 사용하지 말 것
+	/// </summary>
+	static bool LoadAnimation(const wstring& clipPath, OUT AnimationData& animationData);
+
 private:
 	static bool LoadMaterials(const wstring& materialPath, const ShaderInfo& shaderInfo, OUT Array<MaterialInfoVariant>& materials, OUT Array<string>& materialNames);
 	static bool LoadMeshes(const wstring& meshPath, const Array<string>& materialNames, OUT ModelData& modelData);

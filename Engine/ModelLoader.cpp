@@ -7,6 +7,7 @@
 #include <filesystem>
 
 static_assert(sizeof(ModelVertexType) <= UINT8_MAX, "Geometry::vertexSize가 UINT8");
+static_assert(sizeof(KeyframeData) == 44, "Converter asKeyframeData와 크기가 같아야 함");
 
 bool ModelLoader::LoadModel(const wstring& meshPath, const wstring& materialPath, const ShaderInfo& shaderInfo, OUT ModelData& modelData)
 {
@@ -19,6 +20,50 @@ bool ModelLoader::LoadModel(const wstring& meshPath, const wstring& materialPath
 	if (isSuccess == false) return false;
 
 	modelData.name = std::filesystem::path(meshPath).stem().string();
+
+	return true;
+}
+
+bool ModelLoader::LoadAnimation(const wstring& clipPath, OUT AnimationData& animationData)
+{
+	// FileUtils::Open은 실패 시 assert 이므로 먼저 확인
+	if (std::filesystem::exists(clipPath) == false) return false;
+
+	// 손상된 파일에서 터무니없는 count로 할당하는 것 방지용
+	const UINT64 fileSize = std::filesystem::file_size(clipPath);
+
+	FileUtils file;
+	file.Open(clipPath, FileMode::Read);
+
+	string clipName;
+	file.Read(clipName);
+
+	animationData.name = std::filesystem::path(clipPath).stem().string();
+	animationData.duration = file.Read<float>();
+	animationData.frameRate = file.Read<float>();
+	animationData.frameCount = file.Read<UINT32>();
+	if (animationData.frameRate <= 0.f || animationData.frameCount == 0) return false;
+
+	UINT32 trackCount = file.Read<UINT32>();
+	if (trackCount > fileSize) return false;
+
+	animationData.tracks = Array<AnimationTrack>(trackCount);
+	for (UINT32 i = 0; i < trackCount; ++i)
+	{
+		AnimationTrack& track = animationData.tracks[i];
+		file.Read(track.boneName);
+
+		// 샘플링할 때 모든 트랙을 같은 프레임 인덱스로 읽음
+		UINT32 keyCount = file.Read<UINT32>();
+		if (keyCount != animationData.frameCount) return false;
+
+		UINT64 keyByteSize = (UINT64)keyCount * sizeof(KeyframeData);
+		if (keyByteSize > fileSize) return false;
+
+		track.keyframes = Array<KeyframeData>(keyCount);
+		void* keyData = track.keyframes.GetData();
+		file.Read(&keyData, (UINT32)keyByteSize);
+	}
 
 	return true;
 }
