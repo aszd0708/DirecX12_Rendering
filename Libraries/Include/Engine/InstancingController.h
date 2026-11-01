@@ -41,6 +41,10 @@ private:
 class InstancingController
 {
 public:
+	static bool TURN_ON_INSTANCING;
+	static UINT32 DRAW_CALL_COUNT;
+
+public:
 	InstancingController();
 	~InstancingController();
 

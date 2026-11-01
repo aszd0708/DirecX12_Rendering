@@ -6,6 +6,9 @@
 #include "Shader.h"
 #include "Mesh.h"
 
+bool InstancingController::TURN_ON_INSTANCING = true;
+UINT32 InstancingController::DRAW_CALL_COUNT = 0;
+
 InstanceGroup::InstanceGroup(Mesh* mesh, Shader* shader) : _mesh(mesh), _shader(shader), _instanceDesces()
 {
 
@@ -82,11 +85,12 @@ void InstancingController::Clear()
 
 void InstancingController::Render(const ComPtr<ID3D12GraphicsCommandList>& commandList)
 {
+	DRAW_CALL_COUNT = 0;
 	for (int i = 0; i < _instanceArray.GetCount(); ++i)
 	{
 		InstanceGroup* group = _instanceArray[i];
 		UINT32 descCount = group->GetDescCount();
-		if(descCount <= 0) continue;
+		if (descCount <= 0) continue;
 
 		UINT64 bufferSize = sizeof(InstanceDesc) * descCount;
 		// 여기 인스턴싱 하는 부분
@@ -109,9 +113,21 @@ void InstancingController::Render(const ComPtr<ID3D12GraphicsCommandList>& comma
 		commandList->IASetIndexBuffer(&indexView);
 
 		// 인스턴싱 세팅
-		commandList->SetGraphicsRootShaderResourceView((UINT)eShaderIndex::INSTANCE, address);
-
-		commandList->DrawIndexedInstanced(mesh->GetIndexCount(), descCount, 0, 0, 0);
+		if (TURN_ON_INSTANCING)
+		{
+			commandList->SetGraphicsRootShaderResourceView((UINT)eShaderIndex::INSTANCE, address);
+			commandList->DrawIndexedInstanced(mesh->GetIndexCount(), descCount, 0, 0, 0);
+			DRAW_CALL_COUNT++;
+		}
+		else
+		{
+			for (UINT32 j = 0; j < descCount; ++j)
+			{
+				commandList->SetGraphicsRootShaderResourceView((UINT)eShaderIndex::INSTANCE, address + j * sizeof(InstanceDesc));
+				commandList->DrawIndexedInstanced(mesh->GetIndexCount(), 1, 0, 0, 0);
+				DRAW_CALL_COUNT++;
+			}
+		}
 	}
 }
 

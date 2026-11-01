@@ -7,6 +7,7 @@
 #include "ModelInfo.h"
 #include "ModelRenderer.h"
 #include "ModelLoader.h"
+#include "InstancingController.h"
 
 ModelDemo::ModelDemo(string sceneName) : SceneBuilder("ModelDemo")
 {
@@ -23,12 +24,19 @@ void ModelDemo::Init()
 	SceneBuilder::Init();
 
 	CreateCamera();
-	CreateModel();
+
+	for (int i = 0; i < 5; ++i)
+	{
+		CreateModel();
+	}
 }
 
 void ModelDemo::Update()
 {
 	SceneBuilder::Update();
+
+	ImGui::Checkbox("Instancing", &InstancingController::TURN_ON_INSTANCING);
+	ImGui::LabelText("Current Draw Call  ", "%d", InstancingController::DRAW_CALL_COUNT);
 }
 
 void ModelDemo::Render()
@@ -55,7 +63,7 @@ void ModelDemo::CreateModel()
 	assert(isSuccess);
 
 	Transform* transform = obj->GetComponent<Transform>();
-	Vec3 position = Vec3(0.0f, 0.0f, 0.0f);
+	Vec3 position = Vec3(rand() % 100, 0.0f, rand() % 100);
 	transform->SetPosition(position);
 	transform->SetScale(Vec3(0.1f, 0.1f, 0.1f));
 

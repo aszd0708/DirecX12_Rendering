@@ -184,6 +184,9 @@ void Scene::Render()
 				if(isSuccess == false) 
 				{
 					render->Render(COMMAND_LIST.Get());
+				}
+				else
+				{
 					isExistRendering = true;
 				}
 			}
