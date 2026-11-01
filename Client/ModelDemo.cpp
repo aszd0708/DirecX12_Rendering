@@ -63,7 +63,7 @@ void ModelDemo::CreateModel()
 	wstring modelPath = L"../Resources/Models/Kachujin/Kachujin.mesh";
 	wstring xmlPath = L"../Resources/Models/Kachujin/Kachujin.xml";
 	ShaderInfo shaderInfo = {};
-	shaderInfo.path = L"Model";
+	shaderInfo.path = L"TextureMesh";
 	shaderInfo.inputLayoutDesc = ModelVertexType::GetDesc();
 
 	ModelInfo modelInfo = {};

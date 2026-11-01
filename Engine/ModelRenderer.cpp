@@ -5,6 +5,7 @@
 #include "Mesh.h"
 #include "Material.h"
 #include "Shader.h"
+#include "InstancingController.h"
 
 
 ModelRenderer::ModelRenderer() : Renderer(eComponentType::Renderer), _instancingDesces(0), _model(nullptr)
@@ -80,14 +81,54 @@ void ModelRenderer::Render(ID3D12GraphicsCommandList * commandList)
 	}
 }
 
-void ModelRenderer::RenderInstancing(ID3D12GraphicsCommandList * commandList, D3D12_GPU_VIRTUAL_ADDRESS address, UINT32 count)
+bool ModelRenderer::SetInstancingInfo(InstancingController* controller)
 {
-	Renderer::RenderInstancing(commandList, address, count);
+	Transform* transform;
+	bool isSuccess = GetTransform(&transform);
+	if (isSuccess == false) return false;
 
+	Matrix world = transform->GetWorldMatrix();
 
-}
+	UINT32 meshCount = _model->GetSubMeshes().GetCount();
+	const Array<SubMesh>& meshes = _model->GetSubMeshes();
+	const Array<Material*>& materials = _model->GetMaterials();
+	const Array<BoneData>& boneData = _model->GetBones();
+	for (UINT32 i = 0; i < meshCount; ++i)
+	{
+		InstancingInfo info = {};
 
-bool ModelRenderer::SetInstancingInfo(InstancingInfo & info)
-{
-	return false;
+		INT32 materialIdx = meshes[i].materialIndex;
+		if (materialIdx == INVALID_INDEX)
+		{
+			info.shader = RESOURCES->GetErrorShader();
+			_instancingDesces[i].materialIndex = RESOURCES->GetErrorMaterialSlotIdx();
+		}
+		else
+		{
+			Material* material = materials[materialIdx];
+			_instancingDesces[i].materialIndex = material->GetSlotIndex();
+			info.shader = material->GetShader();
+		}
+
+		INT32 boneIdx = meshes[i].boneIndex;
+		Matrix boneMatrix = {};
+		if (boneIdx == INVALID_INDEX)
+		{
+			boneMatrix = Matrix::Identity;
+		}
+		else
+		{
+			boneMatrix = boneData[boneIdx].rootMatrix;
+		}
+
+		Matrix resultMatrix = boneMatrix * world;
+		_instancingDesces[i].W = resultMatrix.Transpose();
+
+		info.instanceDesc = _instancingDesces[i];
+		info.mesh = meshes[i].mesh;
+
+		controller->Add(info);
+	}
+
+	return true;
 }

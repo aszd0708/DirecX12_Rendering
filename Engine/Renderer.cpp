@@ -29,11 +29,6 @@ void Renderer::Render(ID3D12GraphicsCommandList* commandList)
 
 }
 
-void Renderer::RenderInstancing(ID3D12GraphicsCommandList* commandList, D3D12_GPU_VIRTUAL_ADDRESS address, UINT32 count)
-{
-
-}
-
 void Renderer::PushWorldMatrixBuffer(OUT D3D12_GPU_VIRTUAL_ADDRESS& address)
 {
 	if(_worldTransformBuffer == nullptr) return;

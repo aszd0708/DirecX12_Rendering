@@ -10,6 +10,7 @@ struct MeshInfo;
 
 class TexturePool;
 
+class Shader;
 class ShaderPool;
 
 struct MaterialInfo;
@@ -45,9 +46,12 @@ public:
 	bool GetModel(ModelInfo& info, OUT MemoryBlock& memoryBlock);
 	bool ReleaseModel(const ModelInfo& key);
 
-	const MemoryBlock& GetErrorShader();
+	Shader* GetErrorShader();
+	const MemoryBlock& GetErrorShaderMemoryBlock();
 	const MemoryBlock& GetErrorTexture();
+
 	const MemoryBlock& GetErrorMaterial();
+	const UINT64 GetErrorMaterialSlotIdx();
 
 	const TextureInfo& GetErrorTextureInfo();
 
@@ -67,12 +71,13 @@ private:
 	Stack<UINT32> _usableMeshID;
 	Stack<UINT32> _usableShaderID;
 
-	MemoryBlock _meshErrorMemoryBlock;
+	MemoryBlock _errorShaderMemoryBlock;
+	Shader* _errorShader;
 
 	MemoryBlock _textureErrorMemoryBlock;
 	TextureInfo _errorTextureInfo;
 
-
 	MemoryBlock _materialErrorMemoryBlock;
+	UINT64 _errorMaterialSlotIdx = 0;
 };
 

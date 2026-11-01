@@ -5,6 +5,7 @@
 #include "MeshPool.h"
 #include "TexturePool.h"
 #include "ShaderPool.h"
+#include "Material.h"
 #include "MaterialPool.h"
 #include "ModelPool.h"
 #include "GpuCommandPool.h"
@@ -30,7 +31,7 @@ void ResourceManager::Release()
 
 	CPU_MEM_POOL->GetMemoryPool(_materialErrorMemoryBlock._poolID)->ReleaseMemory(_materialErrorMemoryBlock);
 	CPU_MEM_POOL->GetMemoryPool(_textureErrorMemoryBlock._poolID)->ReleaseMemory(_textureErrorMemoryBlock);
-	CPU_MEM_POOL->GetMemoryPool(_meshErrorMemoryBlock._poolID)->ReleaseMemory(_meshErrorMemoryBlock);
+	CPU_MEM_POOL->GetMemoryPool(_errorShaderMemoryBlock._poolID)->ReleaseMemory(_errorShaderMemoryBlock);
 }
 
 void ResourceManager::BeginBatch()
@@ -95,7 +96,13 @@ bool ResourceManager::ReleaseShader(const ShaderInfo& info)
 
 bool ResourceManager::GetMaterial(const MaterialInfo& info, OUT MemoryBlock& memoryBlock)
 {
-	return _materialPool->PoolOutMaterial(info, _commandInfo, memoryBlock);
+	bool isSuccess = _materialPool->PoolOutMaterial(info, _commandInfo, memoryBlock);
+	if (isSuccess == false)
+	{
+		return isSuccess;
+	}
+
+	return isSuccess;
 }
 
 void ResourceManager::ReleaseMaterial(const UINT64 key)
@@ -115,9 +122,14 @@ bool ResourceManager::ReleaseModel(const ModelInfo& key)
 	return _modelPool->PoolInModel(key);
 }
 
-const MemoryBlock& ResourceManager::GetErrorShader()
+Shader* ResourceManager::GetErrorShader()
 {	
-	return _meshErrorMemoryBlock;
+	return _errorShader;
+}
+
+const MemoryBlock& ResourceManager::GetErrorShaderMemoryBlock()
+{
+	return _errorShaderMemoryBlock;
 }
 
 const MemoryBlock& ResourceManager::GetErrorTexture()
@@ -125,10 +137,14 @@ const MemoryBlock& ResourceManager::GetErrorTexture()
 	return _textureErrorMemoryBlock;
 }
 
-
 const MemoryBlock& ResourceManager::GetErrorMaterial()
 {
 	return _materialErrorMemoryBlock;
+}
+
+const UINT64 ResourceManager::GetErrorMaterialSlotIdx()
+{
+	return _errorMaterialSlotIdx;
 }
 
 const TextureInfo& ResourceManager::GetErrorTextureInfo()
@@ -140,12 +156,19 @@ void ResourceManager::CreateErrorResources()
 {
 	BeginBatch();
 
-	ShaderInfo _meshErrorShader = {};
-	_meshErrorShader.path = L"ERROR_COLOR";
-	_meshErrorShader.inputLayoutDesc = ErrorVertexData::GetDesc();
+	ShaderInfo meshErrorShader = {};
+	meshErrorShader.path = L"ERROR_COLOR";
+	meshErrorShader.inputLayoutDesc = ErrorVertexData::GetDesc();
 
-	_meshErrorMemoryBlock = {};
-	bool isSuccess = GetShader(_meshErrorShader, _meshErrorMemoryBlock);
+	_errorShaderMemoryBlock = {};
+	bool isSuccess = GetShader(meshErrorShader, _errorShaderMemoryBlock);
+	if (isSuccess == false)
+	{
+		assert(isSuccess);
+	}
+	_errorShader = nullptr;
+	isSuccess = CPU_MEM_POOL->GetMemoryPool(_errorShaderMemoryBlock._poolID)->GetObjectByMemoryBlock(_errorShaderMemoryBlock, &_errorShader);
+
 	if (isSuccess == false)
 	{
 		assert(isSuccess);
@@ -169,11 +192,20 @@ void ResourceManager::CreateErrorResources()
 	errorMaterialInfo.shaderInfo = materialErrorShader;
 	errorMaterialInfo.textureInfos[(UINT8)eDefaultTextureType::DIFFUSE] = _errorTextureInfo;
 	_materialErrorMemoryBlock = {};
-	isSuccess = GetMaterial(errorMaterialInfo, _materialErrorMemoryBloc;
+	isSuccess = GetMaterial(errorMaterialInfo, _materialErrorMemoryBlock);
+	if (isSuccess == false)
+	{
+		assert(isSuccess);
+	}
+
+	Material* material = nullptr;
+	isSuccess = CPU_MEM_POOL->GetMemoryPool(_materialErrorMemoryBlock._poolID)->GetObjectByMemoryBlock(_materialErrorMemoryBlock, &material);
 
 	if (isSuccess == false)
 	{
 		assert(isSuccess);
 	}
+
+	_errorMaterialSlotIdx = material->GetSlotIndex();
 	EndBatch();
 }

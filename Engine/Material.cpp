@@ -42,7 +42,7 @@ bool Material::CreateMaterial(const MaterialInfo& info, GpuCommandInfo* commandI
 	bool isSuccess =  RESOURCES->GetShader(info.shaderInfo, shaderMemoryBlock);
 	if (isSuccess == false)
 	{
-		shaderMemoryBlock = RESOURCES->GetErrorShader();
+		shaderMemoryBlock = RESOURCES->GetErrorShaderMemoryBlock();
 	}
 
 	isSuccess = CPU_MEM_POOL->GetMemoryPool(shaderMemoryBlock._poolID)->GetObjectByMemoryBlock(shaderMemoryBlock, &_shader);

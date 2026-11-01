@@ -3,8 +3,10 @@
 #include "GpuConstantBufferPoolManager.h"
 #include "GpuCommandPool.h"
 #include "ConstantBuffer.h"
+#include "Shader.h"
+#include "Mesh.h"
 
-InstanceGroup::InstanceGroup(const MemoryBlock& memBlock) : _renderMemBlock(memBlock), _instanceDesces()
+InstanceGroup::InstanceGroup(Mesh* mesh, Shader* shader) : _mesh(mesh), _shader(shader), _instanceDesces()
 {
 
 }
@@ -35,7 +37,7 @@ void InstanceGroup::Clear()
 
 InstancingController::InstancingController() : _instanceTable(), _instanceArray()
 {
-
+	
 }
 
 InstancingController::~InstancingController()
@@ -48,7 +50,7 @@ InstancingController::~InstancingController()
 
 void InstancingController::Add(const InstancingInfo& info)
 {
-	UINT64 key = GetKey(info.meshID, info.shaderID);
+	UINT64 key = GetKey(info.mesh->GetInstancingID(), info.shader->GetInstancingID());
 	
 	InstanceGroup* group = nullptr;
 	bool isFound = _instanceTable.GetValue(key, group);
@@ -56,13 +58,14 @@ void InstancingController::Add(const InstancingInfo& info)
 	{
 		if (group->GetDescCount() <= 0)
 		{
-			group->SetRenderMemoryBlock(info.renderMemBlock);
+			group->SetMesh(info.mesh);
+			group->SetShader(info.shader);
 		}
 		group->AddInstanceDesc(info.instanceDesc);
 	}
 	else
 	{
-		group = new InstanceGroup(info.renderMemBlock);
+		group = new InstanceGroup(info.mesh, info.shader);
 		group->AddInstanceDesc(info.instanceDesc);
 		_instanceTable.Add(key, group);
 		_instanceArray.Add(group);
@@ -77,27 +80,38 @@ void InstancingController::Clear()
 	}
 }
 
-void InstancingController::Render(const ComPtr<ID3D12GraphicsCommandList>& commandInfo)
+void InstancingController::Render(const ComPtr<ID3D12GraphicsCommandList>& commandList)
 {
 	for (int i = 0; i < _instanceArray.GetCount(); ++i)
 	{
-		UINT32 descCount = _instanceArray[i]->GetDescCount();
+		InstanceGroup* group = _instanceArray[i];
+		UINT32 descCount = group->GetDescCount();
 		if(descCount <= 0) continue;
 
-		MemoryBlock memBlock = _instanceArray[i]->GetRenderMemoryBlock();
-		CpuMemoryPool* pool = CPU_MEM_POOL->GetMemoryPool(memBlock._poolID);
-		Renderer* renderer = nullptr;
-		bool isSuccess = pool->GetObjectByMemoryBlock<Renderer>(memBlock, &renderer);
-		if (isSuccess)
-		{
-			UINT64 bufferSize = sizeof(InstanceDesc) * descCount;
-			// 여기 인스턴싱 하는 부분
-			ConstantBuffer buffer(bufferSize);
-			D3D12_GPU_VIRTUAL_ADDRESS address = {};
-			buffer.PushDataWithGetAddress(_instanceArray[i]->GetDesces(), bufferSize, address);
+		UINT64 bufferSize = sizeof(InstanceDesc) * descCount;
+		// 여기 인스턴싱 하는 부분
+		ConstantBuffer buffer(bufferSize);
+		D3D12_GPU_VIRTUAL_ADDRESS address = {};
+		buffer.PushDataWithGetAddress(group->GetDesces(), bufferSize, address);
 
-			renderer->RenderInstancing(commandInfo.Get(), address, descCount);
-		}
+		Shader* shader = group->GetShader();
+		Mesh* mesh = group->GetMesh();
+
+		commandList->SetPipelineState(shader->GetPSO().Get());
+		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		// Vertex 버퍼 전달
+		D3D12_VERTEX_BUFFER_VIEW vertexView = mesh->GetVertexView();
+		commandList->IASetVertexBuffers(0, 1, &vertexView);
+
+		// Index 버퍼 전달
+		D3D12_INDEX_BUFFER_VIEW indexView = mesh->GetIndexView();
+		commandList->IASetIndexBuffer(&indexView);
+
+		// 인스턴싱 세팅
+		commandList->SetGraphicsRootShaderResourceView((UINT)eShaderIndex::INSTANCE, address);
+
+		commandList->DrawIndexedInstanced(mesh->GetIndexCount(), descCount, 0, 0, 0);
 	}
 }
 

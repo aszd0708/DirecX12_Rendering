@@ -14,8 +14,7 @@ private:
 public:
 	void Init(MemoryBlock& modelHandler);
 	void Render(ID3D12GraphicsCommandList* commandList) override;
-	void RenderInstancing(ID3D12GraphicsCommandList* commandList, D3D12_GPU_VIRTUAL_ADDRESS address, UINT32 count) override;
-	bool SetInstancingInfo(InstancingInfo& info) override;
+	bool SetInstancingInfo(InstancingController* controller) override;
 
 public:
 	

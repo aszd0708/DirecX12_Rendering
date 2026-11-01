@@ -180,17 +180,10 @@ void Scene::Render()
 			isSuccess = CpuMemoryPoolManager::GetInstance()->Resolve(entity, &render);
 			if (isSuccess)
 			{
-				InstancingInfo info = {};
-				isSuccess = render->SetInstancingInfo(info);
+				isSuccess = render->SetInstancingInfo(_instancingController);
 				if(isSuccess == false) 
 				{
 					render->Render(COMMAND_LIST.Get());
-					isExistRendering = true;
-				}
-
-				else
-				{
-					_instancingController->Add(info);
 					isExistRendering = true;
 				}
 			}

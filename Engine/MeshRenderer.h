@@ -18,8 +18,7 @@ public:
 public:
 	void Init(MemoryBlock meshHandler, MemoryBlock materialHandler);
 	virtual void Render(ID3D12GraphicsCommandList* commandList) override;
-	virtual void RenderInstancing(ID3D12GraphicsCommandList* commandList, D3D12_GPU_VIRTUAL_ADDRESS address, UINT32 count) override;
-	virtual bool SetInstancingInfo(InstancingInfo& info) override;
+	virtual bool SetInstancingInfo(InstancingController* controller) override;
 
 public:
 	const D3D12_VERTEX_BUFFER_VIEW& GetVertexBuffer() { return _mesh->GetVertexView(); }

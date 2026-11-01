@@ -1,30 +1,37 @@
 #pragma once
 
+class Mesh;
+class Shader;
+
 struct InstancingInfo
 {
-	UINT32 meshID;
-	UINT32 shaderID;
-	MemoryBlock renderMemBlock;
+	Mesh* mesh;
+	Shader* shader;
 	InstanceDesc instanceDesc;
 };
 
 class InstanceGroup
 {
 public:
-	InstanceGroup(const MemoryBlock& memBlock);
+	InstanceGroup(Mesh* mesh, Shader* shader);
 	~InstanceGroup();
 
 	void AddInstanceDesc(const InstanceDesc& instanceDesc);
 
-	void SetRenderMemoryBlock(const MemoryBlock& memoryBlock) { _renderMemBlock = memoryBlock; }
-	const MemoryBlock& GetRenderMemoryBlock() { return _renderMemBlock; }
+	void SetMesh(Mesh* mesh) { _mesh = mesh; }
+	Mesh* GetMesh() { return _mesh; }
+
+	void SetShader(Shader* shader) {_shader = shader;}
+	Shader* GetShader() { return _shader; }
+
 	const InstanceDesc* GetDesces();
 	UINT32 GetDescCount(){ return _instanceDesces.GetCount(); }
 
 	void Clear();
 
 private:
-	MemoryBlock _renderMemBlock;
+	Mesh* _mesh;
+	Shader* _shader;
 	DynamicArray<InstanceDesc> _instanceDesces;
 };
 
@@ -40,7 +47,7 @@ public:
 public:
 	void Add(const InstancingInfo& info);
 	void Clear();
-	void Render(const ComPtr<ID3D12GraphicsCommandList>& commandInfo);
+	void Render(const ComPtr<ID3D12GraphicsCommandList>& commandList);
 
 private:
 	UINT64 GetKey(UINT32 meshID, UINT32 shaderID);
