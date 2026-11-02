@@ -1,5 +1,6 @@
 #pragma once
 #include "ModelData.h"
+#include "AnimationData.h"
 
 namespace tinyxml2
 {

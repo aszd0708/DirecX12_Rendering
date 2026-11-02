@@ -38,7 +38,7 @@ void InstanceGroup::Clear()
 	_instanceDesces.Clear();
 }
 
-InstancingController::InstancingController() : _instanceTable(), _instanceArray()
+InstancingController::InstancingController() : _instanceTable(), _instanceArray(), _paletMatrixArray()
 {
 	
 }
@@ -75,16 +75,37 @@ void InstancingController::Add(const InstancingInfo& info)
 	}
 }
 
+UINT32 InstancingController::AddAnimationPaletMatrix(const Array<Matrix>& matrixArray)
+{
+	UINT32 startIdx = _paletMatrixArray.GetCount();
+	for (int i = 0; i < matrixArray.GetCount(); ++i)
+	{
+		Matrix matrix = matrixArray[i].Transpose();
+		_paletMatrixArray.Add(matrix);
+	}
+	return startIdx;
+}
+
 void InstancingController::Clear()
 {
 	for (int i = 0; i < _instanceArray.GetCount(); ++i)
 	{
 		_instanceArray[i]->Clear();
 	}
+	_paletMatrixArray.Clear();
 }
 
 void InstancingController::Render(const ComPtr<ID3D12GraphicsCommandList>& commandList)
 {
+	if (_paletMatrixArray.GetCount() > 0)
+	{	
+		UINT32 bufferSize = sizeof(Matrix) * _paletMatrixArray.GetCount();
+		ConstantBuffer buffer(bufferSize);
+		D3D12_GPU_VIRTUAL_ADDRESS address = {};
+		buffer.PushDataWithGetAddress(&_paletMatrixArray[0], bufferSize, address);
+		commandList->SetGraphicsRootShaderResourceView((int)eShaderIndex::ANIMATION, address);
+	}
+
 	DRAW_CALL_COUNT = 0;
 	for (int i = 0; i < _instanceArray.GetCount(); ++i)
 	{
@@ -92,7 +113,7 @@ void InstancingController::Render(const ComPtr<ID3D12GraphicsCommandList>& comma
 		UINT32 descCount = group->GetDescCount();
 		if (descCount <= 0) continue;
 
-		UINT64 bufferSize = sizeof(InstanceDesc) * descCount;
+		UINT32 bufferSize = sizeof(InstanceDesc) * descCount;
 		// 여기 인스턴싱 하는 부분
 		ConstantBuffer buffer(bufferSize);
 		D3D12_GPU_VIRTUAL_ADDRESS address = {};

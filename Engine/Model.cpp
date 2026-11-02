@@ -91,6 +91,13 @@ bool Model::SetModelData(ModelData&& data)
 
 	UINT32 boneCount = data.boneData.GetCount();
 	_bones = move(data.boneData);
+	_bonesInvertedMatrix.SetCount(boneCount);
+	for (UINT32 i = 0; i < _bones.GetCount(); ++i)
+	{
+		Matrix rootMat = _bones[i].rootMatrix;
+		Matrix invertedMat = rootMat.Invert();
+		_bonesInvertedMatrix[i] = invertedMat;
+	}
 
 	return true;
 }

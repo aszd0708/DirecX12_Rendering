@@ -1,11 +1,13 @@
 #include "pch.h"
 #include "ModelRenderer.h"
+#include "GameObject.h"
 #include "GlobalConstantBuffer.h"
 #include "Model.h"
 #include "Mesh.h"
 #include "Material.h"
 #include "Shader.h"
 #include "InstancingController.h"
+#include "Animator.h"
 
 
 ModelRenderer::ModelRenderer() : Renderer(eComponentType::Renderer), _instancingDesces(0), _model(nullptr)
@@ -20,10 +22,7 @@ ModelRenderer::~ModelRenderer()
 
 void ModelRenderer::Init(MemoryBlock& modelHandler)
 {
-	bool isSuccess = CPU_MEM_POOL->GetMemoryPool(modelHandler._poolID)->GetObjectByMemoryBlock(modelHandler, &_model);
-	assert(isSuccess);
-
-	_instancingDesces.SetCount(_model->GetSubMeshes().GetCount());
+	SetModel(modelHandler);
 }
 
 void ModelRenderer::Render(ID3D12GraphicsCommandList * commandList)
@@ -83,9 +82,26 @@ void ModelRenderer::Render(ID3D12GraphicsCommandList * commandList)
 
 bool ModelRenderer::SetInstancingInfo(InstancingController* controller)
 {
+	// Animation
+	GameObject* gameObject = nullptr;
+	bool isSuccess = GetGameObject(&gameObject);
+	if (isSuccess == false)
+	{
+		return false;
+	}
+
 	Transform* transform;
-	bool isSuccess = GetTransform(&transform);
+	isSuccess = GetTransform(&transform);
 	if (isSuccess == false) return false;
+
+	// Animator 먼저
+	UINT32 animatorStartIdx = 0;
+	Animator* animator = gameObject->GetComponent<Animator>();
+	if (animator != nullptr)
+	{
+		const Array<Matrix>& palet = animator->GetPaletMatrixArray();
+		animatorStartIdx = controller->AddAnimationPaletMatrix(palet);
+	}
 
 	Matrix world = transform->GetWorldMatrix();
 
@@ -96,6 +112,8 @@ bool ModelRenderer::SetInstancingInfo(InstancingController* controller)
 	for (UINT32 i = 0; i < meshCount; ++i)
 	{
 		InstancingInfo info = {};
+
+		_instancingDesces[i].paletStartIndex = animatorStartIdx;
 
 		INT32 materialIdx = meshes[i].materialIndex;
 		if (materialIdx == INVALID_INDEX)
@@ -131,4 +149,22 @@ bool ModelRenderer::SetInstancingInfo(InstancingController* controller)
 	}
 
 	return true;
+}
+
+void ModelRenderer::SetModel(MemoryBlock& modelHandler)
+{
+	bool isSuccess = CPU_MEM_POOL->GetMemoryPool(modelHandler._poolID)->GetObjectByMemoryBlock(modelHandler, &_model);
+	assert(isSuccess);
+
+	_instancingDesces.SetCount(_model->GetSubMeshes().GetCount());
+
+	GameObject* obj = nullptr;
+	isSuccess = GetGameObject(&obj);
+	assert(isSuccess);
+
+	Animator* animator = obj->GetComponent<Animator>();
+	if (animator != nullptr)
+	{
+		animator->SetModel(modelHandler);
+	}
 }

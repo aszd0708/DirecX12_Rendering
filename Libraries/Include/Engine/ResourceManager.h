@@ -18,6 +18,9 @@ struct MaterialInfo;
 struct ModelInfo;
 class ModelPool;
 
+struct AnimationInfo;
+class AnimationPool;
+
 class GpuCommandInfo;
 
 class ResourceManager
@@ -46,6 +49,9 @@ public:
 	bool GetModel(ModelInfo& info, OUT MemoryBlock& memoryBlock);
 	bool ReleaseModel(const ModelInfo& key);
 
+	bool GetAnimation(const AnimationInfo& key, OUT MemoryBlock& memoryBlock);
+	bool ReleaseAnimation(const AnimationInfo& key);
+
 	Shader* GetErrorShader();
 	const MemoryBlock& GetErrorShaderMemoryBlock();
 	const MemoryBlock& GetErrorTexture();
@@ -64,6 +70,7 @@ private:
 	ShaderPool* _shaderPool;
 	MaterialPool* _materialPool;
 	ModelPool* _modelPool;
+	AnimationPool* _animationPool;
 
 	GpuCommandInfo* _commandInfo = nullptr;
 

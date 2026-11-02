@@ -25,6 +25,7 @@ public:
 	const Array<SubMesh>& GetSubMeshes() { return _subMeshes; }
 	const Array<Material*>& GetMaterials() { return _materials; }
 	const Array<BoneData>& GetBones() { return _bones; }
+	const Array<Matrix>& GetBonesInvertedMatrix() { return _bonesInvertedMatrix; }
 
 private:
 	// 추후 추가
@@ -32,5 +33,6 @@ private:
 	Array<SubMesh> _subMeshes;
 	Array<Material*> _materials;
 	Array<BoneData> _bones;
+	Array<Matrix> _bonesInvertedMatrix;
 };
 

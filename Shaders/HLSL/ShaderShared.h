@@ -1,6 +1,9 @@
 #ifndef SHADER_SHARED_H
 #define SHADER_SHARED_H
 
+#define CONCAT_IMPL(a, b)   a ## b
+#define CONCAT(a, b)        CONCAT_IMPL(a, b)
+
 // Constant Buffer (b)
 #define GLOBAL_REGISTER					0
 #define TRANSFORM_REGISTER				1
@@ -16,8 +19,11 @@
 #define MATERIAL_REGISTER       		1	
 
 // For Default MATERIAL Texture Type
-#define DEFAULT_MATERIAL_TEX_NORMAL	0
+#define DEFAULT_MATERIAL_TEX_NORMAL		0
 #define DEFAULT_MATERIAL_TEX_DIFFUSE	1
-#define DEFAULT_MATERIAL_TEX_COUNT  2
+#define DEFAULT_MATERIAL_TEX_COUNT		2
+
+// Animation
+#define ANIMATION_REGISTER				2
 
 #endif

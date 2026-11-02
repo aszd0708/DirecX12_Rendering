@@ -17,7 +17,7 @@ public:
 	bool SetInstancingInfo(InstancingController* controller) override;
 
 public:
-	
+	void SetModel(MemoryBlock& modelHandler);
 
 private:
 	Array<InstanceDesc> _instancingDesces;

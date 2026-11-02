@@ -8,6 +8,7 @@
 #include "Material.h"
 #include "MaterialPool.h"
 #include "ModelPool.h"
+#include "AnimationPool.h"
 #include "GpuCommandPool.h"
 
 void ResourceManager::Init()
@@ -17,6 +18,7 @@ void ResourceManager::Init()
 	_shaderPool = new ShaderPool();
 	_materialPool = new MaterialPool();
 	_modelPool = new ModelPool();
+	_animationPool = new AnimationPool();
 
 	CreateErrorResources();
 }
@@ -28,6 +30,7 @@ void ResourceManager::Release()
 	delete(_shaderPool);
 	delete(_materialPool);
 	delete(_modelPool);
+	delete(_animationPool);
 
 	CPU_MEM_POOL->GetMemoryPool(_materialErrorMemoryBlock._poolID)->ReleaseMemory(_materialErrorMemoryBlock);
 	CPU_MEM_POOL->GetMemoryPool(_textureErrorMemoryBlock._poolID)->ReleaseMemory(_textureErrorMemoryBlock);
@@ -122,6 +125,16 @@ bool ResourceManager::ReleaseModel(const ModelInfo& key)
 	return _modelPool->PoolInModel(key);
 }
 
+bool ResourceManager::GetAnimation(const AnimationInfo& key, OUT MemoryBlock& memoryBlock)
+{
+	return _animationPool->PoolOutAnimation(key, memoryBlock);
+}
+
+bool ResourceManager::ReleaseAnimation(const AnimationInfo& key)
+{
+	return _animationPool->PoolInAnimation(key);
+}
+
 Shader* ResourceManager::GetErrorShader()
 {	
 	return _errorShader;
@@ -207,5 +220,6 @@ void ResourceManager::CreateErrorResources()
 	}
 
 	_errorMaterialSlotIdx = material->GetSlotIndex();
+
 	EndBatch();
 }

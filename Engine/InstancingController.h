@@ -50,6 +50,7 @@ public:
 
 public:
 	void Add(const InstancingInfo& info);
+	UINT32 AddAnimationPaletMatrix(const Array<Matrix>& matrixArray);
 	void Clear();
 	void Render(const ComPtr<ID3D12GraphicsCommandList>& commandList);
 
@@ -59,5 +60,6 @@ private:
 private:
 	HashTable<UINT64, InstanceGroup*> _instanceTable;
 	DynamicArray<InstanceGroup*> _instanceArray;
+	DynamicArray<Matrix> _paletMatrixArray;
 };
 

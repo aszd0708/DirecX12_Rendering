@@ -1,12 +1,12 @@
 #pragma once
 #include "CpuMemoryPoolInterfaces.h"
 
-class GameObject;
 class Transform;
+class GameObject;
 
 enum class eComponentType
 {
-	Transform, Camera, Light, Renderer, END,
+	Transform, Camera, Light, Renderer, Animator, END,
 	Script
 };
 
@@ -36,4 +36,3 @@ private:
 
 	MemoryEntry _gameObjectMemory;
 };
-

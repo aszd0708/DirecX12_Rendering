@@ -5,11 +5,12 @@
 #include "MeshDemo.h"
 #include "InstancingDemo.h"
 #include "ModelDemo.h"
+#include "AnimationDemo.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
 	GameDesc desc;
-	desc._scene = make_shared<ModelDemo>("ModelDemo");
+	desc._scene = make_shared<AnimationDemo>("AnimationDemo");
 	desc.appName = L"DX12_Study";
 	desc.hInstance = hInstance;
 	desc.vsync = false;

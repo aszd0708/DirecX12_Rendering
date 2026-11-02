@@ -1,8 +1,5 @@
 #include "ShaderShared.h"
 
-#define CONCAT_IMPL(a, b)   a ## b
-#define CONCAT(a, b)        CONCAT_IMPL(a, b)
-
 ////////////////////
 /// GlobalDesces ///
 ////////////////////
@@ -86,7 +83,10 @@ struct InstanceDesc
     matrix W;
     uint materialIndex;
     
-    uint padding[3];
+    // For Animation
+    uint paletStartIndex;
+    
+    uint padding[2];
 };
 
 StructuredBuffer<InstanceDesc> InstancingBuffer : register(CONCAT(t, INSTANCE_REGISTER));

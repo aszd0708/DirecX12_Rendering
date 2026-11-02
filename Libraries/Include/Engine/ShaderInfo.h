@@ -27,5 +27,7 @@ enum class eShaderIndex
 
 	MATERIAL = 4,
 
+	ANIMATION = 5,
+
 	MAX
 };

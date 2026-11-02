@@ -61,12 +61,6 @@
     <Filter Include="01. Graphics\PostProccessing\AO">
       <UniqueIdentifier>{094ffa96-f82a-4a14-bf62-94c6fcefd923}</UniqueIdentifier>
     </Filter>
-    <Filter Include="99. Shaders\AO">
-      <UniqueIdentifier>{cd1ce304-5498-4059-99b1-75542c3b7e99}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="99. Shaders\Common">
-      <UniqueIdentifier>{92ee152a-b263-416b-8d91-7151af634ae8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="04. Component\FixedComponent">
       <UniqueIdentifier>{7581e6c1-00ea-4e4c-a29b-b07d8699e4ef}</UniqueIdentifier>
     </Filter>
@@ -111,6 +105,9 @@
     </Filter>
     <Filter Include="00. Engine\Resource\Mesh">
       <UniqueIdentifier>{9fad1aa3-36ab-4ab8-b898-02570516d9b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="00. Engine\Resource\Animation">
+      <UniqueIdentifier>{02eda1c2-da58-4274-9236-e1e119d5ddc2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -355,6 +352,21 @@
     <ClInclude Include="ModelPool.h">
       <Filter>00. Engine\Pool\GpuResourcePool</Filter>
     </ClInclude>
+    <ClInclude Include="AnimationData.h">
+      <Filter>00. Engine\Resource\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation.h">
+      <Filter>00. Engine\Resource\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationPool.h">
+      <Filter>00. Engine\Pool\GpuResourcePool</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationInfo.h">
+      <Filter>00. Engine\Pool\GpuResourcePool</Filter>
+    </ClInclude>
+    <ClInclude Include="Animator.h">
+      <Filter>04. Component\FixedComponent\Render</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -579,46 +591,25 @@
     <ClCompile Include="ModelPool.cpp">
       <Filter>00. Engine\Pool\GpuResourcePool</Filter>
     </ClCompile>
+    <ClCompile Include="AnimationData.cpp">
+      <Filter>00. Engine\Resource\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation.cpp">
+      <Filter>00. Engine\Resource\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationPool.cpp">
+      <Filter>00. Engine\Pool\GpuResourcePool</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationInfo.cpp">
+      <Filter>00. Engine\Pool\GpuResourcePool</Filter>
+    </ClCompile>
+    <ClCompile Include="Animator.cpp">
+      <Filter>04. Component\FixedComponent\Render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="SimpleMath.inl">
       <Filter>98. Utils</Filter>
-    </None>
-    <None Include="..\Shaders\BRDF.fx">
-      <Filter>99. Shaders</Filter>
-    </None>
-    <None Include="..\Shaders\Prefiltered.fx">
-      <Filter>99. Shaders</Filter>
-    </None>
-    <None Include="..\Shaders\Util.fx">
-      <Filter>99. Shaders</Filter>
-    </None>
-    <None Include="..\Shaders\EquiToCube.fx">
-      <Filter>99. Shaders</Filter>
-    </None>
-    <None Include="..\Shaders\Irradiance.fx">
-      <Filter>99. Shaders</Filter>
-    </None>
-    <None Include="..\Shaders\GTAO.fx">
-      <Filter>99. Shaders\AO</Filter>
-    </None>
-    <None Include="..\Shaders\AOBase.fx">
-      <Filter>99. Shaders\AO</Filter>
-    </None>
-    <None Include="..\Shaders\00. Global.fx">
-      <Filter>99. Shaders\Common</Filter>
-    </None>
-    <None Include="..\Shaders\00. Light.fx">
-      <Filter>99. Shaders\Common</Filter>
-    </None>
-    <None Include="..\Shaders\00. PBR.fx">
-      <Filter>99. Shaders\Common</Filter>
-    </None>
-    <None Include="..\Shaders\00. Render.fx">
-      <Filter>99. Shaders\Common</Filter>
-    </None>
-    <None Include="..\Shaders\00. PostProccess.fx">
-      <Filter>99. Shaders\Common</Filter>
     </None>
     <None Include="packages.config" />
   </ItemGroup>

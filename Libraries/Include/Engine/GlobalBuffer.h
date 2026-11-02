@@ -26,6 +26,7 @@ struct InstanceDesc
 {
 	Matrix W;
 	UINT32 materialIndex;
+	UINT32 paletStartIndex;
 	
-	UINT32 padding[3];
+	UINT32 padding[2];
 };
