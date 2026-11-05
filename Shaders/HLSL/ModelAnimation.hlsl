@@ -5,13 +5,18 @@ TextureMeshOutput VS(AnimationModel input)
 {
     TextureMeshOutput output;
     
-    InstanceDesc instasnceData = InstancingBuffer[input.instanceID];
+    InstanceDesc instanceData = InstancingBuffer[input.instanceID];
     
-    output.position = mul(float4(input.position, 1.0f), instasnceData.W);
+    uint paletStartIdx = instanceData.paletStartIndex;
+    
+    matrix animatedMatrix = GetAnimationMatrix(paletStartIdx, input.blendWeight, input.blendIndices);
+    
+    float4 animatedPosition = mul(float4(input.position, 1.0f), animatedMatrix);
+    output.position = mul(animatedPosition, instanceData.W);
     output.worldPosition = output.position;
     output.position = mul(output.position, GlobalMatrix.VP);
     output.uv = input.uv;
-    output.materialIndexID = instasnceData.materialIndex;
+    output.materialIndexID = instanceData.materialIndex;
     
     return output;
 }

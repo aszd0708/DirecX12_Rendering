@@ -4,6 +4,7 @@
 class Animation;
 class Model;
 struct BoneData;
+struct KeyframeData;
 
 class Animator : public Component
 {
@@ -24,11 +25,16 @@ public:
 	const Array<Matrix>& GetPaletMatrixArray() { return _paletMatrixArray; }
 
 private:
+	Matrix GetLerpMatrix(const KeyframeData& currentKeyframe, const KeyframeData& nextKeyframe, float ratio);
+
+private:
 	Animation* _clip;
 	float _time;
 
 	Model* _model;
 	Array<Matrix> _globalMatrixArray;
 	Array<Matrix> _paletMatrixArray;
+
+	Array<INT> _boneIndexes;
 };
 
