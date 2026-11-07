@@ -90,10 +90,10 @@ bool ModelPool::PoolOutModel(ModelInfo& key, GpuCommandInfo* commandInfo, OUT Me
 		
 		// 모델 생성
 		ModelData modelData = {};
-		isSuccess = ModelLoader::LoadModel(key.modelFilePath, key.materialFilePath, key.shaderInfo, key.modelData);
+		isSuccess = ModelLoader::LoadModel(key.modelFilePath, key.materialFilePath, key.shaderInfo, modelData);
 		assert(isSuccess && "Model Load 실패");
 
-		model->SetModelData(move(key.modelData));
+		model->SetModelData(move(modelData), key);
 		commandInfo->AddCommandCount();
 
 		memoryBlock = model->GetMemoryHandler();

@@ -31,5 +31,7 @@ private:
 	static bool LoadMeshes(const wstring& meshPath, const Array<string>& materialNames, OUT ModelData& modelData);
 
 	static void ReadTextureInfo(const tinyxml2::XMLElement* materialNode, const char* elementName, const char* legacyElementName, const wstring& folderPath, OUT TextureInfo& textureInfo);
+	// vertexData : ModelVertexType 배열
+	static bool HasBlendWeight(const void* vertexData, UINT32 vertexCount);
 	static INT32 FindMaterialIndex(const Array<string>& materialNames, const string& materialName);
 };

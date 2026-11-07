@@ -179,6 +179,8 @@ bool ModelLoader::LoadMeshes(const wstring& meshPath, const Array<string>& mater
 		{
 			void* vertexData = geometry.vertices.GetData();
 			file.Read(&vertexData, (UINT32)vertexByteSize);
+
+			subMesh.isSkinned = HasBlendWeight(vertexData, vertexCount);
 		}
 
 		// Index
@@ -213,6 +215,23 @@ void ModelLoader::ReadTextureInfo(const tinyxml2::XMLElement* materialNode, cons
 	textureInfo.filePath = (std::filesystem::path(folderPath) / Utils::ToWString(fileName)).wstring();
 	textureInfo.format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	textureInfo.mipLevels = 1;
+}
+
+bool ModelLoader::HasBlendWeight(const void* vertexData, UINT32 vertexCount)
+{
+	const ModelVertexType* vertices = (const ModelVertexType*)vertexData;
+
+	// Converter는 가중치 없는 정점을 (0, 0, 0, 0)으로 저장함
+	for (UINT32 i = 0; i < vertexCount; ++i)
+	{
+		const Vec4& weights = vertices[i].blendWeights;
+		if (weights.x > 0.f || weights.y > 0.f || weights.z > 0.f || weights.w > 0.f)
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 INT32 ModelLoader::FindMaterialIndex(const Array<string>& materialNames, const string& materialName)

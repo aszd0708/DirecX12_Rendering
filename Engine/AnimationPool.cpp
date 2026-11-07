@@ -75,7 +75,7 @@ bool AnimationPool::PoolOutAnimation(const AnimationInfo& key, OUT MemoryBlock& 
 		isSuccess = CPU_MEM_POOL->GetMemoryPool(cpuPoolID)->GetMemory(&animation);
 		assert(isSuccess && "CPU 메모리 풀 메모리 부족");
 
-		animation->Init(data);
+		animation->Init(data, key);
 		memoryBlock = animation->GetMemoryHandler();
 
 		AnimationPoolBlock newPoolBlock = {};

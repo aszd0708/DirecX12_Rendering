@@ -17,7 +17,10 @@ ModelRenderer::ModelRenderer() : Renderer(eComponentType::Renderer), _instancing
 
 ModelRenderer::~ModelRenderer()
 {
-
+	if (_model != nullptr)
+	{
+		RESOURCES->ReleaseModel(_model->GetModelInfo());
+	}
 }
 
 void ModelRenderer::Init(MemoryBlock& modelHandler)
@@ -96,14 +99,15 @@ bool ModelRenderer::SetInstancingInfo(InstancingController* controller)
 
 	// Animator 먼저
 	UINT32 animatorStartIdx = 0;
+
+	Matrix world = transform->GetWorldMatrix();
 	Animator* animator = gameObject->GetComponent<Animator>();
-	if (animator != nullptr)
+	bool existAnimator = animator != nullptr;
+	if (existAnimator)
 	{
 		const Array<Matrix>& palet = animator->GetPaletMatrixArray();
 		animatorStartIdx = controller->AddAnimationPaletMatrix(palet);
 	}
-
-	Matrix world = transform->GetWorldMatrix();
 
 	UINT32 meshCount = _model->GetSubMeshes().GetCount();
 	const Array<SubMesh>& meshes = _model->GetSubMeshes();
@@ -138,8 +142,22 @@ bool ModelRenderer::SetInstancingInfo(InstancingController* controller)
 		{
 			boneMatrix = boneData[boneIdx].rootMatrix;
 		}
-
-		Matrix resultMatrix = boneMatrix * world;
+		Matrix resultMatrix = {};
+		if (meshes[i].isSkinned)
+		{
+			resultMatrix = world;
+		}
+		else
+		{
+			if (existAnimator)
+			{
+				if (boneIdx != INVALID_INDEX)
+				{
+					boneMatrix = animator->GetGlobalMatrixArray()[boneIdx];
+				}
+			}
+			resultMatrix = boneMatrix * world;
+		}
 		_instancingDesces[i].W = resultMatrix.Transpose();
 
 		info.instanceDesc = _instancingDesces[i];

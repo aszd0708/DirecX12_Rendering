@@ -9,6 +9,11 @@ struct SubMeshData
 	MeshInfo meshInfo;
 	INT32 materialIndex = INVALID_INDEX;
 	INT32 boneIndex = INVALID_INDEX;
+
+	// 가중치가 있는 정점이 하나라도 있으면 true
+	// true : 정점마다 팔레트로 본을 따라감 -> W는 World만
+	// false : 메시 전체가 boneIndex 본을 따라감 (고정 부착)
+	bool isSkinned = false;
 };
 
 struct BoneData

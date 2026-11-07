@@ -28,7 +28,7 @@ Model::~Model()
 	}
 }
 
-bool Model::SetModelData(ModelData&& data)
+bool Model::SetModelData(ModelData&& data, const ModelInfo& modelInfo)
 {
 	CpuMemoryPoolManager* cpuMemPool = CPU_MEM_POOL;
 	ResourceManager* resourcePool = RESOURCES;
@@ -56,6 +56,7 @@ bool Model::SetModelData(ModelData&& data)
 		_subMeshes[i].mesh = mesh;
 		_subMeshes[i].boneIndex = data.meshData[i].boneIndex;
 		_subMeshes[i].materialIndex = data.meshData[i].materialIndex;
+		_subMeshes[i].isSkinned = data.meshData[i].isSkinned;
 	}
 	
 	UINT32 materialCount = data.materials.GetCount();
@@ -98,6 +99,9 @@ bool Model::SetModelData(ModelData&& data)
 		Matrix invertedMat = rootMat.Invert();
 		_bonesInvertedMatrix[i] = invertedMat;
 	}
+
+	// ModelData를 제외한 값들만 복사
+	_modelInfo = modelInfo;
 
 	return true;
 }

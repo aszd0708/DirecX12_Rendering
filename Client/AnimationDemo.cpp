@@ -25,6 +25,7 @@ AnimationDemo::~AnimationDemo()
 void AnimationDemo::Init()
 {
 	SceneBuilder::Init();
+	_idx = 0;
 
 	CreateCamera();
 
@@ -32,14 +33,26 @@ void AnimationDemo::Init()
 	{
 		CreateModel();
 	}
-}
 
+	_clipNames[(UINT8)eAnimationClip::Idle] = "Idle";
+	_clipNames[(UINT8)eAnimationClip::Run] = "Run";
+	_clipNames[(UINT8)eAnimationClip::Slash] = "Slash";
+	_curAnimationClip = eAnimationClip::Idle;
+}
+ 
 void AnimationDemo::Update()
 {
 	SceneBuilder::Update();
 
 	ImGui::Checkbox("Instancing", &InstancingController::TURN_ON_INSTANCING);
 	ImGui::LabelText("Current Draw Call  ", "%d", InstancingController::DRAW_CALL_COUNT);
+	
+	INT clipIdx = (INT)_curAnimationClip;
+	if (ImGui::Combo("Animation Clip", &clipIdx, _clipNames, (INT)eAnimationClip::MAX))
+	{
+		_curAnimationClip = (eAnimationClip)clipIdx;
+		_testAnimator->SetAnimationIndex((UINT8)_curAnimationClip);
+	}
 }
 
 void AnimationDemo::Render()
@@ -89,15 +102,32 @@ void AnimationDemo::CreateModel()
 	ModelRenderer* renderer = obj->AddComponent<ModelRenderer>();
 	renderer->Init(modelMemBlock);
 
-	AnimationInfo animationInfo = {};
-	animationInfo.filePath = L"../Resources/Models/Kachujin/Idle.clip";
-
-	MemoryBlock animationBlock = {};
-	isSuccess = RESOURCES->GetAnimation(animationInfo, animationBlock);
-	assert(isSuccess);
-
 	Animator* animator = obj->AddComponent<Animator>();
-	animator->Init(animationBlock, modelMemBlock);
+	animator->SetModel(modelMemBlock);
+	animator->SetTime((float)_idx);
+	_testAnimator = animator;
+
+	for (UINT8 i = 0; i < (UINT8)eAnimationClip::MAX; ++i)
+	{
+		AnimationInfo animationInfo = {};
+		switch (i)
+		{
+		case (UINT8)eAnimationClip::Idle:
+			animationInfo.filePath = L"../Resources/Models/Kachujin/Idle.clip";
+			break;
+		case (UINT8)eAnimationClip::Run:
+			animationInfo.filePath = L"../Resources/Models/Kachujin/Slash.clip";
+			break;
+		case (UINT8)eAnimationClip::Slash:
+			animationInfo.filePath = L"../Resources/Models/Kachujin/Run.clip";
+			break;
+		}
+
+		MemoryBlock animationBlock = {};
+		isSuccess = RESOURCES->GetAnimation(animationInfo, animationBlock);
+		assert(isSuccess);
+		animator->AddAnimationClip(animationBlock);
+	}
 
 	RESOURCES->EndBatch();
 

@@ -7,7 +7,6 @@ struct ModelInfo
 {
 	wstring modelFilePath;
 	wstring materialFilePath;
-	ModelData modelData;
 	ShaderInfo shaderInfo;
 };
 
