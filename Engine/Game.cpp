@@ -41,11 +41,7 @@ WPARAM Game::Run(GameDesc& desc)
 	bufferInfo.bumpIndexMaxSize = 10 * 1024 * (UINT64)1024;
 	bufferInfo.bumpVertexMaxSize = 10 * 1024 * (UINT64)1024;
 	bufferInfo.constantBufferMaxSize = 256 * (UINT64)1024;
-	for (int i = 0; i < (UINT8)eMaterialType::MAX; ++i)
-	{
-		bufferInfo.materialBufferSizes[i] = 0;
-	}
-	bufferInfo.materialBufferSizes[(UINT8)eMaterialType::DEFAULT] = 128;
+	bufferInfo.materialBufferSize = 256;
 
 	GPU_BUFFER_POOL->Init(bufferInfo);
 

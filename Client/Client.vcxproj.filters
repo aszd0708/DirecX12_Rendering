@@ -19,6 +19,9 @@
     <Filter Include="Shaders\GlobalData">
       <UniqueIdentifier>{8804d004-c6f5-48f9-bd37-984706a3ee5a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\Demo\PBR">
+      <UniqueIdentifier>{d5029b13-4382-41bd-9812-32a9a08ef717}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -42,6 +45,9 @@
     <ClCompile Include="AnimationDemo.cpp">
       <Filter>Game\Demo</Filter>
     </ClCompile>
+    <ClCompile Include="PBRDemo.cpp">
+      <Filter>Game\Demo\PBR</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Main.h">
@@ -64,6 +70,9 @@
     </ClInclude>
     <ClInclude Include="AnimationDemo.h">
       <Filter>Game\Demo</Filter>
+    </ClInclude>
+    <ClInclude Include="PBRDemo.h">
+      <Filter>Game\Demo\PBR</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -89,6 +98,9 @@
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="..\Shaders\HLSL\GlobalAnimation.hlsl">
+      <Filter>Shaders\GlobalData</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Shaders\HLSL\GlobalPBR.hlsl">
       <Filter>Shaders\GlobalData</Filter>
     </FxCompile>
   </ItemGroup>

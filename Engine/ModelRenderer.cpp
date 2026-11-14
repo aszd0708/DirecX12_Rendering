@@ -23,6 +23,21 @@ ModelRenderer::~ModelRenderer()
 	}
 }
 
+void ModelRenderer::Start()
+{
+	Renderer::Start();
+
+	GameObject* obj = nullptr;
+	bool isSuccess = GetGameObject(&obj);
+	assert(isSuccess);
+
+	Animator* animator = obj->GetComponent<Animator>();
+	if (animator != nullptr)
+	{
+		_animator = animator;
+	}
+}
+
 void ModelRenderer::Init(MemoryBlock& modelHandler)
 {
 	SetModel(modelHandler);
@@ -101,11 +116,10 @@ bool ModelRenderer::SetInstancingInfo(InstancingController* controller)
 	UINT32 animatorStartIdx = 0;
 
 	Matrix world = transform->GetWorldMatrix();
-	Animator* animator = gameObject->GetComponent<Animator>();
-	bool existAnimator = animator != nullptr;
+	bool existAnimator = _animator != nullptr;
 	if (existAnimator)
 	{
-		const Array<Matrix>& palet = animator->GetPaletMatrixArray();
+		const Array<Matrix>& palet = _animator->GetPaletMatrixArray();
 		animatorStartIdx = controller->AddAnimationPaletMatrix(palet);
 	}
 
@@ -153,7 +167,7 @@ bool ModelRenderer::SetInstancingInfo(InstancingController* controller)
 			{
 				if (boneIdx != INVALID_INDEX)
 				{
-					boneMatrix = animator->GetGlobalMatrixArray()[boneIdx];
+					boneMatrix = _animator->GetGlobalMatrixArray()[boneIdx];
 				}
 			}
 			resultMatrix = boneMatrix * world;
@@ -184,5 +198,6 @@ void ModelRenderer::SetModel(MemoryBlock& modelHandler)
 	if (animator != nullptr)
 	{
 		animator->SetModel(modelHandler);
+		_animator = animator;
 	}
 }

@@ -61,7 +61,7 @@ bool Material::CreateMaterial(const MaterialInfo& info, GpuCommandInfo* commandI
 
 	GpuMemoryHandle handle = {};
 	UINT64 dataSize = 0;
-	void* data = malloc(MaterialInfo::GetDescSize(info.materialType));
+	void* data = malloc(MaterialInfo::GetDescSize());
 	GetMaterialDesc(info, data, dataSize);
 	GPU_BUFFER_POOL->GetMaterialPool()->Upload(commandInfo, _slot, data, dataSize, handle);
 	commandInfo->AddCommandCount();
@@ -75,23 +75,8 @@ void Material::SetTextures(const MaterialInfo& info)
 {
 	UINT8 textureCount = 0;
 	const TextureInfo* textureInfos = nullptr;
-
-	switch (info.materialType)
-	{
-		case eMaterialType::DEFAULT:
-		{
-			const DefaultMaterialInfo& matInfo = static_cast<const DefaultMaterialInfo&>(info);
-			textureInfos = matInfo.textureInfos;
-			textureCount = DefaultMaterialInfo::TEX_COUNT;
-			break;
-		}
-
-		default:
-		{
-			assert(false);
-			break;
-		}
-	}
+	textureInfos = info.textureInfos;
+	textureCount = info.textureCount;
 
 	if(textureInfos == nullptr || textureCount == 0) return;
 
@@ -134,23 +119,12 @@ const UINT64 Material::GetSlotIndex()
 
 void Material::GetMaterialDesc(const MaterialInfo& info, OUT void* data, OUT UINT64& size)
 {
-	switch (info.materialType)
-	{
-	case eMaterialType::DEFAULT:
-		{
-			const DefaultMaterialInfo& matInfo = static_cast<const DefaultMaterialInfo&>(info);
-			DefaultMaterialTextureDesc desc = {};
-			desc.normalTextureIndex = _textureIndexes[(UINT8)eDefaultTextureType::NORMAL];
-			desc.diffuseTextureIndex = _textureIndexes[(UINT8)eDefaultTextureType::DIFFUSE];
-			size = sizeof(desc);
-			memcpy(data, &desc, size);
-			break;
-		}
+	MaterialTextureDesc desc = {};
 
-	default:
-		{
-			assert(false);
-			break;
-		}
+	for (UINT32 i = 0; i < _textureCount; ++i)
+	{
+		desc.textureIndexes[i] = _textureIndexes[i];
 	}
+	size = sizeof(desc);
+	memcpy(data, &desc, size);
 }

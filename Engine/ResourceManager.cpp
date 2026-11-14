@@ -201,9 +201,10 @@ void ResourceManager::CreateErrorResources()
 		assert(isSuccess);
 	}
 
-	DefaultMaterialInfo errorMaterialInfo = {};
+	MaterialInfo errorMaterialInfo = {};
 	errorMaterialInfo.shaderInfo = materialErrorShader;
 	errorMaterialInfo.textureInfos[(UINT8)eDefaultTextureType::DIFFUSE] = _errorTextureInfo;
+	errorMaterialInfo.textureCount = 1;
 	_materialErrorMemoryBlock = {};
 	isSuccess = GetMaterial(errorMaterialInfo, _materialErrorMemoryBlock);
 	if (isSuccess == false)

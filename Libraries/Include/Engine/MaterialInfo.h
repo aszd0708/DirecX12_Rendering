@@ -2,58 +2,28 @@
 #include "MaterialInfoEnum.h"
 #include "ShaderInfo.h"
 #include "TextureInfo.h"
+#include "../Shaders/HLSL/ShaderShared.h"
 
 struct MaterialInfo
 {
 public:
-	static UINT64 GetDescSize(eMaterialType type);
-
-protected:
-	MaterialInfo(eMaterialType type) : materialType(type) {}
-
-public:
-	virtual ~MaterialInfo() {}
-
-public:
-	eMaterialType materialType;
-	ShaderInfo shaderInfo;
-};
-
-struct DefaultMaterialInfo : public MaterialInfo
-{
-	static const UINT8 TEX_COUNT = (UINT8)eDefaultTextureType::MAX;
-	static const eMaterialType MAT_TYPE = eMaterialType::DEFAULT;
-
-public:
-	DefaultMaterialInfo() : MaterialInfo(MAT_TYPE) 
-	{
-		
-	}
-	~DefaultMaterialInfo() override {}; 
+	static UINT64 GetDescSize();
 	
 public:
-	TextureInfo textureInfos[TEX_COUNT];
+	eMaterialType materialType = eMaterialType::ERROR_TYPE;
+	ShaderInfo shaderInfo;
+	TextureInfo textureInfos[MAX_TEXTURE_COUNT];
+	UINT8 textureCount = 0;
 };
-static_assert(DefaultMaterialInfo::TEX_COUNT <= MAX_TEXTURE_COUNT);
-
-struct DefaultMaterialTextureDesc
-{
-	UINT32 normalTextureIndex = UINT32_MAX;
-	UINT32 diffuseTextureIndex = UINT32_MAX;
-
-	UINT32 padding0 = 0;
-	UINT32 padding1 = 0;
-};
-static_assert(sizeof(DefaultMaterialTextureDesc) == 16);
 
 template<>
-struct Hash<DefaultMaterialInfo>
+struct Hash<MaterialInfo>
 {
-	static UINT64 GetHash(const DefaultMaterialInfo& key)
+	static UINT64 GetHash(const MaterialInfo& key)
 	{
 		UINT64 shaderHash = Hash<ShaderInfo>::GetHash(key.shaderInfo);
 		UINT64 textureHash = 0;
-		for (int i = 0; i < (int)eDefaultTextureType::MAX; ++i)
+		for (UINT8 i = 0; i < key.textureCount; ++i)
 		{
 			UINT64 hash = Hash<TextureInfo>::GetHash(key.textureInfos[i]);
 			Hash<UINT64>::HashCombine(textureHash, hash);
@@ -67,22 +37,12 @@ struct Hash<DefaultMaterialInfo>
 	}
 };
 
-template<>
-struct Hash<MaterialInfo>
+struct MaterialTextureDesc
 {
-	static UINT64 GetHash(const MaterialInfo& key)
+	MaterialTextureDesc()
 	{
-		UINT64 hash = 0;
-		switch (key.materialType)
-		{
-		case eMaterialType::DEFAULT:
-			hash = Hash<DefaultMaterialInfo>::GetHash(static_cast<const DefaultMaterialInfo&>(key));
-			break;
-		default:
-			assert(false);
-		break;
-		}
-
-		return hash;
+		std::fill(textureIndexes, textureIndexes + MAX_TEXTURE_COUNT, UINT32_MAX);
 	}
+	UINT32 textureIndexes[MAX_TEXTURE_COUNT];
 };
+static_assert((sizeof(MaterialTextureDesc) & (16 - 1)) == 0);

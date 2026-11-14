@@ -51,7 +51,10 @@ void AnimationDemo::Update()
 	if (ImGui::Combo("Animation Clip", &clipIdx, _clipNames, (INT)eAnimationClip::MAX))
 	{
 		_curAnimationClip = (eAnimationClip)clipIdx;
-		_testAnimator->SetAnimationIndex((UINT8)_curAnimationClip);
+		for (int i = 0; i < _testAnimator.GetCount(); ++i)
+		{
+			_testAnimator[i]->SetAnimationIndex((UINT8)_curAnimationClip);
+		}
 	}
 }
 
@@ -92,6 +95,7 @@ void AnimationDemo::CreateModel()
 
 	ModelInfo modelInfo = {};
 	modelInfo.modelFilePath = modelPath;
+	modelInfo.materialType = eMaterialType::DEFAULT;
 	modelInfo.materialFilePath = xmlPath;
 	modelInfo.shaderInfo = shaderInfo;
 
@@ -105,7 +109,7 @@ void AnimationDemo::CreateModel()
 	Animator* animator = obj->AddComponent<Animator>();
 	animator->SetModel(modelMemBlock);
 	animator->SetTime((float)_idx);
-	_testAnimator = animator;
+	_testAnimator.Add(animator);
 
 	for (UINT8 i = 0; i < (UINT8)eAnimationClip::MAX; ++i)
 	{
@@ -116,10 +120,10 @@ void AnimationDemo::CreateModel()
 			animationInfo.filePath = L"../Resources/Models/Kachujin/Idle.clip";
 			break;
 		case (UINT8)eAnimationClip::Run:
-			animationInfo.filePath = L"../Resources/Models/Kachujin/Slash.clip";
+			animationInfo.filePath = L"../Resources/Models/Kachujin/Run.clip";
 			break;
 		case (UINT8)eAnimationClip::Slash:
-			animationInfo.filePath = L"../Resources/Models/Kachujin/Run.clip";
+			animationInfo.filePath = L"../Resources/Models/Kachujin/Slash.clip";
 			break;
 		}
 

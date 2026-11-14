@@ -1,8 +1,5 @@
 #pragma once
 
-// 최대 텍스처 갯수
-constexpr UINT8 MAX_TEXTURE_COUNT = 8;
-
 enum class eMaterialType : UINT8
 {
 	ERROR_TYPE = 0,
@@ -19,6 +16,18 @@ enum class eDefaultTextureType : UINT8
 {
 	NORMAL = 0,
 	DIFFUSE,
+
+	MAX
+};
+
+enum class ePBRTextureType : UINT8
+{
+	BASE_COLOR = 0,
+	EMISSIVE,
+	METALIC,
+	ROUGHNESS,
+	AO,
+	NORMAL,
 
 	MAX
 };

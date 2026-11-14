@@ -4,8 +4,8 @@
 #include "GpuCommandPool.h"
 #include "MaterialInfo.h"
 
-GpuMaterialBufferPage::GpuMaterialBufferPage(eMaterialType materialType, UINT32 totalCount, UINT64 stride, UINT64 offset)
-: _materialType(materialType), _totalCount(totalCount), _stride(stride), _offset(offset), _allocableCheckingArray(), _usableIndex(totalCount)
+GpuMaterialBufferPage::GpuMaterialBufferPage(UINT32 totalCount, UINT64 stride, UINT64 offset)
+: _totalCount(totalCount), _stride(stride), _offset(offset), _allocableCheckingArray(), _usableIndex(totalCount)
 {
 	for (int i = totalCount - 1; i >= 0; --i)
 	{
@@ -34,7 +34,6 @@ bool GpuMaterialBufferPage::Alloc(OUT GpuMaterialBufferHandle& handle)
 
 	assert(_allocableCheckingArray[index] == eGpuSlotCondition::FREE);
 
-	handle.materialType = _materialType;
 	handle.index = index;
 	_allocableCheckingArray[index] = eGpuSlotCondition::USED;
 	return true;
@@ -93,49 +92,38 @@ bool GpuMaterialBufferPage::IsValied(UINT32 index, UINT64 size)
 	return isValied;
 }
 
- UINT64 GpuMaterialBufferPage::GetOffset(UINT32 index) const
+UINT64 GpuMaterialBufferPage::GetOffset(UINT32 index) const
 {
 	UINT64 offset = _offset + (index * _stride);
 	return offset;
 }
 
-GpuMaterialBufferPool::GpuMaterialBufferPool(UINT32 poolID, const UINT32* materialCountArray)
-: _poolID(poolID), _pages((UINT32)eMaterialType::MAX)
+GpuMaterialBufferPool::GpuMaterialBufferPool(UINT32 poolID, UINT32 materialCount): _poolID(poolID)
 {
 	UINT64 resourceSize = 0;
 
-	for (int i = 0; i < (UINT32)eMaterialType::MAX; ++i)
+	if (materialCount == 0)
 	{
-		eMaterialType type = (eMaterialType)i;
-		UINT32 totalCount = materialCountArray[i];
-		if (totalCount <= 0)
-		{
-			_pages[i] = nullptr;
-			continue;
-		}
-
-		UINT64 stride = MaterialInfo::GetDescSize(type);
-		assert(stride != 0);
-
-		GpuMaterialBufferPage* page = new GpuMaterialBufferPage(type, totalCount, stride, resourceSize);
-		_pages[i] = page;
-		resourceSize += totalCount * stride;
-
-		// 256 단위로 올림
-		resourceSize = (255 + resourceSize) & ~255;
+		_page = nullptr;
+		return;
 	}
+	UINT64 stride = MaterialInfo::GetDescSize();
+	assert(stride != 0);
+
+	resourceSize = materialCount * stride;
+	resourceSize = (255 + resourceSize) & ~255;
 	_totalSize = resourceSize;
+
+	// 256 단위로 올림
+	GpuMaterialBufferPage* page = new GpuMaterialBufferPage(materialCount, stride, 0);
+	_page = page;
 	
 	CreateResource(resourceSize);
 }
 
 GpuMaterialBufferPool::~GpuMaterialBufferPool()
 {
-	for (int i = 0; i < _pages.GetCount(); ++i)
-	{
-		delete _pages[i];
-	}
-
+	delete _page;
 	_resource.Reset();
 }
 
@@ -180,8 +168,8 @@ void GpuMaterialBufferPool::GetUploadHeap(const D3D12_RESOURCE_DESC& desc, UINT6
 void GpuMaterialBufferPool::Upload(GpuCommandInfo* commandInfo, const GpuMaterialBufferHandle& handle, const void* uploadData, UINT64 dataSize, OUT GpuMemoryHandle& memoryHandle)
 {
 	assert(handle.poolID == _poolID);
-	assert(_pages[(UINT8)handle.materialType] != nullptr);
-	assert(_pages[(UINT8)handle.materialType]->IsValied(handle.index, dataSize));
+	assert(_page != nullptr);
+	assert(_page->IsValied(handle.index, dataSize));
 
 	D3D12_RESOURCE_DESC desc = {};
 	desc.Format = DXGI_FORMAT_UNKNOWN;
@@ -209,7 +197,7 @@ void GpuMaterialBufferPool::Upload(GpuCommandInfo* commandInfo, const GpuMateria
 		commandInfo->GetCommandList()->ResourceBarrier(1, &prevBarrier);
 	}
 
-	GpuMaterialBufferPage* page = _pages[(UINT8)handle.materialType];
+	GpuMaterialBufferPage* page = _page;
 
 	UINT64 offset = page->GetOffset(handle.index);
 	commandInfo->GetCommandList()->CopyBufferRegion(_resource.Get(), offset, uploadResource.Get(), 0, dataSize);
@@ -228,50 +216,33 @@ void GpuMaterialBufferPool::Upload(GpuCommandInfo* commandInfo, const GpuMateria
 	commandInfo->GetCommandList()->ResourceBarrier(1, &nextBarrier);
 }
 
-bool GpuMaterialBufferPool::Alloc(const eMaterialType materialType, OUT GpuMaterialBufferHandle& handle)
+bool GpuMaterialBufferPool::Alloc(OUT GpuMaterialBufferHandle& handle)
 {
-	assert(_pages[(UINT8)materialType] != nullptr);
-
 	handle.poolID = _poolID;
-	bool isSuccess = _pages[(UINT8)materialType]->Alloc(handle);
+	bool isSuccess = _page->Alloc(handle);
 	return isSuccess;
 }
 
 void GpuMaterialBufferPool::Free(const GpuMaterialBufferHandle& handle, const UINT64 fenceValue)
 {
-	assert(_pages[(UINT8)handle.materialType] != nullptr);
 	// Pool ID가 다를 경우
 	assert(handle.poolID == _poolID);
 
-	_pages[(UINT8)handle.materialType]->Free(handle, fenceValue);
+	_page->Free(handle, fenceValue);
 }
 
 void GpuMaterialBufferPool::ProcessRetired(const UINT64 fenceValue)
 {
-	for (int i = 0; i < (UINT8)eMaterialType::MAX; ++i)
-	{
-		if (_pages[i] != nullptr)
-		{
-			_pages[i]->ProcessRetired(fenceValue);
-		}
-	}
+	_page->ProcessRetired(fenceValue);
 }
 
 void GpuMaterialBufferPool::ResetAllPage()
 {
-	for (int i = 0; i < _pages.GetCount(); ++i)
-	{
-		if (_pages[i] != nullptr)
-		{
-			_pages[i]->Reset();
-		}
-	}
+	_page->Reset();
 }
 
-D3D12_GPU_VIRTUAL_ADDRESS GpuMaterialBufferPool::GetGpuAddress(eMaterialType type)
+D3D12_GPU_VIRTUAL_ADDRESS GpuMaterialBufferPool::GetGpuAddress()
 {
-	assert(_pages[(UINT8)type] != nullptr);
-
-	UINT64 offset = _pages[(UINT8)type]->GetOffset(0);
+	UINT64 offset = _page->GetOffset(0);
 	return _resource->GetGPUVirtualAddress() + offset;
 }

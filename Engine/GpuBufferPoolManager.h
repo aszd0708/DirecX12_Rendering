@@ -36,7 +36,7 @@ public:
 
 		UINT64 constantBufferMaxSize;
 
-		UINT32 materialBufferSizes[(UINT32)eMaterialType::MAX];
+		UINT32 materialBufferSize;
 	};
 
 public:

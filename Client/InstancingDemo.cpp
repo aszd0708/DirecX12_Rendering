@@ -117,7 +117,7 @@ void InstancingDemo::CreateTextureMesh(int index)
 	textureInfo.format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	textureInfo.mipLevels = 1;
 
-	DefaultMaterialInfo materialInfo = {};
+	MaterialInfo materialInfo = {};
 	materialInfo.shaderInfo = shaderInfo;
 	materialInfo.textureInfos[(UINT8)eDefaultTextureType::DIFFUSE] = textureInfo;
 	materialInfo.textureInfos[(UINT8)eDefaultTextureType::NORMAL] = textureInfo;
@@ -161,7 +161,7 @@ void InstancingDemo::CreateCubeMesh(int index)
 	textureInfo.format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	textureInfo.mipLevels = 1;
 
-	DefaultMaterialInfo materialInfo = {};
+	MaterialInfo materialInfo = {};
 	materialInfo.shaderInfo = shaderInfo;
 	materialInfo.textureInfos[(UINT8)eDefaultTextureType::DIFFUSE] = textureInfo;
 	materialInfo.textureInfos[(UINT8)eDefaultTextureType::NORMAL] = textureInfo;

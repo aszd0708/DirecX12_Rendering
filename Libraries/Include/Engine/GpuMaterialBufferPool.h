@@ -6,7 +6,6 @@ class GpuCommandInfo;
 
 struct GpuMaterialBufferHandle
 {
-	eMaterialType materialType;
 	UINT32 poolID;
 	UINT32 index = UINT32_MAX;
 };
@@ -20,7 +19,7 @@ struct GpuMaterialWaitingInfo
 class GpuMaterialBufferPage
 {
 public:
-	GpuMaterialBufferPage(eMaterialType materialType, UINT32 totalCount, UINT64 stride, UINT64 offset);
+	GpuMaterialBufferPage(UINT32 totalCount, UINT64 stride, UINT64 offset);
 	~GpuMaterialBufferPage();
 
 public:
@@ -36,7 +35,6 @@ public:
 	UINT64 GetOffset(UINT32 index) const;
 
 private:
-	eMaterialType _materialType;
 	UINT32 _totalCount;
 	UINT64 _stride;
 	UINT64 _offset;
@@ -55,8 +53,7 @@ public:
 	/// 
 	/// </summary>
 	/// <param name="poolID"></param>
-	/// <param name="memoryInfos">갯수는 eMaterialType::MAX 사용하지 않는다면 0개</param>
-	GpuMaterialBufferPool(UINT32 poolID, const UINT32* materialCountArray);
+	GpuMaterialBufferPool(UINT32 poolID, UINT32 materialCount);
 	~GpuMaterialBufferPool();
 
 private:
@@ -67,22 +64,22 @@ public:
 	void Upload(GpuCommandInfo* commandInfo, const GpuMaterialBufferHandle& handle, const void* data, UINT64 dataSize, OUT GpuMemoryHandle& memoryHandle);
 
 public:
-	bool Alloc(const eMaterialType materialType, OUT GpuMaterialBufferHandle& handle);
+	bool Alloc(OUT GpuMaterialBufferHandle& handle);
 	void Free(const GpuMaterialBufferHandle& handle, const UINT64 fenceValue);
 
 	void ProcessRetired(const UINT64 fenceValue);
 
 	void ResetAllPage();
 
-	D3D12_GPU_VIRTUAL_ADDRESS GetGpuAddress(eMaterialType type);
+	D3D12_GPU_VIRTUAL_ADDRESS GetGpuAddress();
 
 private:
-	UINT32 _poolID;
-	UINT64 _totalSize;
+	UINT32 _poolID = UINT32_MAX;
+	UINT64 _totalSize = 0;
 
-	Array<GpuMaterialBufferPage*> _pages;
+	GpuMaterialBufferPage* _page;
 
 	ComPtr<ID3D12Resource> _resource;
-	D3D12_RESOURCE_STATES _currentState;
+	D3D12_RESOURCE_STATES _currentState = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_COMMON;
 };
 

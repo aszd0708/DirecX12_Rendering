@@ -65,17 +65,9 @@ bool Model::SetModelData(ModelData&& data, const ModelInfo& modelInfo)
 	{
 		MemoryBlock memoryBlock = {};
 
-		// 추후 MaterialInfo 별로 분리
-		bool isContainDefaultMaterialInfo = std::holds_alternative<DefaultMaterialInfo>(data.materials[i]);
-		const DefaultMaterialInfo* info = std::get_if<DefaultMaterialInfo>(&data.materials[i]);
+		const MaterialInfo& info = data.materials[i];
 
-		bool isSuccess = info != nullptr;
-		if (isSuccess == false)
-		{
-			return isSuccess;
-		}
-
-		isSuccess = resourcePool->GetMaterial(*info, memoryBlock);
+		bool isSuccess = resourcePool->GetMaterial(info, memoryBlock);
 		if (isSuccess == false)
 		{
 			return isSuccess;

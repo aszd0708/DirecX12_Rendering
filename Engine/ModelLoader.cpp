@@ -9,11 +9,11 @@
 static_assert(sizeof(ModelVertexType) <= UINT8_MAX, "Geometry::vertexSize가 UINT8");
 static_assert(sizeof(KeyframeData) == 44, "Converter asKeyframeData와 크기가 같아야 함");
 
-bool ModelLoader::LoadModel(const wstring& meshPath, const wstring& materialPath, const ShaderInfo& shaderInfo, OUT ModelData& modelData)
+bool ModelLoader::LoadModel(const wstring& meshPath, const wstring& materialPath, const ShaderInfo& shaderInfo, eMaterialType materialType, OUT ModelData& modelData)
 {
 	// Mesh가 materialName으로 Material을 찾기 때문에 Material 먼저 로드
 	Array<string> materialNames;
-	bool isSuccess = LoadMaterials(materialPath, shaderInfo, modelData.materials, materialNames);
+	bool isSuccess = LoadMaterials(materialPath, shaderInfo, materialType, modelData.materials, materialNames);
 	if (isSuccess == false) return false;
 
 	isSuccess = LoadMeshes(meshPath, materialNames, modelData);
@@ -68,8 +68,13 @@ bool ModelLoader::LoadAnimation(const wstring& clipPath, OUT AnimationData& anim
 	return true;
 }
 
-bool ModelLoader::LoadMaterials(const wstring& materialPath, const ShaderInfo& shaderInfo, OUT Array<MaterialInfoVariant>& materials, OUT Array<string>& materialNames)
+bool ModelLoader::LoadMaterials(const wstring& materialPath, const ShaderInfo& shaderInfo, eMaterialType materialType, OUT Array<MaterialInfo>& materials, OUT Array<string>& materialNames)
 {
+	// 호출하는 쪽이 잘못된 타입을 넘긴 것은 프로그래머 실수
+	bool isSupportedType = materialType == eMaterialType::DEFAULT || materialType == eMaterialType::PBR;
+	assert(isSupportedType);
+	if (isSupportedType == false) return false;
+
 	if (std::filesystem::exists(materialPath) == false) return false;
 
 	tinyxml2::XMLDocument document;
@@ -85,11 +90,17 @@ bool ModelLoader::LoadMaterials(const wstring& materialPath, const ShaderInfo& s
 		materialCount++;
 	}
 
-	materials = Array<MaterialInfoVariant>(materialCount);
+	materials = Array<MaterialInfo>(materialCount);
 	materialNames = Array<string>(materialCount);
 
 	// 텍스처 경로는 xml 파일 폴더 기준 상대 경로로 저장되어 있음
 	wstring folderPath = std::filesystem::path(materialPath).parent_path().wstring();
+
+	// 색 데이터(BaseColor/Diffuse, Emissive)와 수치 데이터(Normal, Metallic, Roughness, AO)를 구분
+	// TODO(sRGB 단계) : colorFormat을 DXGI_FORMAT_R8G8B8A8_UNORM_SRGB로 바꾸고 출력 감마 처리
+	//                   지금 바꾸면 감마 처리 전이라 기존 모델 색이 어두워짐
+	const DXGI_FORMAT colorFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+	const DXGI_FORMAT dataFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 
 	UINT32 index = 0;
 	for (tinyxml2::XMLElement* node = root->FirstChildElement("Material"); node != nullptr; node = node->NextSiblingElement("Material"))
@@ -98,12 +109,36 @@ bool ModelLoader::LoadMaterials(const wstring& materialPath, const ShaderInfo& s
 		const char* name = nameElement ? nameElement->GetText() : nullptr;
 		materialNames[index] = name ? name : "";
 
-		DefaultMaterialInfo info;
-		// 현재 Converter는 BaseColorFile / NormalMapFile, 이전 버전은 DiffuseFile / NormalFile 로 저장
-		ReadTextureInfo(node, "BaseColorFile", "DiffuseFile", folderPath, info.textureInfos[(UINT8)eDefaultTextureType::DIFFUSE]);
-		ReadTextureInfo(node, "NormalMapFile", "NormalFile", folderPath, info.textureInfos[(UINT8)eDefaultTextureType::NORMAL]);
-
+		MaterialInfo info = {};
+		info.materialType = materialType;
 		info.shaderInfo = shaderInfo;
+
+		// 현재 Converter는 BaseColorFile / NormalMapFile, 이전 버전은 DiffuseFile / NormalFile 로 저장
+		switch (materialType)
+		{
+		case eMaterialType::DEFAULT:
+		{
+			info.textureCount = (UINT8)eDefaultTextureType::MAX;
+			ReadTextureInfo(node, "BaseColorFile", "DiffuseFile", folderPath, colorFormat, info.textureInfos[(UINT8)eDefaultTextureType::DIFFUSE]);
+			ReadTextureInfo(node, "NormalMapFile", "NormalFile", folderPath, dataFormat, info.textureInfos[(UINT8)eDefaultTextureType::NORMAL]);
+			break;
+		}
+		case eMaterialType::PBR:
+		{
+			// glTF처럼 Metallic/Roughness가 한 장에 묶인 경우 두 칸에 같은 파일명이 들어옴
+			// -> 같은 경로 + 같은 format이라 TextureInfo 해시가 같아서 GPU 리소스는 하나만 생김
+			// AO는 Converter가 저장하지 않음 -> 비워둠
+			info.textureCount = (UINT8)ePBRTextureType::MAX;
+			ReadTextureInfo(node, "BaseColorFile", "DiffuseFile", folderPath, colorFormat, info.textureInfos[(UINT8)ePBRTextureType::BASE_COLOR]);
+			ReadTextureInfo(node, "EmissiveMapFile", nullptr, folderPath, colorFormat, info.textureInfos[(UINT8)ePBRTextureType::EMISSIVE]);
+			ReadTextureInfo(node, "MetallicMapFile", nullptr, folderPath, dataFormat, info.textureInfos[(UINT8)ePBRTextureType::METALIC]);
+			ReadTextureInfo(node, "RoughnessMapFile", nullptr, folderPath, dataFormat, info.textureInfos[(UINT8)ePBRTextureType::ROUGHNESS]);
+			ReadTextureInfo(node, "NormalMapFile", "NormalFile", folderPath, dataFormat, info.textureInfos[(UINT8)ePBRTextureType::NORMAL]);
+			break;
+		}
+		default:
+			break;
+		}
 
 		materials[index] = info;
 		index++;
@@ -199,10 +234,11 @@ bool ModelLoader::LoadMeshes(const wstring& meshPath, const Array<string>& mater
 	return true;
 }
 
-void ModelLoader::ReadTextureInfo(const tinyxml2::XMLElement* materialNode, const char* elementName, const char* legacyElementName, const wstring& folderPath, OUT TextureInfo& textureInfo)
+void ModelLoader::ReadTextureInfo(const tinyxml2::XMLElement* materialNode, const char* elementName, const char* legacyElementName, const wstring& folderPath, DXGI_FORMAT format, OUT TextureInfo& textureInfo)
 {
 	const tinyxml2::XMLElement* element = materialNode->FirstChildElement(elementName);
-	if (element == nullptr)
+	// FirstChildElement(nullptr)은 이름 상관없이 첫 자식을 돌려주므로 nullptr이면 건너뜀
+	if (element == nullptr && legacyElementName != nullptr)
 	{
 		element = materialNode->FirstChildElement(legacyElementName);
 	}
@@ -213,7 +249,7 @@ void ModelLoader::ReadTextureInfo(const tinyxml2::XMLElement* materialNode, cons
 	if (fileName == nullptr || fileName[0] == '\0') return;
 
 	textureInfo.filePath = (std::filesystem::path(folderPath) / Utils::ToWString(fileName)).wstring();
-	textureInfo.format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	textureInfo.format = format;
 	textureInfo.mipLevels = 1;
 }
 

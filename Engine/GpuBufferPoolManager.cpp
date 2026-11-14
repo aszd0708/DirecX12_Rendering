@@ -22,7 +22,7 @@ void GpuBufferPoolManager::Init(sBufferPoolManagerInfo info)
 	}
 	if ((info.initPoolFlag & eBufferPoolID::MATERIAL) == eBufferPoolID::MATERIAL)
 	{
-		_materialBufferPool = new GpuMaterialBufferPool((int)eBufferPoolID::MATERIAL, info.materialBufferSizes);
+		_materialBufferPool = new GpuMaterialBufferPool((int)eBufferPoolID::MATERIAL, info.materialBufferSize);
 	}
 }
 
@@ -105,7 +105,7 @@ bool GpuBufferPoolManager::GetMaterialMemory(eBufferPoolID poolID, eMaterialType
 	switch (poolID)
 	{
 	case eBufferPoolID::MATERIAL:
-		isSuccess = _materialBufferPool->Alloc(materialType, handle);
+		isSuccess = _materialBufferPool->Alloc(handle);
 		break;
 	}
 	return isSuccess;

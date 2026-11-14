@@ -2,6 +2,7 @@
 #include "Renderer.h"
 
 class Model;
+class Animator;
 
 class ModelRenderer : public Renderer
 {
@@ -12,6 +13,7 @@ public:
 private:
 
 public:
+	void Start() override;
 	void Init(MemoryBlock& modelHandler);
 	void Render(ID3D12GraphicsCommandList* commandList) override;
 	bool SetInstancingInfo(InstancingController* controller) override;
@@ -22,5 +24,6 @@ public:
 private:
 	Array<InstanceDesc> _instancingDesces;
 	Model* _model = nullptr;
+	Animator* _animator = nullptr;
 };
 

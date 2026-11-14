@@ -2,8 +2,6 @@
 #include "MeshInfo.h"
 #include "MaterialInfo.h"
 
-using MaterialInfoVariant = std::variant<DefaultMaterialInfo>;
-
 struct SubMeshData
 {
 	MeshInfo meshInfo;
@@ -30,5 +28,5 @@ struct ModelData
 
 	Array<SubMeshData> meshData;
 	Array<BoneData> boneData;
-	Array<MaterialInfoVariant> materials;
+	Array<MaterialInfo> materials;
 };

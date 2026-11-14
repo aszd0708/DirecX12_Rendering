@@ -40,5 +40,5 @@ private:
 	eAnimationClip _curAnimationClip;
 	const char* _clipNames[(UINT8)eAnimationClip::MAX];
 
-	Animator* _testAnimator = nullptr;
+	DynamicArray<Animator*> _testAnimator;
 };

@@ -1,5 +1,7 @@
 #include "ShaderShared.h"
 
+#define PI 3.14159265359
+
 ////////////////////
 /// GlobalDesces ///
 ////////////////////
@@ -38,6 +40,22 @@ cbuffer TextureIndexBuffer : register(CONCAT(b, TEXTURE_INDEX_REGISTER))
 {
     TextureIndexDesc TextureIndex;
 };
+
+//////////////
+// Function //
+//////////////
+
+float3 CameraPosition()
+{
+    return GlobalMatrix.VInv._41_42_43;
+}
+
+float3 CameraDirection(float3 worldPosition)
+{
+    float3 cameraPosition = CameraPosition();
+    float3 viewVector = normalize(cameraPosition - worldPosition);
+    return viewVector;
+}
 
 ///////////////
 // MeshBuffer//
@@ -92,13 +110,14 @@ struct InstanceDesc
 StructuredBuffer<InstanceDesc> InstancingBuffer : register(CONCAT(t, INSTANCE_REGISTER));
 
 // For Default Shader Material Index
-// MaterialInfo.h DefaultMaterialTextureDesc 와 같은 구조여야 함
 struct DefaultMaterialTextureDesc
 {
     uint normalTextureIndex;
     uint diffuseTextureIndex;
     
     uint padding[2];
+    
+    uint maxTextureCountPadding[MAX_TEXTURE_COUNT - DEFAULT_MATERIAL_TEX_COUNT - 4];
 };
 
 StructuredBuffer<DefaultMaterialTextureDesc> DefaultMaterialTextureBuffer : register(CONCAT(t, MATERIAL_REGISTER));
